@@ -20,6 +20,10 @@ public class AnimatedSpotLight : AnimatedLight
     [ShowOnly]
     [SerializeField]
     public Transform lightElement;
+    //follow transform
+    //look at vector3
+    //follow animation
+    //follow animation curve
 
 
     protected override void Start()
@@ -36,7 +40,6 @@ public class AnimatedSpotLight : AnimatedLight
             //framerate dependant!
             if(Application.isPlaying)
                 lightElement.GetComponent<MeshRenderer>().material.color = 6f * colorGradient.Evaluate(evaluationTime / lifeTime);
-
 
             lookVector = Vector3.Lerp(lookVector, lookTarget.position, 0.08f);
             spotlightHead.LookAt(lookVector);

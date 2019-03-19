@@ -6,10 +6,10 @@ Material:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: Glass
-  m_Shader: {fileID: 4800000, guid: 7f205347e1ebaf14c97b28211ae55dbe, type: 3}
-  m_ShaderKeywords: _EMISSION _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
-  m_LightmapFlags: 1
+  m_Name: PillowWall
+  m_Shader: {fileID: 46, guid: 0000000000000000f000000000000000, type: 0}
+  m_ShaderKeywords: _NORMALMAP
+  m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
@@ -19,7 +19,7 @@ Material:
     serializedVersion: 3
     m_TexEnvs:
     - _BumpMap:
-        m_Texture: {fileID: 2800000, guid: e07be47df2e750046a6eeaa358f48611, type: 3}
+        m_Texture: {fileID: 2800000, guid: 99eddbf52e5bd7b4d9e33ed163fcb1cf, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _DetailAlbedoMap:
@@ -35,19 +35,19 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _EmissionMap:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 3.18, y: 5.44}
+        m_Texture: {fileID: 2800000, guid: 3aa57df75934ce347a6121739c38e416, type: 3}
+        m_Scale: {x: 20, y: 20}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 3.18, y: 5.44}
+        m_Texture: {fileID: 2800000, guid: 695fcdc75eb666f4b94bcc11932aa3b3, type: 3}
+        m_Scale: {x: 20, y: 20}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _OcclusionMap:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 3aa57df75934ce347a6121739c38e416, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _ParallaxMap:
@@ -55,35 +55,22 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     m_Floats:
-    - _AlbedoMap: 0
     - _BumpScale: 1
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
-    - _Distortion: 0.108
     - _DstBlend: 0
     - _GlossMapScale: 1
-    - _Glossiness: 0.897
+    - _Glossiness: 0.5
     - _GlossyReflections: 1
-    - _MKEditorShowMainBehavior: 1
-    - _MKEditorShowRenderBehavior: 1
-    - _MKEditorShowRimBehavior: 1
-    - _MKEditorShowSpecularBehavior: 1
-    - _MainTint: 1.602
-    - _Metallic: 1
+    - _Metallic: 0
     - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
-    - _RimIntensity: 0.66
-    - _RimSize: 2.3
-    - _Shininess: 0.25
-    - _SmoothnessTextureChannel: 1
+    - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
-    - _SpecularIntensity: 0.5
     - _SrcBlend: 1
     - _UVSec: 0
     - _ZWrite: 1
     m_Colors:
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
-    - _EmissionColor: {r: 2.6573231, g: 1.5743849, b: 2.670157, a: 1}
-    - _RimColor: {r: 0.21765637, g: 1, b: 0, a: 1}
-    - _SpecColor: {r: 1, g: 1, b: 1, a: 0.5}
+    - _Color: {r: 0.6320754, g: 0.25342646, b: 0.4336819, a: 1}
+    - _EmissionColor: {r: 3.9529412, g: 0, b: 2.6666667, a: 1}
