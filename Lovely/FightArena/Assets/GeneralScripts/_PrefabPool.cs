@@ -84,7 +84,7 @@ public class _PrefabPool : _MasterComponent<_PrefabPool>
             var go = (GameObject)AssetDatabase.LoadMainAssetAtPath(path);
             Debug.unityLogger.logEnabled = true;
             var data = go.GetComponent<ISpawnable>();
-            if (data != null && data.gameObject != null) result.Add(data.gameObject);
+            if (data != null && data.GameObject != null) result.Add(data.GameObject);
         }
         return result;
     }

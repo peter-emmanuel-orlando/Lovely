@@ -67,6 +67,8 @@ public class _Master : MonoBehaviour
         master = this;
         if (Application.isPlaying)
             DontDestroyOnLoad(this.gameObject);
+
+        transform.SetSiblingIndex(0);
     }
 
     private void OnApplicationQuit()

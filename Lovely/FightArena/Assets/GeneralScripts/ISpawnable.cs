@@ -7,6 +7,9 @@ using UnityEngine;
 public interface ISpawnable
 {
     string PrefabName { get; }
-    GameObject gameObject { get; }
-    Transform transform { get; }
+
+    //needs to be nullchecked before accessing gameobject or else error
+    GameObject GameObject { get; }
+    
+    Transform Transform { get; }
 }

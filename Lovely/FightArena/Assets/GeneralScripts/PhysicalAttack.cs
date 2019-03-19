@@ -52,7 +52,7 @@ public abstract class PhysicalAttack : AnimatedAbility
     protected virtual void ApplyEffects(Body hitBody)
     {
         performer.TurnToFace(hitBody.transform.position);
-        hitBody.ApplyAbilityEffects(performer.Mind, Damage, RecoilAnimation);
+        hitBody.ApplyAbilityEffects(performer.Mind, -Damage, RecoilAnimation);
     }
 }
 

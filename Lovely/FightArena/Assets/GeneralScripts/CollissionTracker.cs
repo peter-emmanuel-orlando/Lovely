@@ -22,13 +22,15 @@ public class CollisionTracker
     public void MarkAsAffected(Body affectedBody)
     {
         CheckForNullCoroutineSource();
-
-        if (!alreadyAffected.Contains(affectedBody))
-            alreadyAffected.Add(affectedBody);
-        if(!alreadyAffectedThisFrame.Contains(affectedBody))
+        if(affectedBody.gameObject.activeInHierarchy)
         {
-            alreadyAffectedThisFrame.Add(affectedBody);
-            coroutineSource.StartCoroutine(ClearAlreadyAffectedThisFrame());
+            if (!alreadyAffected.Contains(affectedBody))
+                alreadyAffected.Add(affectedBody);
+            if (!alreadyAffectedThisFrame.Contains(affectedBody))
+            {
+                alreadyAffectedThisFrame.Add(affectedBody);
+                coroutineSource.StartCoroutine(ClearAlreadyAffectedThisFrame());
+            }
         }
     }
 

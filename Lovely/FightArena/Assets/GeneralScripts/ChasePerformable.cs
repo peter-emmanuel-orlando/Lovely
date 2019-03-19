@@ -6,6 +6,8 @@ public class ChasePerformable : IPerformable
 {
     public readonly Mind performer;
     public readonly ISpawnable target;
+    public float stoppingDistance = 0;
+    float TotalStoppingDist { get { return performer.Body.NavAgent.radius + 1 /* + target.radius*/ + stoppingDistance + 0.1f; } }
 
     public ChasePerformable(Mind performer, ISpawnable target)
     {
@@ -17,9 +19,16 @@ public class ChasePerformable : IPerformable
 
     public IEnumerator Perform()
     {
-        while (Vector3.Distance(target.gameObject.transform.position, performer.Body.transform.position) > 1.5)
+        while (true)
         {
-            performer.Body.MoveToDestination(target.gameObject.transform.position);
+            var v = target.GameObject;
+            if (target.GameObject != null && performer.Body != null && Vector3.SqrMagnitude(target.GameObject.transform.position - performer.Body.transform.position) > Mathf.Pow(TotalStoppingDist, 2))
+            { }
+            else break;
+
+            performer.Body.MoveToDestination(target.GameObject.transform.position);
+            yield return null;
+            yield return null;
             yield return null;
         }
         yield break;

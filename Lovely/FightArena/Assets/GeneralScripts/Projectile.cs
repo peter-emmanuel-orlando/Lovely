@@ -2,6 +2,9 @@
 
 public abstract class Projectile : MonoBehaviour, ISpawnable
 {
+    public GameObject GameObject { get { return (this == null) ? null : base.gameObject; } }
+    public Transform Transform { get { return (this == null) ? null : transform; } }
+
     [ShowOnly]
     public GameObject initiator;
 

@@ -167,7 +167,7 @@ public class PlayerControl : IDecisionMaker, IPerformable
             head = Performer.Body.transform.FindDeepChild("head");
             cam = body.GetComponentInChildren<Camera>();
             if (cam == null)
-                cam = GameObject.Instantiate<GameObject>(_PrefabPool.GetPrefab("PlayerCamera").gameObject).GetComponent<Camera>();
+                cam = GameObject.Instantiate<GameObject>(_PrefabPool.GetPrefab("PlayerCamera").GameObject).GetComponent<Camera>();
             if (cam.GetComponent<AudioListener>() == null)
                 SingleAudioListner.AttachAudioListner(cam.gameObject);
             cam.allowHDR = true;

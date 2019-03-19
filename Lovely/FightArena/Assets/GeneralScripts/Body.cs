@@ -17,8 +17,11 @@ using UnityEngine;
 /// body also create a new mind of the appropriate type
 /// </summary>
 
-public abstract partial class Body : UnifiedController, ISpawnable
+public abstract class Body : UnifiedController, ISpawnable
 {
+    public GameObject GameObject { get { return (this == null) ? null : gameObject; } }
+    public Transform Transform { get { return (this == null) ? null : transform; } }
+
     [ShowOnly]
     [SerializeField]
     private float health;
@@ -44,6 +47,7 @@ public abstract partial class Body : UnifiedController, ISpawnable
     public abstract CharacterAbilities CharacterAbilities { get; }
     SkinnedMeshRenderer bodyMesh;
 
+    public event CharDeathEventHandler CharDeathEvent;
 
 
 
@@ -63,14 +67,14 @@ public abstract partial class Body : UnifiedController, ISpawnable
             gameObject.name = Names.maleNames.Random();
 
     }
-    
+
     protected override void Update()
     {
         base.Update();
-        if(bodyMesh == null)
+        if (bodyMesh == null)
             bodyMesh = GetComponentInChildren<SkinnedMeshRenderer>();
 
-        if(bodyMesh != null && bodyMesh.material.HasProperty("_Color"))
+        if (bodyMesh != null && bodyMesh.material.HasProperty("_Color"))
         {
             var baseColor = bodyMesh.sharedMaterial.color;
             var modifier = Color.Lerp(Color.magenta, Color.green, health / 100f);
@@ -79,7 +83,7 @@ public abstract partial class Body : UnifiedController, ISpawnable
         }
         anim.SetFloat("BreathingLabor", 1f - (stamina / 100));
 
-        if ( empowermentLevel != 0 && Time.time > depowerAfter)
+        if (empowermentLevel != 0 && Time.time > depowerAfter)
         {
             ConsumeEmpowerment();
         }
@@ -87,7 +91,7 @@ public abstract partial class Body : UnifiedController, ISpawnable
 
     protected virtual void OnEmpowermentChange(Body sender, EmpowerChangeEventArgs e)
     {
-        if( e.newPowerLevel != e.oldPowerLevel)
+        if (e.newPowerLevel != e.oldPowerLevel)
         {
             if (EmpowermentChangeEvent != null)
                 EmpowermentChangeEvent(this, e);
@@ -98,9 +102,18 @@ public abstract partial class Body : UnifiedController, ISpawnable
             UpdateEmpowerVisualEffect(this, e);
         }
     }
+
+    protected virtual void OnCharDeath(Body sender, CharDeathEventArgs e)
+    {
+        if (CharDeathEvent != null)
+            CharDeathEvent(this, e);
+
+        Destroy(this.gameObject);///return this to pool
+    }
     //\/////////////////////////////////////////////////////////////////////////////////////////////
     //\/////////////////////////////////////////////////////////////////////////////////////////////
 
+ 
     public void Empower()
     {
         var newEmpowermentLevel = (empowermentLevel + 1) % (maxEmpowermentLevel + 1);
@@ -119,23 +132,23 @@ public abstract partial class Body : UnifiedController, ISpawnable
     {
         if (powerUpEffects == null)
         {
-            powerUpEffects = GameObject.Instantiate<GameObject>(_PrefabPool.GetPrefab("PowerUpEffect").gameObject).GetComponent<PowerUpEffect>();
+            powerUpEffects = GameObject.Instantiate<GameObject>(_PrefabPool.GetPrefab("PowerUpEffect").GameObject).GetComponent<PowerUpEffect>();
             powerUpEffects.transform.SetParent(transform);
             powerUpEffects.transform.localPosition = Vector3.zero;
         }
         powerUpEffects.SetPowerLevel(e.newPowerLevel);
     }
     
-    public void Jump()
-    {
-
-    }
     //can be attacks or augments, good or bad
     public void ApplyAbilityEffects(Mind damager, float deltaHealth, AnimationClip effectAnimation)
     {
         health += deltaHealth;
         PlayInterruptAnimation(effectAnimation);
+        if(health <= 0)
+            OnCharDeath(this, new CharDeathEventArgs());
     }
+
+
 
     private readonly List<CapsuleCollider> hurtBoxes = new List<CapsuleCollider>();
     private readonly Dictionary<HitBoxType, CapsuleCollider> hitBoxes = new Dictionary<HitBoxType, CapsuleCollider>();

@@ -318,7 +318,7 @@ namespace ModularNavMesh
 
                 var trigger = triggers[i];
                 trigger.center = bound.center;
-                trigger.size = bound.size;
+                trigger.size = transform.InverseTransformVector(bound.size);
             }
         }
 

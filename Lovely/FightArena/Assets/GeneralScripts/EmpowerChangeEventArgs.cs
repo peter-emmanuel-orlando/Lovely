@@ -14,3 +14,4 @@ public class EmpowerChangeEventArgs : EventArgs
         this.newPowerLevel = newPowerLevel;
     }
 }
+

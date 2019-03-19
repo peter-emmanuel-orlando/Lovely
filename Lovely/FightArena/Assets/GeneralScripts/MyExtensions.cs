@@ -106,9 +106,14 @@ static class MyExtensions
         return float.IsNaN(v.x) || float.IsNaN(v.y);
     }
 
-    
 
 
+
+    public static bool IsNull(this ISpawnable s)
+    {
+        var result = s.GameObject == null;
+        return result;
+    }
 
 
 

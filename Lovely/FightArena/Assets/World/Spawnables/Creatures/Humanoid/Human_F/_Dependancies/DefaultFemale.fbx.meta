@@ -1,7 +1,7 @@
 fileFormatVersion: 2
 guid: 7664e0d991d053942a52235d6c293a31
 ModelImporter:
-  serializedVersion: 22
+  serializedVersion: 23
   fileIDToRecycleName:
     100000: Basis
     100002: chest
@@ -67,6 +67,20 @@ ModelImporter:
     100122: NoseRings
     100124: StrapSkirt
     100126: StrapTop
+    100128: Eye.L_end
+    100130: Eye.R_end
+    100132: f_index.02.L_end
+    100134: f_index.02.R_end
+    100136: f_middle.02.L_end
+    100138: f_middle.02.R_end
+    100140: f_pinky.02.L_end
+    100142: f_pinky.02.R_end
+    100144: f_ring.02.L_end
+    100146: f_ring.02.R_end
+    100148: thumb.03.L_end
+    100150: thumb.03.R_end
+    100152: toe.L_end
+    100154: toe.R_end
     400000: Basis
     400002: chest
     400004: //RootNode
@@ -131,6 +145,20 @@ ModelImporter:
     400122: NoseRings
     400124: StrapSkirt
     400126: StrapTop
+    400128: Eye.L_end
+    400130: Eye.R_end
+    400132: f_index.02.L_end
+    400134: f_index.02.R_end
+    400136: f_middle.02.L_end
+    400138: f_middle.02.R_end
+    400140: f_pinky.02.L_end
+    400142: f_pinky.02.R_end
+    400144: f_ring.02.L_end
+    400146: f_ring.02.R_end
+    400148: thumb.03.L_end
+    400150: thumb.03.R_end
+    400152: toe.L_end
+    400154: toe.R_end
     2100000: No Name
     2100002: Material
     2300000: Earrings
@@ -203,6 +231,8 @@ ModelImporter:
     secondaryUVHardAngle: 88
     secondaryUVPackMargin: 4
     useFileScale: 1
+    previousCalculatedGlobalScale: 0.01
+    hasPreviousCalculatedGlobalScale: 1
   tangentSpace:
     normalSmoothAngle: 60
     normalImportMode: 0

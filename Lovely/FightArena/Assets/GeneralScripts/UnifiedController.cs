@@ -165,7 +165,8 @@ public abstract class UnifiedController : MonoBehaviour
         //navAgent.hideFlags = HideFlags.HideInInspector;
         navAgent.updatePosition = false;
         //navAgent.updateRotation = false;
-        navAgent.speed = float.MaxValue;
+        navAgent.angularSpeed = lookHMaxSpeed;
+        navAgent.speed = RunSpeed;//float.MaxValue;
         navDestination = transform.position;
         //TEMPORARY WORKAROUNT todo
         navAgent.areaMask &= ~(1 << NavMesh.GetAreaFromName("Jump"));
@@ -210,7 +211,6 @@ public abstract class UnifiedController : MonoBehaviour
         {
             navAgent.areaMask = 1 << NavMesh.GetAreaFromName("WalkableMain");
         }*/
-
         SyncAnimation();
         SyncNavigation();
         SyncPhysics();
@@ -308,6 +308,7 @@ public abstract class UnifiedController : MonoBehaviour
 
     private void SyncNavigation()
     {
+
         if (movementSource == ControlMode.AnimNav)
         {
             var tmp = new NavMeshHit();
@@ -349,7 +350,7 @@ public abstract class UnifiedController : MonoBehaviour
         }
         else if (movementSource == ControlMode.Physics)
         {
-            navAgent.Warp(transform.position);
+            //navAgent.Warp(transform.position);
         }
     }
 
@@ -361,11 +362,12 @@ public abstract class UnifiedController : MonoBehaviour
 
     private void FixedUpdate()
     {
+        //navAgent.nextPosition = transform.position;
         //certain actions(ie jump, fly, and other vertical movements) 
         //are too complex to be scripted with physics. Therefore follow root motion animation
         //physics (ie falling, ragdolling getting hit by certain things) is to complex to do everything via animation so turn off everything and just physics
         //navigation is a downer to script, its better to use the built in, no matter how troublesome
-        
+
         if (movementSource == ControlMode.Navigation)
         {
             rb.isKinematic = true;
@@ -564,6 +566,11 @@ public abstract class UnifiedController : MonoBehaviour
         navAgent.stoppingDistance = stoppingDistance;//dont like setting this here
         navDestination = destination;
 
+        if(Vector3.SqrMagnitude(transform.position - destination) <= Mathf.Pow(stoppingDistance + 0.2f, 2))
+        {
+            yield return ProgressStatus.Complete;
+        }
+
         while (navAgent.pathPending && !(navAgent.pathStatus == NavMeshPathStatus.PathComplete || navAgent.pathStatus == NavMeshPathStatus.PathPartial))
         {
             if (navDestination != destination)
@@ -586,7 +593,6 @@ public abstract class UnifiedController : MonoBehaviour
         }
 
         yield return ProgressStatus.Complete;
-        yield break;
     }
 
     public void Jump(Vector3 normalizedJump)
@@ -715,7 +721,8 @@ public abstract class UnifiedController : MonoBehaviour
         //clear manual movement
         animMovement = Vector3.zero;
         //clear navigation
-        navAgent.isStopped = true;
+        if(navAgent.isOnNavMesh)
+            navAgent.isStopped = true;
         navDestination = transform.position;
         //clear jump
         jump = false;

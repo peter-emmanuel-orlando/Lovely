@@ -5,6 +5,8 @@ using UnityEngine;
 public class FightPerformable : IPerformable
 {
     private Mind performer;
+    private readonly float reassessmentInterval = 2f;
+    private float nextReassessment = 0;
 
     public FightPerformable(Mind performer)
     {
@@ -20,8 +22,9 @@ public class FightPerformable : IPerformable
         while (true)
         {
             var strategy = GetStrategy();
-            if (currentEnumerator == null || strategy != currentStrategy)
+            if (currentEnumerator == null || strategy != currentStrategy || Time.time >= nextReassessment )
             {
+                nextReassessment = Time.time + reassessmentInterval;
                 currentStrategy = strategy;
 
                 if (strategy == FightStrategy.Attack)
@@ -49,21 +52,27 @@ public class FightPerformable : IPerformable
         var enemy = GetBestAttackTarget();
         if(enemy.isInitialized)
         {
+            IEnumerator activeEnumerator = null;
+
             var chase = new ChasePerformable(performer, enemy.subject);
-            var chaseEnumerator = chase.Perform();
-            while(chaseEnumerator.MoveNext())
+            activeEnumerator = chase.Perform();
+            while(activeEnumerator.MoveNext())
             {
                 yield return null;
             }
-            var faceEnemyEnumerator = performer.Body.TurnToFace(enemy.subject.transform.position);
-            while (chaseEnumerator.MoveNext())
+            activeEnumerator = null;
+
+            if(!enemy.subject.IsNull())
+                activeEnumerator = performer.Body.TurnToFace(enemy.subject.Transform.position);
+            while (activeEnumerator != null && activeEnumerator.MoveNext())
             {
                 yield return null;
             }
+            activeEnumerator = null;
+
             //what if no attacks?
             var chosenAbility = performer.Body.CharacterAbilities[CharacterAbilitySlot.DashPunch];
-            chosenAbility.CastAbility();
-           
+            chosenAbility.CastAbility();           
             while (chosenAbility != null && chosenAbility.CheckStatus() == ProgressStatus.InProgress)
             {
                 yield return null;

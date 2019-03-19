@@ -17,7 +17,7 @@ public struct Intel  : IComparable<Intel>, IEquatable<Intel>
         timeStamp = Time.time;
         this.observer = observer;
         this.subject = subject;
-        distance = Vector3.Distance(observer.transform.position, subject.gameObject.transform.position);
+        distance = Vector3.Distance(observer.transform.position, subject.GameObject.transform.position);
     }
     
 

@@ -8,4 +8,7 @@ public class Spawnable : MonoBehaviour, ISpawnable
     {
         get { return gameObject.name; }
     }
+
+    public GameObject GameObject { get { return (this == null) ? null : base.gameObject; } }
+    public Transform Transform { get { return (this == null) ? null : transform; } }
 }

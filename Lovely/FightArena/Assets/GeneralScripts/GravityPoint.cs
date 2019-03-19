@@ -65,14 +65,28 @@ public class GravityPoint : MonoBehaviour
 
     private void FixedUpdate()
     {
+        var markedForRemovalRB = new List<Rigidbody>();
+        var markedForRemovalUnified = new List<UnifiedController>();
+
         foreach (var rb in tracked)
         {
-            rb.AddForce(CalculateForce(rb.position), ForceMode.Acceleration);
+            if (rb)
+                rb.AddForce(CalculateForce(rb.position), ForceMode.Acceleration);
+            else
+                markedForRemovalRB.Add(rb);
         }
         foreach (var unified in trackedController)
         {
-            unified.AddForce(CalculateForce(unified.transform.position), ForceMode.Acceleration);
+            if (unified)
+                unified.AddForce(CalculateForce(unified.transform.position), ForceMode.Acceleration);
+            else
+                markedForRemovalUnified.Add(unified);
         }
+
+        foreach (var unified in markedForRemovalUnified)
+            trackedController.Remove(unified);
+        foreach (var rb in markedForRemovalRB)
+            tracked.Remove(rb);
     }
 
     Vector3 CalculateForce(Vector3 position)

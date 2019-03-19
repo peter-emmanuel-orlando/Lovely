@@ -35,7 +35,7 @@ public abstract class ProjectileAttack : AnimatedAbility
     }
     protected virtual void SpawnProjectile()
     {
-        var newProjectile = GameObject.Instantiate<GameObject>(_PrefabPool.GetPrefab(ProjectileStats.prefabName).gameObject).GetComponent<Projectile>();
+        var newProjectile = GameObject.Instantiate<GameObject>(_PrefabPool.GetPrefab(ProjectileStats.prefabName).GameObject).GetComponent<Projectile>();
         newProjectile.initiator = performer.gameObject;
         newProjectile.transform.parent = SpawnedProjectileNewParent;
         newProjectile.transform.position = SpawnedProjectileNewLocation;
