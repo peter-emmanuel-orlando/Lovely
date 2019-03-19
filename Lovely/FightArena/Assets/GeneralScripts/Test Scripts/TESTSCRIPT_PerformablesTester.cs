@@ -6,18 +6,15 @@ public class TESTSCRIPT_PerformablesTester : MonoBehaviour, IDecisionMaker
 {
     [ShowOnly]
     Mind performer;
-    ChasePerformable currentPerformable;
+    IPerformable currentPerformable;
 
     [SerializeField]
     GameObject target;
 
     public IPerformable GetDecisions()
     {
-        var spwn = target.GetComponentInChildren<ISpawnable>();
-        if(spwn != null)
-        {
-            currentPerformable = new ChasePerformable(performer, spwn);
-        }
+        if(currentPerformable == null)
+            currentPerformable = new FightPerformable(performer);
 
         return currentPerformable;
     }

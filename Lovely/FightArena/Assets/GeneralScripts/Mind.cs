@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -13,12 +14,22 @@ public abstract class Mind : IDecisionMaker
     private IPerformable currentPerformable;
     private IEnumerator currentEnumerator;
     private readonly List<Intel> visibleEnemies = new List<Intel>();
-    private GradientValue perceptionDelayGradient = new GradientValue(2f, 5f);
+    private GradientValue perceptionDelayGradient = new GradientValue(0.2f, 5f);
     private float currentAlertness = 0;
     private float lookAroundAfter = 0;
 
 
     //getters/setters
+    public abstract List<Ability> MindAbilities { get; }
+    public List<Ability> AllAbilities
+    {
+        get
+        {
+            var result = new List<Ability>(MindAbilities);
+            result.AddRange(body.BodyAbilities);
+            return result;
+        }
+    }
     public Body Body { get { return body; } }
     protected abstract float SightRange { get; }
     protected float SightRadius { get { return SightRange * 0.75f; } }
@@ -74,17 +85,16 @@ public abstract class Mind : IDecisionMaker
 
     private void LookAround()
     {
-        VisibleEnemies.Clear();
-        var inRange = Physics.OverlapCapsule(body.CameraBone.position, body.CameraBone.forward * SightRange, SightRadius, Physics.AllLayers, QueryTriggerInteraction.Collide);
+        visibleEnemies.Clear();
+        var inRange = Physics.OverlapSphere(body.CameraBone.position, SightRange);//Physics.OverlapCapsule(body.CameraBone.position, body.CameraBone.forward * SightRange, SightRadius, Physics.AllLayers, QueryTriggerInteraction.Collide);
         foreach (var col in inRange)
         {
             var current = col.GetComponentInParent<ISpawnable>();
-            if(current != null)
-            {
-                VisibleEnemies.Add(new Intel(body.gameObject, current));
-
-            }
+            if(current != null && !object.ReferenceEquals(current, body))
+                visibleEnemies.Add(new Intel(body.gameObject, current));
         }
+        visibleEnemies.Distinct();
+        visibleEnemies.Sort();
     }
 
     //public methods

@@ -111,7 +111,7 @@ public partial class UnifiedController : MonoBehaviour
 
         navAgent = transform.GetComponent<NavMeshAgent>();
         if (navAgent == null) navAgent = gameObject.AddComponent<NavMeshAgent>();
-        navAgent.hideFlags = HideFlags.HideInInspector;
+        //navAgent.hideFlags = HideFlags.HideInInspector;
         navAgent.updatePosition = false;
         navDestination = transform.position;
 
@@ -129,7 +129,7 @@ public partial class UnifiedController : MonoBehaviour
 
         rb = transform.GetComponent<Rigidbody>();
         if (rb == null) rb = gameObject.AddComponent<Rigidbody>();
-        rb.hideFlags = HideFlags.HideInInspector;
+        //rb.hideFlags = HideFlags.HideInInspector;
         rb.isKinematic = true;
         rb.useGravity = true;
     }
@@ -140,6 +140,11 @@ public partial class UnifiedController : MonoBehaviour
         SyncAnimation();
         SyncNavigation();
         SyncPhysics();
+        gameObject.DisplayTextComponent(
+            "movementSource: " + movementSource + "\n" +
+            "navAgent.desiredVelocity: " + navAgent.desiredVelocity + "\n" +
+            "navAgent.destination: " + navAgent.destination + "\n"
+            );
     }
 
     private void SyncAnimation()
@@ -217,6 +222,11 @@ public partial class UnifiedController : MonoBehaviour
                         movementSource = ControlMode.Physics;
                 }
             }
+        }
+        else if (movementSource == ControlMode.Physics)
+        {
+            anim.SetFloat("SpeedHorizontal", 0);
+            anim.SetFloat("SpeedForward", 0);
         }
     }
     
@@ -390,17 +400,29 @@ public partial class UnifiedController : MonoBehaviour
         result.MoveNext();
         return result;
     }
-    private IEnumerator _TurnToFace(Vector3 lookTarget)
+    private IEnumerator<ProgressStatus> _TurnToFace(Vector3 lookTarget)
     {
-        var desiredLook = Quaternion.LookRotation(lookTarget - transform.position, transform.up).eulerAngles;
-        deltaDegreesV = desiredLook.x;
-        deltaDegreesH = desiredLook.y;
+        //var desiredLook = Quaternion.LookRotation(lookTarget - transform.position, transform.up).eulerAngles;
+        //deltaDegreesV = desiredLook.x;
+        //deltaDegreesH = desiredLook.y;
+        transform.LookAt(lookTarget);
+        yield return ProgressStatus.Complete;
         yield break;
     }
 
-        public void MoveToDestination(Vector3 destination, float stoppingDistance = 1)
+    public IEnumerator<ProgressStatus> MoveToDestination(Vector3 destination, float stoppingDistance = 1)
     {
-        if (isLocked || !IsInitialized) return;
+        var result = _MoveToDestination(destination, stoppingDistance);
+        result.MoveNext();
+        return result;
+    }
+    private IEnumerator<ProgressStatus> _MoveToDestination(Vector3 destination, float stoppingDistance)
+    {
+        if (isLocked || !IsInitialized)
+        {
+            yield return ProgressStatus.Aborted;
+            yield break;
+        }
 
         //clear manual movement
         animMovement = Vector3.zero;
@@ -414,6 +436,30 @@ public partial class UnifiedController : MonoBehaviour
         movementSource = ControlMode.Navigation;
         navAgent.stoppingDistance = stoppingDistance;//dont like setting this here
         navDestination = destination;
+
+        while(navAgent.pathPending && !(navAgent.pathStatus == NavMeshPathStatus.PathComplete))
+        {
+            if(navDestination != destination)
+            {
+                yield return ProgressStatus.Aborted;
+                yield break;
+            }
+            else
+                yield return ProgressStatus.Pending;
+        }
+        while(navAgent.remainingDistance > 0)
+        {
+            if (navDestination != destination)
+            {
+                yield return ProgressStatus.Aborted;
+                yield break;
+            }
+            else
+                yield return ProgressStatus.InProgress;
+        }
+
+        yield return ProgressStatus.Complete;
+        yield break;        
     }
 
     public void Jump()
@@ -435,15 +481,19 @@ public partial class UnifiedController : MonoBehaviour
     }
 
     //unless stayOnNavMesh == true, use physics colliders while animating
-    public IEnumerator PlayAnimation(AnimationClip clip, bool remainOnNavMesh = true, bool playMirrored = false)
+    public IEnumerator<ProgressStatus> PlayAnimation(AnimationClip clip, bool remainOnNavMesh = true, bool playMirrored = false)
     {
         var result = _PlayAnimation(clip, remainOnNavMesh, playMirrored);
         result.MoveNext();
         return result;
     }
-    private IEnumerator _PlayAnimation(AnimationClip clip, bool remainOnNavMesh, bool playMirrored)
-    { 
-        if (isLocked || !IsInitialized || clip == null) yield break;
+    private IEnumerator<ProgressStatus> _PlayAnimation(AnimationClip clip, bool remainOnNavMesh, bool playMirrored)
+    {
+        if (isLocked || !IsInitialized || clip == null)
+        {
+            yield return ProgressStatus.Aborted;
+            yield break;
+        }
 
         //clear manual movement
         animMovement = Vector3.zero;
@@ -458,9 +508,34 @@ public partial class UnifiedController : MonoBehaviour
         movementSource = ControlMode.AnimatedRoot;
         this.playMirrored = playMirrored;
         playAnimationNext = clip;
+
+        var stateInfo = anim.GetCurrentAnimatorStateInfo(0);
+        bool isPlayingAnimation = false;
+
+        //if not playing animation and either its still queued or its in transition, wait til animation is being played
+        while(isPlayingAnimation == false && (playAnimationNext == clip || anim.IsInTransition(0)))
+        {
+            isPlayingAnimation = stateInfo.IsName("ActionA") || stateInfo.IsName("ActionB");
+            //if its not playing animation, and its not queued, and its not in transition, its been aborted somehow
+            if (!isPlayingAnimation && !playAnimationNext == clip && !anim.IsInTransition(0))
+            {
+                yield return ProgressStatus.Aborted;
+                yield break;
+            }
+            else
+                yield return ProgressStatus.Pending;
+        }
+        while(isPlayingAnimation)
+        {
+            stateInfo = anim.GetCurrentAnimatorStateInfo(0);
+            isPlayingAnimation = stateInfo.IsName("ActionA") || stateInfo.IsName("ActionB");
+            yield return ProgressStatus.InProgress;
+        }
+        yield return ProgressStatus.Complete;
         yield break;
     }
 
+    /*
     public IEnumerator PlayAnimation(RecoilCode code, bool remainOnNavMesh = true)
     {
         var result = _PlayAnimation(code, remainOnNavMesh);
@@ -485,6 +560,7 @@ public partial class UnifiedController : MonoBehaviour
         recoil = code;
         yield break;
     }
+    */
 
     public void SetHurtBoxActiveState(bool isActive)
     {

@@ -111,7 +111,7 @@ public class PlayerControl : IDecisionMaker, IPerformable
 
     Body performerBody;
     public Mind Performer { get { return performerBody.Mind; } }
-    Ability punch;
+    Ability punch { get { return Performer.AllAbilities[0]; } }
     Transform head;
     Vector3 cameraOffset = Vector3.zero;//offset from the head
     Camera cam;
@@ -131,7 +131,7 @@ public class PlayerControl : IDecisionMaker, IPerformable
             GameObject.Destroy(cam);
         performerBody = body;
         Performer.OverrideDecisionMaker(this);
-        punch = new PunchCombo(Performer.Body.SubscribeForUpdates, Performer.Body.SubscribeForAnimationEvents, Performer.Body.SubscribeForTriggerEvents, Performer.Body);
+        //punch = new PunchCombo(Performer.Body.SubscribeForUpdates, Performer.Body.SubscribeForAnimationEvents, Performer.Body.SubscribeForTriggerEvents, Performer.Body);
         head = Performer.Body.transform.FindDeepChild("head");
         cam = body.GetComponentInChildren<Camera>();
         if(cam == null)
@@ -170,7 +170,7 @@ public class PlayerControl : IDecisionMaker, IPerformable
                 performerBody.Look(lookSpeedH, lookSpeedV);
                 //performerMind.Body.Look(lookSpeedH, lookSpeedV);
                 if (activatePunch)
-                    punch.Perform();
+                    punch.CastAbility();
                 if (activateJump)
                     performerBody.Jump();
             }

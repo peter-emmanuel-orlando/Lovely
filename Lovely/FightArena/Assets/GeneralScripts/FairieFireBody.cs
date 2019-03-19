@@ -15,6 +15,7 @@ public class FairieFireBody : Body, IBodyCanGlow
     public override Gender Gender { get { return Gender.Nongendered; } }
     public override float MaxHealth { get { return 50f; } }
     public override float MaxStamina { get { return float.MaxValue; } }
+    public override List<Ability> BodyAbilities { get { return new List<Ability>(); } }
 
     public Color GlowColor
     {

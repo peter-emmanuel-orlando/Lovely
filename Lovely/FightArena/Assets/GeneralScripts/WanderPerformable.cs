@@ -20,9 +20,9 @@ public class WanderPerformable : IPerformable
     {
         while(true)
         {
-            if (Time.time > setNext && (!NavAgent.hasPath && !NavAgent.pathPending))
+            if (Time.time > setNext && (!NavAgent.hasPath && !NavAgent.pathPending || NavAgent.isPathStale))
             {
-                setNext = Time.time + Random.Range(3f, 8f);
+                setNext = Time.time + Random.Range(1f, 3f);
                 var randomDelta = new Vector3(Random.Range(-10f, 10f), Random.Range(-10f, 10f), Random.Range(-10f, 10f));
                 //NavMeshHit hit;
                 //NavMesh.Raycast(transform.position, transform.position + randomDelta, out hit, NavMesh.AllAreas);

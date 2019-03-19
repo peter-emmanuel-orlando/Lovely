@@ -20,6 +20,7 @@ public class GenericBody : Body
     public override Gender Gender { get { return gender; } }
     public override float MaxHealth { get { return maxHealth; } }
     public override float MaxStamina { get { return maxStamina; } }
+    public override List<Ability> BodyAbilities { get { return new List<Ability>(); } }
 
     protected override void Awake()
     {

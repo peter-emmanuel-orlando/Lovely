@@ -1,4 +1,5 @@
-﻿using System;
+﻿
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -26,12 +27,12 @@ public partial class PunchCombo : Ability
 
 
 
-
+    private IEnumerator statusEnumerator;
     private readonly HashSet<Body> enemiesAffected = new HashSet<Body>();
     private bool isActive = false;
     private float lockPerformUntil = 0;
     private float resetComboIfPerformedAfter = 0;
-    ComboPlaceMarker currentPlaceInCombo = new ComboPlaceMarker();
+    private ComboPlaceMarker currentPlaceInCombo = new ComboPlaceMarker();
 
     public override float Range
     {
@@ -41,37 +42,64 @@ public partial class PunchCombo : Ability
         }
     }
 
-    public PunchCombo(UpdateSubscriber SubscribeForUpdate, AnimationEventSubscriber SubscribeForAnimationEvents, TriggerEventSubscriber SubscribeForTriggerEvents, UnifiedController inteControl) : base(SubscribeForUpdate, SubscribeForAnimationEvents, SubscribeForTriggerEvents, inteControl)
-    { }
 
-    public override AbilityStatus CheckStatus()
+    public PunchCombo(UpdateSubscriber SubscribeForUpdate, AnimationEventSubscriber SubscribeForAnimationEvents, TriggerEventSubscriber SubscribeForTriggerEvents, UnifiedController inteControl) : base(SubscribeForUpdate, SubscribeForAnimationEvents, SubscribeForTriggerEvents, inteControl)
+    {    }
+
+    public override ProgressStatus CheckStatus()
     {
-        throw new NotImplementedException();
+        var result = ProgressStatus.Complete;
+        if (statusEnumerator != null)
+        {
+            if (statusEnumerator.MoveNext())
+                result = ProgressStatus.InProgress;
+            else
+                statusEnumerator = null;
+        }
+        return result;
+
     }
 
 
-    public override void Perform()
+    public override IEnumerator<ProgressStatus> CastAbility()
+    {
+        var result = _CastAbility();
+        result.MoveNext();
+        return result;
+    }
+    private IEnumerator<ProgressStatus> _CastAbility()
     {
         //need a way to say which combo to perform
         currentPlaceInCombo.SetCombo(combo1);
 
         if (Time.time > lockPerformUntil && !isActive)
         {
-            if (currentPlaceInCombo.IsEmpty) return;
+            if (!currentPlaceInCombo.IsEmpty)
+            {
+                if (Time.time > resetComboIfPerformedAfter || currentPlaceInCombo.IsAtEnd)
+                    currentPlaceInCombo.Reset();
 
-            if (Time.time > resetComboIfPerformedAfter || currentPlaceInCombo.IsAtEnd)
-                currentPlaceInCombo.Reset();
-
-            var current = currentPlaceInCombo.GetCurrent();
-            uniControl.PlayAnimation(current.punchAnimation, true, current.isMirrored);
-            lockPerformUntil = Time.time + lockPerformFor;
-            resetComboIfPerformedAfter = Time.time + current.punchAnimation.length + comboHoldFor;
+                var current = currentPlaceInCombo.GetCurrent();
+                var enumerator = uniControl.PlayAnimation(current.punchAnimation, true, current.isMirrored);
+                lockPerformUntil = Time.time + lockPerformFor;
+                resetComboIfPerformedAfter = Time.time + current.punchAnimation.length + comboHoldFor;
+                while (enumerator.MoveNext())
+                {
+                    yield return enumerator.Current;
+                }
+            }
+        }
+        else
+        {
+            yield return ProgressStatus.Aborted;
+            yield break;
         }
     }
 
     protected override void ReceiveAnimationEvents(string message)
     {
         Debug.Log(this + " received an animationEvent message: " + message);
+        Debug.LogWarning(this + " does not filter received messages! may cause errors");
         if (message == AnimationEventMessages.activeFramesStart)
         {
             var current = currentPlaceInCombo.GetCurrent();
@@ -117,13 +145,9 @@ public partial class PunchCombo : Ability
 
     protected override void Update()
     {
-
+        
     }
 }
-
-
-
-
 
 
 

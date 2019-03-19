@@ -2,7 +2,7 @@
 
 public partial class PunchCombo
 {
-    private struct ComboPlaceMarker
+    private class ComboPlaceMarker
     {
         private PunchStats[] combo;
         private int currentIndex;

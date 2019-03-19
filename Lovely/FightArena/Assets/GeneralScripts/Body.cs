@@ -31,6 +31,17 @@ public abstract class Body : UnifiedController, ISpawnable
     public abstract float MaxStamina { get; }
     public abstract Gender Gender { get; }
     public abstract string PrefabName { get; }
+    public abstract List<Ability> BodyAbilities { get; }
+    public List<Ability> AllAbilities
+    {
+        get
+        {
+            var result = new List<Ability>(BodyAbilities);
+            if(Mind != null)
+                result.AddRange(Mind.MindAbilities);
+            return result;
+        }
+    }
 
     protected override void Awake()
     {

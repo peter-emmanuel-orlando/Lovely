@@ -8,4 +8,5 @@ public interface ISpawnable
 {
     string PrefabName { get; }
     GameObject gameObject { get; }
+    Transform transform { get; }
 }

@@ -1,9 +1,11 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public struct Intel  : IComparer<Intel>
+public struct Intel  : IComparable<Intel>, IEquatable<Intel>
 {
+    public readonly bool isInitialized;
     public readonly float timeStamp;
     public readonly GameObject observer;
     public readonly ISpawnable subject;
@@ -11,6 +13,7 @@ public struct Intel  : IComparer<Intel>
 
     public Intel(GameObject observer, ISpawnable subject)
     {
+        isInitialized = true;
         timeStamp = Time.time;
         this.observer = observer;
         this.subject = subject;
@@ -18,8 +21,22 @@ public struct Intel  : IComparer<Intel>
     }
     
 
-    int IComparer<Intel>.Compare(Intel x, Intel y)
+    
+
+    public int CompareTo(Intel other)
     {
-        return x.distance.CompareTo(y.distance);
+        return this.distance.CompareTo(other.distance);
+    }
+
+    public bool Equals(Intel other)
+    {
+        var result =
+            isInitialized == other.isInitialized &&
+            timeStamp == other.timeStamp &&
+            observer == other.observer &&
+            subject == other.subject &&
+            distance == other.distance;
+
+        return result;
     }
 }

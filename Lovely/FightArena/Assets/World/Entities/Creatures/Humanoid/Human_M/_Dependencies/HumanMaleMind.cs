@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HumanMaleMind : Mind
+public class HumanMaleMind : HumanMind
 {
     public HumanMaleMind(Body body) : base(body)
     {

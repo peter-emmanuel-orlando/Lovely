@@ -2,8 +2,19 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class HumanFemaleMind : Mind
+public class HumanFemaleMind : HumanMind
 {
+    private readonly List<Ability> femaleMindAbilities = new List<Ability>();
+    public override List<Ability> MindAbilities
+    {
+        get
+        {
+            var result = new List<Ability>(femaleMindAbilities);
+            result.AddRange(base.MindAbilities);
+            return result;
+        }
+    }
+
     public HumanFemaleMind(Body body) : base(body)
     {
 

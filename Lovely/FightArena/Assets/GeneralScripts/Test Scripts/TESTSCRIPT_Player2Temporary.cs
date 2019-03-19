@@ -43,7 +43,7 @@ public class TESTSCRIPT_Player2Temporary : MonoBehaviour, IDecisionMaker, IPerfo
             performer.Body.Move(moveSpeedX, moveSpeedZ);
             //performerMind.Body.Look(lookSpeedH, lookSpeedV);
             if (activatePunch)
-                punch.Perform();
+                punch.CastAbility();
 
             yield return null;
         }
