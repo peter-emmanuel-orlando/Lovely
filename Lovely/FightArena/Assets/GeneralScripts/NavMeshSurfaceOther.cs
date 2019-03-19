@@ -247,7 +247,7 @@ namespace UnityEngine.AI
                 modifiers =  new List<INavMeshModifier>( NavMeshModifier.activeModifiers);
             }
             var parentSurf = transform.parent.GetComponent<NavMeshSurfaceOther>();
-            modifiers.RemoveAll(x => x.Equals(this) || x.Equals(parentSurf));
+            modifiers.RemoveAll(x => x is NavMeshSurfaceOther);
 
             foreach (var m in modifiers)
             {

@@ -165,6 +165,7 @@ public abstract class UnifiedController : MonoBehaviour
         //navAgent.hideFlags = HideFlags.HideInInspector;
         navAgent.updatePosition = false;
         //navAgent.updateRotation = false;
+        navAgent.speed = float.MaxValue;
         navDestination = transform.position;
 
         anim = transform.GetComponent<Animator>();
@@ -318,7 +319,7 @@ public abstract class UnifiedController : MonoBehaviour
         else if (movementSource == ControlMode.Navigation)
         {
             var tmp = new NavMeshHit();
-            if (!NavMesh.SamplePosition(transform.position, out tmp, 2f, NavMesh.AllAreas))
+            if (!navAgent.isOnOffMeshLink && !NavMesh.SamplePosition(transform.position, out tmp, 2f, NavMesh.AllAreas))
             {
                 movementSource = ControlMode.Physics;
                 return;

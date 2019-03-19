@@ -12,6 +12,4 @@ very minor bugfixes
 
 TODO!!!!! COMPLETELY CHANGE THE WAY NAVMESHSURFACEOTHER GATHERS SOURCES
 
-instead of gathering children or volume or whatever, itll gather a new class [public class OtherSurfaceVolume] that [requirecomponent(typeof(NavMEshSurfaceOther))]
-this class defines both the triggers and the walkable volume of the surface
-navmeshsurfaceother should only gather this new class instead of the normal gathering method
+instead of gathering children or volume or whatever, itll have a list of triggers. the triggers are also the walkable volume of the surface. Navmeshsurfaceother should only gather the triggers instead of the normal gathering method
