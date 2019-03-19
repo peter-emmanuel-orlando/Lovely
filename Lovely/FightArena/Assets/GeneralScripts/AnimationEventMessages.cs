@@ -62,3 +62,22 @@ public static class AnimationEventMessages
         return normalizedTime * clip.length;
     }
 }
+
+public struct AnimationMessage : System.IComparable<AnimationMessage>
+{
+    public readonly bool isValid;
+    public readonly string message;
+    public readonly float triggerTimeNormalized;
+
+    public AnimationMessage(string message, float triggerTimeNormalized)
+    {
+        isValid = true;
+        this.message = message;
+        this.triggerTimeNormalized = triggerTimeNormalized;
+    }
+
+    public int CompareTo(AnimationMessage other)
+    {
+        return this.triggerTimeNormalized.CompareTo(other.triggerTimeNormalized);
+    }
+}

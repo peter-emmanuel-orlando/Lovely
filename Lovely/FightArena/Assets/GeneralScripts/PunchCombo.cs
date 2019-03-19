@@ -87,18 +87,26 @@ public partial class PunchCombo : Ability
                 if (Time.time > resetComboIfPerformedAfter || currentPlaceInCombo.IsAtEnd)
                     currentPlaceInCombo.Reset();
 
+                isActive = false;
                 var current = currentPlaceInCombo.GetCurrent();
-                var enumerator = uniControl.PlayAnimation(current.punchAnimation, true, current.isMirrored);
+                var enumerator = uniControl.PlayAnimation(current.punchAnimation, true, current.isMirrored, new AnimationMessage("testopen", 0.3f), new AnimationMessage("testclose", 0.7f));
                 lockPerformUntil = Time.time + lockPerformFor;
                 resetComboIfPerformedAfter = Time.time + current.punchAnimation.length + comboHoldFor;
-                //var testmessages = new Stack<string>(new string[] {"openmessages", "closemessage" });
                 while (enumerator.MoveNext())
                 {
-                    var time = enumerator.Current.normalizedTime;
-                    if (time > 0.3f)
-                        ReceiveAnimationEvents("testmessage. Time: " + time);
+                    //if current time is after active start time, set isactive to true
+                    //if current time is after active end time, set isactive to false
+                    //make sure active frame triggers at least once
+
+                    var animTime = enumerator.Current.normalizedTime;
+                    if(animTime > 0.2)
+                        isActive = true;
+
+                    if (animTime > 0.8)
+                        isActive = false;
                     yield return enumerator.Current.status;
                 }
+                isActive = false;
             }
         }
         else
@@ -140,8 +148,8 @@ public partial class PunchCombo : Ability
     */
     protected override void ReceiveAnimationEvents(string message)
     {
-        Debug.Log(this + " received an animationEvent message: " + message);
-        Debug.LogWarning(this + " does not filter received messages! may cause errors");
+        //Debug.Log(this + " received an animationEvent message: " + message);
+        //Debug.LogWarning(this + " does not filter received messages! may cause errors");
         if (message == AnimationEventMessages.activeFramesStart)
         {
             var current = currentPlaceInCombo.GetCurrent();
@@ -154,15 +162,15 @@ public partial class PunchCombo : Ability
                 tmp.transform.localPosition = Vector3.zero;
                 GameObject.Destroy(tmp, 0.1f);
             }
-            isActive = true;
+            //isActive = true;
         }
         if (message == AnimationEventMessages.activeFramesEnd)
         {
             var current = currentPlaceInCombo.GetCurrent();
             var handCode = current.hitBoxType;
             uniControl.SetHitBoxActiveState(handCode, false);
-            isActive = false;
-            currentPlaceInCombo.AdvanceCombo();
+            //isActive = false;
+            //currentPlaceInCombo.AdvanceCombo();
             enemiesAffected.Clear();
         }
     }
@@ -172,7 +180,7 @@ public partial class PunchCombo : Ability
         if (collider.gameObject.layer == LayerMask.NameToLayer("HurtBox") && isActive)
         {
 
-            Debug.Log("I [" + uniControl + "] punched: " + collider.attachedRigidbody.gameObject);
+            //Debug.Log("I [" + uniControl + "] punched: " + collider.attachedRigidbody.gameObject);
             var body = collider.GetComponentInParent<Body>();
             if (body != null && !enemiesAffected.Contains(body))
             {

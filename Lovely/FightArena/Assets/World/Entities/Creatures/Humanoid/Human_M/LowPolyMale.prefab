@@ -879,7 +879,7 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4023466304976278}
-  - component: {fileID: 114084801704927818}
+  - component: {fileID: 114913217906003382}
   m_Layer: 0
   m_Name: LowPolyMale
   m_TagString: Untagged
@@ -1714,7 +1714,7 @@ Transform:
   m_Father: {fileID: 4602008369203486}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &114084801704927818
+--- !u!114 &114913217906003382
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -1722,15 +1722,13 @@ MonoBehaviour:
   m_GameObject: {fileID: 1939304979440340}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b9cdf1de7aa174440914c4aaeef41fa8, type: 3}
+  m_Script: {fileID: 11500000, guid: 2989025d9f859ef46865c97dbf61f270, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  avatar: {fileID: 9000000, guid: 88dd1ec3136885b4e8690707b3b0a7c6, type: 3}
+  avatar: {fileID: 9000000, guid: 6a6140f4a53a6ee4ba924227bfda6924, type: 3}
   overrideController: {fileID: 22100000, guid: 2a8a4c266b1daed479a4c6cf4140eb97, type: 2}
-  health: 100
-  stamina: 100
-  gender: 1
-  prefabName: LowPolyHumanMale
+  health: 0
+  stamina: 0
 --- !u!136 &136001099910010072
 CapsuleCollider:
   m_ObjectHideFlags: 1

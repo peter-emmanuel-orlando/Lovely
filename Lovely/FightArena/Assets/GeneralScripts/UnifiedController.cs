@@ -480,13 +480,13 @@ public partial class UnifiedController : MonoBehaviour
     }
 
     //unless stayOnNavMesh == true, use physics colliders while animating
-    public IEnumerator<AnimationProgress> PlayAnimation(AnimationClip clip, bool remainOnNavMesh = true, bool playMirrored = false)
+    public IEnumerator<AnimationProgress> PlayAnimation(AnimationClip clip, bool remainOnNavMesh = true, bool playMirrored = false, params AnimationMessage[] messages)
     {
-        var result = _PlayAnimation(clip, remainOnNavMesh, playMirrored);
+        var result = _PlayAnimation(clip, remainOnNavMesh, playMirrored, new List<AnimationMessage>( messages));
         result.MoveNext();
         return result;
     }
-    private IEnumerator<AnimationProgress> _PlayAnimation(AnimationClip clip, bool remainOnNavMesh, bool playMirrored)
+    private IEnumerator<AnimationProgress> _PlayAnimation(AnimationClip clip, bool remainOnNavMesh, bool playMirrored, List<AnimationMessage> messages)
     {
         if (isLocked || !IsInitialized || clip == null)
         {
@@ -516,8 +516,9 @@ public partial class UnifiedController : MonoBehaviour
         this.playMirrored = playMirrored;
         playAnimationNext = clip;
 
-        //conditions to be playing clip, placeholder == clip && (slot == playslot || nextslot == playslot)
-        //the animation will
+        messages.Add(new AnimationMessage("EMPTY_PLACEHOLDER", Mathf.Infinity));
+        messages.Sort();
+        Stack<AnimationMessage> messageStack = new Stack<AnimationMessage>(messages);
 
         while (playAnimationNext == clip)
         {
@@ -534,7 +535,8 @@ public partial class UnifiedController : MonoBehaviour
         var finaltime = (isSlotCurrent) ? stateInfo.normalizedTime : nextInfo.normalizedTime;
         while (isAnimInSlot && !(isSlotCurrent || isSlotNext))
         {
-            var midResult = new AnimationProgress(ProgressStatus.Pending, -1);
+            var message = (finaltime >= messageStack.Peek().triggerTimeNormalized) ? messageStack.Pop() : new AnimationMessage();
+            var midResult = new AnimationProgress(ProgressStatus.Pending, -1, message);
             gameObject.DisplayTextComponent(midResult, this);
             yield return midResult;
 
@@ -547,7 +549,8 @@ public partial class UnifiedController : MonoBehaviour
 
         while ( isAnimInSlot && (isSlotCurrent || isSlotNext))
         {
-            var result = new AnimationProgress(ProgressStatus.InProgress, finaltime);
+            var message = (finaltime >= messageStack.Peek().triggerTimeNormalized) ? messageStack.Pop() : new AnimationMessage();
+            var result = new AnimationProgress(ProgressStatus.InProgress, finaltime, message);
 
             stateInfo = anim.GetCurrentAnimatorStateInfo(0);
             nextInfo = anim.GetNextAnimatorStateInfo(0);
@@ -562,7 +565,8 @@ public partial class UnifiedController : MonoBehaviour
 
         stateInfo = anim.GetCurrentAnimatorStateInfo(0);
         nextInfo = anim.GetNextAnimatorStateInfo(0);
-        var finalResult = new AnimationProgress(ProgressStatus.Complete, finaltime);
+        var finalMessage = (finaltime >= messageStack.Peek().triggerTimeNormalized) ? messageStack.Pop() : new AnimationMessage();
+        var finalResult = new AnimationProgress(ProgressStatus.Complete, finaltime, finalMessage);
         finaltime = (isSlotCurrent) ? stateInfo.normalizedTime : nextInfo.normalizedTime;
         gameObject.DisplayTextComponent(finalResult, this);
         yield return finalResult;
@@ -712,6 +716,7 @@ public class AnimationProgress
 {
     public readonly ProgressStatus status;
     public readonly float normalizedTime;
+    public readonly AnimationMessage animationMessage;
 
     public AnimationProgress(ProgressStatus status, float normalizedTime)
     {
@@ -719,11 +724,17 @@ public class AnimationProgress
         this.normalizedTime = normalizedTime;
     }
 
+    public AnimationProgress(ProgressStatus status, float normalizedTime, AnimationMessage animationMessage) : this(status, normalizedTime)
+    {
+        this.animationMessage = animationMessage;
+    }
+
     public override string ToString()
     {
         return
             "ProgressStatus: " + status + "\n" +
-            "NormalizedTime: " + normalizedTime;
+            "NormalizedTime: " + normalizedTime + "\n" +
+            "Message: " + animationMessage;
     }
 }
 
