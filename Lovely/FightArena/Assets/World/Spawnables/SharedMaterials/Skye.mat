@@ -1,0 +1,35 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!21 &2100000
+Material:
+  serializedVersion: 6
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 0}
+  m_Name: Skye
+  m_Shader: {fileID: 4800000, guid: bc14e32415e93964ea5eaf81d9475396, type: 3}
+  m_ShaderKeywords: 
+  m_LightmapFlags: 4
+  m_EnableInstancingVariants: 0
+  m_DoubleSidedGI: 0
+  m_CustomRenderQueue: -1
+  stringTagMap: {}
+  disabledShaderPasses: []
+  m_SavedProperties:
+    serializedVersion: 3
+    m_TexEnvs: []
+    m_Floats:
+    - _SkyExponent1: 1
+    - _SkyExponent2: 1
+    - _SkyIntensity: 1
+    - _SunAlpha: 550
+    - _SunAltitude: -55
+    - _SunAzimuth: 96.8
+    - _SunBeta: 1
+    - _SunIntensity: 21.98
+    m_Colors:
+    - _SkyColor1: {r: 0.001185745, g: 3.5555515, b: 4.0023713, a: 3}
+    - _SkyColor2: {r: 4.0290647, g: 4.0064588, b: 4.0118413, a: 3}
+    - _SkyColor3: {r: 0, g: 0, b: 0, a: 3}
+    - _SunColor: {r: 1, g: 0.98999995, b: 0.87, a: 1}
+    - _SunVector: {r: -0.08, g: 0.79, b: 0.71, a: 183.24}

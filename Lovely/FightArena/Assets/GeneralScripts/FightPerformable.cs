@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+//fight performable should be called MartialDecicionMaker which is an IDecisionMaker that returns either attack, or flee or recoup or whatever[each of which should be a performable]
 public class FightPerformable : IPerformable
 {
     private Mind performer;
@@ -53,7 +54,7 @@ public class FightPerformable : IPerformable
         if(enemy.isInitialized)
         {
             IEnumerator activeEnumerator = null;
-
+            
             var chase = new ChasePerformable(performer, enemy.subject);
             activeEnumerator = chase.Perform();
             while(activeEnumerator.MoveNext())

@@ -533,7 +533,7 @@ public abstract class UnifiedController : MonoBehaviour
         //var desiredLook = Quaternion.LookRotation(lookTarget - transform.position, transform.up).eulerAngles;
         //deltaDegreesV = desiredLook.x;
         //deltaDegreesH = desiredLook.y;
-        transform.LookAt(lookTarget);
+        transform.LookAt(Vector3.ProjectOnPlane(lookTarget, transform.up));
         yield return ProgressStatus.Complete;
         yield break;
     }

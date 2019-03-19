@@ -15,3 +15,17 @@ public class EmpowerChangeEventArgs : EventArgs
     }
 }
 
+public delegate void DamageTakenEventHandler(Body sender, DamageTakenEventArgs e);
+
+public class DamageTakenEventArgs : EventArgs
+{
+    public readonly int oldPowerLevel;
+    public readonly int newPowerLevel;
+
+    public DamageTakenEventArgs(int oldPowerLevel, int newPowerLevel)
+    {
+        this.oldPowerLevel = oldPowerLevel;
+        this.newPowerLevel = newPowerLevel;
+    }
+}
+

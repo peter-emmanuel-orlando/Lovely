@@ -9,6 +9,7 @@ public abstract class Mind : IDecisionMaker
 
     //properties
     private Body body;
+    //protected ActivityState currentState;
     private IDecisionMaker decisionSource;
     //private Dictionary<IPerformable, IEnumerator> currentPerformables;
     private IPerformable currentPerformable;
@@ -25,6 +26,7 @@ public abstract class Mind : IDecisionMaker
     protected float SightRadius { get { return SightRange * 0.75f; } }
     public List<Intel> VisibleEnemies { get { return new List<Intel>(visibleEnemies); } }
     private float PerceptionDelay { get { return perceptionDelayGradient.Lerp(currentAlertness); } }
+    //public ActivityState CurrentState { get { return currentState; } }
 
 
     //constuctors
@@ -36,10 +38,11 @@ public abstract class Mind : IDecisionMaker
 
 
     //private methods
-    private void ReceiveUpdates(object senter, EventArgs e)
+    protected virtual void ReceiveUpdates(object senter, EventArgs e)
     {
         ManagePerformable();
         ManagePerception();
+        Update();
     }
 
     private void ManagePerformable()
@@ -85,6 +88,11 @@ public abstract class Mind : IDecisionMaker
         }
         visibleEnemies.Distinct();
         visibleEnemies.Sort();
+    }
+
+    protected virtual void Update()
+    {
+
     }
 
     //public methods

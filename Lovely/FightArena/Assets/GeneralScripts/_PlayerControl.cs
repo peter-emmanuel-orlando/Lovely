@@ -191,7 +191,25 @@ public class PlayerControl : IDecisionMaker, IPerformable
     {
         return this;
     }
-    
+
+    private GameObject lockOnTarget = null;
+    private void VisualLockOn()
+    {
+        if(lockOnTarget == null)
+        {
+            RaycastHit rInfo;
+            var lookRay = new Ray(cam.transform.position, cam.transform.forward);
+            if (Physics.SphereCast(lookRay, 3f, out rInfo, 40f, ~(LayerMask.NameToLayer("HitBox") | LayerMask.NameToLayer("HurtBox")), QueryTriggerInteraction.Collide))
+            {
+                lockOnTarget = rInfo.collider.gameObject;
+            }
+        }
+        else
+        {
+            lockOnTarget = null;
+        }
+    }
+
     public IEnumerator Perform()
     {
         while (true)
@@ -207,10 +225,11 @@ public class PlayerControl : IDecisionMaker, IPerformable
                 var activatePunch = PlayerInput.GetAsButtonDown(ButtonCode.B, playerNumber);
                 var activateRanged = PlayerInput.GetAsButtonDown(ButtonCode.X, playerNumber);
                 var activateJump = PlayerInput.GetAsButtonDown(ButtonCode.A, playerNumber);
-                var block = PlayerInput.GetAsButton(AxisCode.TriggersL, playerNumber) || PlayerInput.GetAsButton(AxisCode.TriggersR, playerNumber); 
+                var block = PlayerInput.GetAsButton(AxisCode.TriggersL, playerNumber) || PlayerInput.GetAsButton(AxisCode.TriggersR, playerNumber);
+                var lockOntoTarget = PlayerInput.GetAsButtonDown(ButtonCode.RS, playerNumber);
 
-                performerBody.Move(moveSpeedX, moveSpeedZ);
-                performerBody.Look(lookSpeedH, lookSpeedV);
+                if (lockOntoTarget)
+                    VisualLockOn();
                 if (activatePunch)
                 {
                     if(performerBody.EmpowermentLevel > 0)
@@ -240,9 +259,15 @@ public class PlayerControl : IDecisionMaker, IPerformable
                 }
                 if (activateJump)
                     performerBody.Jump(new Vector3(moveSpeedX, 1, moveSpeedZ));
-
                 if (empower)
                     performerBody.Empower();
+
+
+                if (lockOnTarget)
+                    performerBody.TurnToFace(lockOnTarget.transform.position);
+                performerBody.Move(moveSpeedX, moveSpeedZ);
+                performerBody.Look(lookSpeedH, lookSpeedV);
+
             }
             yield return null;
         }

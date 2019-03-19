@@ -9,9 +9,8 @@ todo:
 	-make kunai apply effects when colliding with a hitbox as well as a physical object
 
 ------------------------------------------------------------------------------------------------
-fixed error causing nullrefexception when closing unity in player control
-fixed stopcannotbecalled on nav agent error for navagents experiencing physics off of the navmesh
+welcome back me! this is why its so important to have a job you love. This current job is taxing on your soul, I havent seen you in a while, bud.
 
-fixed error in UnifiedController where applying physics from multiple sources would override the previous requirephysicstimelength
+Downloaded and tested a few environments with gaia, bloating the size of each zip, but massively improving look of terrain
 
-added in the concept of poise to Unified controller. Forces less than the poise ammount slide character along the navmesh, whereas forces greater than poise put the creature under control of the physics engine 
+dumped AI scripts from fightfightfight in, but did not yet combine with current scripts

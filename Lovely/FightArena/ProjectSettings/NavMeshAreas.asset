@@ -19,7 +19,7 @@ NavMeshProjectSettings:
     cost: 1
   - name: WalkableD
     cost: 1
-  - name: 
+  - name: Water
     cost: 1
   - name: 
     cost: 1
