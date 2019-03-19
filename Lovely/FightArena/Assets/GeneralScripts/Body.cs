@@ -16,20 +16,50 @@ using UnityEngine;
 /// body loads the prefab of its specific model and avatar and override controller
 /// body also create a new mind of the appropriate type
 /// </summary>
-public class Body : UnifiedController
+public class Body : UnifiedController, ISpawnable
 {
     private Mind mind;
     public Mind Mind { get { return mind; } }
 
+    [ShowOnly]
+    [SerializeField]
+    float health = 100f;
+    [ShowOnly]
+    [SerializeField]
+    float stamina = 100f;
+    [SerializeField]
+    Gender gender = Gender.Nongendered;
+    [SerializeField]
+    string prefabName = "";
+
+    public string PrefabName { get { return prefabName; } }
+
     protected override void Awake()
     {
         base.Awake();
+        if (gender == Gender.Male)
+            gameObject.name = Names.maleNames.Random();
+        if (gender == Gender.Female)
+            gameObject.name = Names.maleNames.Random();
         mind = new EmptyMind(this);
     }
 
+    //for testing
+    SkinnedMeshRenderer bodyMesh;
     private void _Update()
     {
+        if(bodyMesh == null)
+            bodyMesh = GetComponentInChildren<SkinnedMeshRenderer>();
 
+        if(bodyMesh != null)
+        {
+            var baseColor = bodyMesh.sharedMaterial.color;
+            var modifier = Color.Lerp(Color.magenta, Color.green, health / 100f);
+            var newColor = Color.Lerp(modifier, baseColor, 0.5f);
+            bodyMesh.material.color = (health <= 0f)? Color.red : newColor;
+        }
+        anim.SetFloat("BreathingLabor", 1f - (stamina / 100));
+        
     }
 
     private void _ReceiveAnimationEvents(string message)
@@ -42,6 +72,12 @@ public class Body : UnifiedController
 
     }
 
+    //can be attacks or augments, good or bad
+    public void ApplyAbilityEffects(Mind damager, float deltaHealth, AnimationClip effectAnimation)
+    {
+        health += deltaHealth;
+        PlayAnimation(effectAnimation);
+    }
 
 
 

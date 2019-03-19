@@ -4,18 +4,11 @@ using UnityEngine;
 
 public class Spawnable : MonoBehaviour, ISpawnable
 {
-    public string prefabName
-    {
-        get { return gameObject.name; }
-    }
+    [SerializeField]
+    string prefabName;
 
-    // Use this for initialization
-    void Start () {
-		
-	}
-	
-	// Update is called once per frame
-	void Update () {
-		
-	}
+    public string PrefabName
+    {
+        get { return prefabName; }
+    }
 }

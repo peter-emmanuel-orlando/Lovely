@@ -10,6 +10,7 @@ using System.IO;
 public class _PrefabPool : _MasterComponent<_PrefabPool>
 {
     //the serialized list of animations is neccessary so they can be accessed without any editor scripts
+    [ShowOnly]
     [SerializeField]
     List<GameObject> prefabsGameObjects = new List<GameObject>();
 
@@ -49,7 +50,7 @@ public class _PrefabPool : _MasterComponent<_PrefabPool>
             var current = prefabs[i].GetComponent<ISpawnable>();
             //default animation names follow the form: ArmatureName|AnimationName
             //split off the name of the armature to leave just the animation name
-            var prefabName = current.prefabName;
+            var prefabName = current.PrefabName;
             if (current != null && !prefabsDict.ContainsKey(prefabName)) prefabsDict.Add(prefabName, current);
         }
     }

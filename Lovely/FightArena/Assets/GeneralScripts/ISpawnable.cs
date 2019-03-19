@@ -4,6 +4,6 @@ using UnityEngine;
 
 public interface ISpawnable
 {
-    string prefabName { get; }
+    string PrefabName { get; }
     GameObject gameObject { get; }
 }

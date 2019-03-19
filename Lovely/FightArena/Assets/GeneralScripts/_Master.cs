@@ -19,19 +19,15 @@ public class _Master : MonoBehaviour
         {
             if (master == null)
             {
-                try
-                {
-                    OnLoad();
-                }
-                catch(Exception e)
-                {
-                    throw new MasterNotFoundInSceneException("there is no master component!");
-                }
-
-                }
+                try { OnLoad(); }
+                catch (Exception) { throw new MasterNotFoundInSceneException("there is no master component!"); }
+            }
             return master;
         }
     }
+
+    static bool isQuitting = false;
+    public static bool IsQuitting { get { return isQuitting; } }
 
     [InitializeOnLoadMethod]
     public static void OnLoad()
@@ -71,6 +67,11 @@ public class _Master : MonoBehaviour
         master = this;
         if (Application.isPlaying)
             DontDestroyOnLoad(this.gameObject);
+    }
+
+    private void OnApplicationQuit()
+    {
+        isQuitting = true;
     }
 }
 

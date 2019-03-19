@@ -44,16 +44,20 @@ public class AddCollidersToCreature : MonoBehaviour
                 DestroyImmediate( bone.GetComponent<Collider>());
                 var col = bone.gameObject.AddComponent<CapsuleCollider>();
                 addedColliders.Add(col);
-                if (bone == handR || bone == handL || bone == footR || bone == footL)
-                    bone.gameObject.layer = LayerMask.NameToLayer("HitBox");
-                else
-                    bone.gameObject.layer = LayerMask.NameToLayer("HurtBox");
                 col.isTrigger = true;
                 col.radius = 0.005f * scale;
                 if (bone.name == "hips" || bone.name == "spine" || bone.name == "chest" || bone.name == "upperChest")
                     col.radius = 0.01f * scale;
                 col.height = 0.03f * scale;
                 col.center = new Vector3(0, 0.01f, 0) * scale;
+                if (bone == handR || bone == handL || bone == footR || bone == footL)
+                {
+                    bone.gameObject.layer = LayerMask.NameToLayer("HitBox");
+                    col.radius = 0.05f * scale;
+                    col.height = 0.1f * scale;
+                }
+                else
+                    bone.gameObject.layer = LayerMask.NameToLayer("HurtBox");
             }
         }
         if(cancel)

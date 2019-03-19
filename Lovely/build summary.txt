@@ -1,31 +1,18 @@
-06-11-2018
+06-14-2018
 
-concept of encapsulation using components has been abandoned. 
-This concept is broken in unity by default as any component can be gotten
-with the GetComponent() methods, so therefore trying to restrict access to
-any components is futile. 
+many MANY bugfixes
 
-Body, Mind, IDecisionMaker IPerformable classes are introduced
+added in jump as a method in UnifiedController
 
-Body extends Unified controller and is a unity component. It adds "game" 
-concepts to the controller such as stamina, health etc. It also links a
-Mind class to the controller, which processes the commands for the controller.
+Overhauled player control so a single class (PlayerControl) acts as a performable and a decisionMaker
+Playercontrol automatically sets up input and splitscreen for the connected players
 
-Mind is the base command processing center. Its not a decision maker itself, but
-its inheriting classes are. This is where commands for what the body is to do 
-come from. The mind can also be overridden by another decision maker, and it will 
-then ignore its own decisions in favor of the overriders decisions. This is especcially
-useful for player control, or a mind control effect.
+the _PlayerControl component requires a mind to override decisions for. It continuously checks for an 
+availible controller until it finds one, then it stays that controller unless manually changed.
 
-IDecision makers are classes that implement the method GetDecisions(). GetDecisions() 
-is a method that returns a performable that the mind is to enumerate over. The performable 
-uses the sensory stats from mind and body to decide how to accomplish its task.
-For example, the IPerformable ForageForFood would say "set random destination. Every frame 
-check if there is food in the area. If so, harvest food, else continue wandering." "if
-full of food, yield break;"
+Added in the concept of a combo move, added in health and taking away health, added in 3 levels of knockback, 
+and the concept of a combo ending with big knockback
 
-the player control components TESTSCRIPT_PlayerUnifiedControl and player2 control testscrips 
-now exert control over Unified Controller through this performable -> decisionMaker -> Mind 
--> Body -> OverrideController pathway
+added a short dash to melee attacks to ensure they connected
 
-
+increased collider radius of hand and foot to ensure attacks connect

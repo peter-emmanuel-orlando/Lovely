@@ -7,12 +7,4 @@ AnimatorOverrideController:
   m_PrefabInternal: {fileID: 0}
   m_Name: Human_Male_Override
   m_Controller: {fileID: 9100000, guid: 2ae70ab33f0352d41a11d029461598ff, type: 2}
-  m_Clips:
-  - m_OriginalClip: {fileID: 7400000, guid: aeddd5bb9bb8f1944954b83297f70d4c, type: 2}
-    m_OverrideClip: {fileID: 7400000, guid: 9244ad5c41d448642ad5eeeb92cfc9bf, type: 3}
-  - m_OriginalClip: {fileID: 7400000, guid: 548a8949abc34fb47886973aafcf874d, type: 2}
-    m_OverrideClip: {fileID: 7400004, guid: 9244ad5c41d448642ad5eeeb92cfc9bf, type: 3}
-  - m_OriginalClip: {fileID: 7400000, guid: 92517a9a3856de84c888658cd771cd45, type: 2}
-    m_OverrideClip: {fileID: 7400000, guid: adbc8dba9f27f824a8ffd42abef0bbf2, type: 3}
-  - m_OriginalClip: {fileID: 7400000, guid: a807a08ad97dde246a6690a10045e035, type: 2}
-    m_OverrideClip: {fileID: 7400000, guid: adbc8dba9f27f824a8ffd42abef0bbf2, type: 3}
+  m_Clips: []

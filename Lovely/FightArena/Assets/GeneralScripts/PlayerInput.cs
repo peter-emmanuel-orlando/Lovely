@@ -7,31 +7,51 @@ using UnityEngine;
 
 public static class PlayerInput
 {
-    public static float GetAxis(AxisCode code, int controllerNumber)
+    public static float GetAsAxis(AxisCode code, int controllerNumber)
     {
         var axisName = GetControllerSpecificName(typeof(AxisCode), code, controllerNumber);
-
-//        if (axisName.Split('_').Last() == "5" && (code == AxisCode.L_XAxis || code == AxisCode.L_YAxis || code == AxisCode.TriggersL || code == AxisCode.TriggersR))
-//          return (Input.GetButton(axisName))? 1f : 0f;
-        return Input.GetAxis(axisName);
+        var result = Input.GetAxis(axisName);
+        return result;
     }
-
-    public static bool GetButton(ButtonCode code, int controllerNumber)
+    public static float GetAsAxis(ButtonCode code, int controllerNumber)
+    {
+        var buttonName = GetControllerSpecificName(typeof(ButtonCode), code, controllerNumber);
+        var result = Input.GetAxis(buttonName);
+        return result;
+    }
+    //********************************************************
+    public static bool GetAsButton(ButtonCode code, int controllerNumber)
     {
         var buttonName = GetControllerSpecificName(typeof(ButtonCode), code, controllerNumber);
         return Input.GetButton(buttonName);
     }
-    public static bool GetButtonDown(ButtonCode code, int controllerNumber)
+    public static bool GetAsButtonDown(ButtonCode code, int controllerNumber)
     {
         var buttonName = GetControllerSpecificName(typeof(ButtonCode), code, controllerNumber);
         return Input.GetButtonDown(buttonName);
     }
-    public static bool GetButtonUp(ButtonCode code, int controllerNumber)
+    public static bool GetAsButtonUp(ButtonCode code, int controllerNumber)
     {
         var buttonName = GetControllerSpecificName(typeof(ButtonCode), code, controllerNumber);
         return Input.GetButtonUp(buttonName);
     }
-
+    //**********************************************************************
+    public static bool GetAsButton(AxisCode code, int controllerNumber)
+    {
+        var axisName = GetControllerSpecificName(typeof(AxisCode), code, controllerNumber);
+        return Input.GetButton(axisName);
+    }
+    public static bool GetAsButtonDown(AxisCode code, int controllerNumber)
+    {
+        var axisName = GetControllerSpecificName(typeof(AxisCode), code, controllerNumber);
+        return Input.GetButtonDown(axisName);
+    }
+    public static bool GetAsButtonUp(AxisCode code, int controllerNumber)
+    {
+        var axisName = GetControllerSpecificName(typeof(AxisCode), code, controllerNumber);
+        return Input.GetButtonUp(axisName);
+    }
+    //***************************************************************************
 
     static string GetControllerSpecificName(Type enumType, object value, int controllerNumber)
     {
@@ -65,7 +85,6 @@ public static class PlayerInput
         var result = Enum.GetName(enumType, value) + '_' + controllerNumber;
         return result;
     }
-
 
     public static bool IsControllerConnected(int controllerNumber)
     {

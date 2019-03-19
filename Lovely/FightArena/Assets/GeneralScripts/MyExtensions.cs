@@ -8,7 +8,6 @@ using UnityEngine;
 
 static class MyExtensions
 {
-
     public static void Shuffle<T>(this IList<T> list)
     {
         int n = list.Count;
@@ -20,6 +19,11 @@ static class MyExtensions
             list[k] = list[n];
             list[n] = value;
         }
+    }
+    public static T Random<T>(this IList<T> list)
+    {
+        int k = ThreadSafeRandom.ThisThreadsRandom.Next(list.Count - 1);
+        return list[k];
     }
 
 
@@ -263,6 +267,8 @@ static class MyExtensions
         resultTexture = tex;
         return true;
     }
+
+
 }
 
 

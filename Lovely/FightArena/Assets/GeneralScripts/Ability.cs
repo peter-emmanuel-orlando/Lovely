@@ -26,6 +26,7 @@ public abstract class Ability
     protected abstract void Update();
 }
 
+
 public enum AbilityStatus
 {
 
