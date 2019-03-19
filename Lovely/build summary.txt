@@ -1,0 +1,6 @@
+06-09-2018
+
+this version has a functional Unified Controller, this being a single
+controller that incorperates navigation, animation, and physics, and 
+manual movement into one controller. Testscripts are included that allow 
+for manual control as well as setting a destination
