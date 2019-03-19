@@ -126,8 +126,9 @@ public abstract class ReptilianMind : Mind
 
     bool GetRecreationPeriodDecisions(ref IPerformable newDecision)
     {
-        var hasMadeDecision = false;
-        return hasMadeDecision;
+        // TODO: implement this
+        var hasMadeDecision = false;        
+        return hasMadeDecision;        
     }
 
 

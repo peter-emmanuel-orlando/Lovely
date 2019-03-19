@@ -24,6 +24,7 @@ public abstract class UnifiedController : MonoBehaviour
     private Transform cameraBone;
     public Transform CameraBone { get { return cameraBone; } }
     public NavMeshAgent NavAgent { get { return navAgent; } }
+    public bool IsGrounded { get { return  (navAgent.isActiveAndEnabled && navAgent.isOnNavMesh); } }
 
     private readonly float lookHMaxSpeed = 300;//deg per sec
     private readonly float lookVMaxSpeed = 300;
@@ -188,13 +189,20 @@ public abstract class UnifiedController : MonoBehaviour
         if (rb == null) rb = gameObject.AddComponent<Rigidbody>();
         rb.hideFlags = HideFlags.NotEditable;
         //rb.hideFlags = HideFlags.HideInInspector;
-        rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
+        rb.collisionDetectionMode = CollisionDetectionMode.ContinuousSpeculative;
         rb.isKinematic = true;
         rb.useGravity = true;
         rb.mass = 77.7f;
         rb.angularDrag = 50f;
         rb.drag = 1f;
         //rb.interpolation = RigidbodyInterpolation.Interpolate;
+    }
+
+    private void OnAnimatorMove()
+    {
+        //anim.deltas will be zero if applyrootmotion is set to false and this method doesnt exist
+        //this methods existence has the side effect of anim.deltas being calculated, and thus 
+        //everything else works as expected
     }
 
     private void InnerUpdate()
