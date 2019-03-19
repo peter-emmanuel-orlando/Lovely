@@ -118,12 +118,6 @@ public abstract class Body : UnifiedController, ISpawnable
         _Update();
         updateCallbacks();
     }
-    protected override void ReceiveAnimationEvents(string message)
-    {
-        base.ReceiveAnimationEvents(message);
-        _ReceiveAnimationEvents(message);
-        animationEventsCallbacks(message);
-    }
     protected virtual void OnTriggerStay(Collider collider)
     {
         _OnTriggerStay(collider);

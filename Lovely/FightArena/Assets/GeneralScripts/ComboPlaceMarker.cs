@@ -1,10 +1,10 @@
 ﻿using System;
 
-public partial class PunchCombo
+public partial class AttackCombo
 {
-    private class ComboPlaceMarker
+    private class ComboTracker
     {
-        private PunchStats[] combo;
+        private AttackInfo[] combo;
         private int currentIndex;
         public bool IsAtEnd
         {
@@ -21,7 +21,7 @@ public partial class PunchCombo
             }
         }
 
-        public void SetCombo( PunchStats[] combo)
+        public void SetCombo( AttackInfo[] combo)
         {
             if(this.combo != combo)
             {
@@ -30,7 +30,7 @@ public partial class PunchCombo
             }
         }
 
-        public PunchStats GetCurrent()
+        public AttackInfo GetCurrent()
         {
             if (IsAtEnd)
                 throw new IndexOutOfRangeException("Trying to getCurrent in a combo that is at its end! Check for this condition using the IsAtEnd method");

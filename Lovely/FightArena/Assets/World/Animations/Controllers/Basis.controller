@@ -64,33 +64,6 @@ AnimatorController:
     m_SyncedLayerAffectsTiming: 0
     m_Controller: {fileID: 9100000}
   - serializedVersion: 5
-    m_Name: Events
-    m_StateMachine: {fileID: 1107586857032017924}
-    m_Mask: {fileID: 0}
-    m_Motions:
-    - serializedVersion: 2
-      m_State: {fileID: 0}
-      m_Motion: {fileID: 7400000, guid: 2721aa7c52836f1469209e06f59a42dc, type: 2}
-    - serializedVersion: 2
-      m_State: {fileID: 0}
-      m_Motion: {fileID: 7400000, guid: edd096a288c9c074eaf2577c5fd544fe, type: 2}
-    - serializedVersion: 2
-      m_State: {fileID: 1102496436226717028}
-      m_Motion: {fileID: 7400000, guid: 41c114560747cc8429f7d985a509d7e7, type: 2}
-    - serializedVersion: 2
-      m_State: {fileID: 1102343526209661618}
-      m_Motion: {fileID: 7400000, guid: b11d1d304930ae04d88a62ac62ec6903, type: 2}
-    - serializedVersion: 2
-      m_State: {fileID: 0}
-      m_Motion: {fileID: 7400000, guid: 9206d8791fc552345ab65f506ce188bf, type: 2}
-    m_Behaviours: []
-    m_BlendingMode: 1
-    m_SyncedLayerIndex: 0
-    m_DefaultWeight: 1
-    m_IKPass: 0
-    m_SyncedLayerAffectsTiming: 0
-    m_Controller: {fileID: 9100000}
-  - serializedVersion: 5
     m_Name: Look
     m_StateMachine: {fileID: 1107691300705537276}
     m_Mask: {fileID: 0}

@@ -45,6 +45,7 @@ public partial class UnifiedController : MonoBehaviour
     private bool playMirrored = false;
     private AnimationClip playAnimationNext;
     private string playAnimationSlot = "ActionA";
+    private IEnumerator<float> playAnimationEnumerator;
     private bool isLocked = false;
     private Collider physicsCollider;
     private readonly List<CapsuleCollider> hurtBoxes = new List<CapsuleCollider>();
@@ -138,7 +139,7 @@ public partial class UnifiedController : MonoBehaviour
 
     protected virtual void Update()
     {
-        if (!IsInitialized) return;
+        if (!IsInitialized) return;        
         SyncAnimation();
         SyncNavigation();
         SyncPhysics();
@@ -147,6 +148,9 @@ public partial class UnifiedController : MonoBehaviour
 
     private void SyncAnimation()
     {
+        if (playAnimationEnumerator != null && !playAnimationEnumerator.MoveNext())
+            playAnimationEnumerator = null;
+
         if (movementSource == ControlMode.AnimNav)
         {
             //if state isnt movement, go to movement
@@ -336,20 +340,6 @@ public partial class UnifiedController : MonoBehaviour
         return new Vector3(speedNormalized_X, 0, speedNormalized_Z);
     }
 
-
-    protected virtual void ReceiveAnimationEvents(string message)
-    {
-        if (message == AnimationEventMessages.animationLock) SetLocked(true);
-        if (message == AnimationEventMessages.animationUnlock) SetLocked(false);
-    }
-
-    private void SetLocked(bool isLocked)
-    {
-        //only look remains unlocked
-        movementSource = ControlMode.AnimatedRoot;
-        this.isLocked = isLocked;
-    }
-
     //public methods
 
     public void Look(float horizontalSpeedNormalized, float verticalSpeedNormalized)
@@ -393,7 +383,7 @@ public partial class UnifiedController : MonoBehaviour
         animMovement = new Vector3(horizontalSpeedNormalized, 0, forwardSpeedNormalized);
     }
 
-    public IEnumerator TurnToFace(Vector3 lookTarget)
+    public IEnumerator<ProgressStatus> TurnToFace(Vector3 lookTarget)
     {
         var result = _TurnToFace(lookTarget);
         result.MoveNext();
@@ -479,23 +469,14 @@ public partial class UnifiedController : MonoBehaviour
         jump = true;
     }
 
+    //needs to lock when appropriate
     //unless stayOnNavMesh == true, use physics colliders while animating
-    public IEnumerator<AnimationProgress> PlayAnimation(AnimationClip clip, bool remainOnNavMesh = true, bool playMirrored = false, params AnimationMessage[] messages)
-    {
-        var result = _PlayAnimation(clip, remainOnNavMesh, playMirrored, new List<AnimationMessage>( messages));
-        result.MoveNext();
-        return result;
-    }
-    private IEnumerator<AnimationProgress> _PlayAnimation(AnimationClip clip, bool remainOnNavMesh, bool playMirrored, List<AnimationMessage> messages)
+    public IEnumerator<float> PlayAnimation(AnimationClip clip, bool remainOnNavMesh = true, bool playMirrored = false)
     {
         if (isLocked || !IsInitialized || clip == null)
         {
-            var result = new AnimationProgress(ProgressStatus.Aborted, -1);
-            gameObject.DisplayTextComponent(result, this);
-            yield return result;
-            yield break;
+            return null;
         }
-
         //clear manual movement
         animMovement = Vector3.zero;
         //clear navigation
@@ -508,6 +489,14 @@ public partial class UnifiedController : MonoBehaviour
 
         movementSource = ControlMode.AnimatedRoot;
 
+        var result = _PlayAnimation(clip, remainOnNavMesh, playMirrored);
+        result.MoveNext();
+        playAnimationEnumerator = result;
+        return result;
+    }
+    private IEnumerator<float> _PlayAnimation(AnimationClip clip, bool remainOnNavMesh, bool playMirrored)
+    {
+
         var stateInfo = anim.GetCurrentAnimatorStateInfo(0);
         var nextInfo = anim.GetNextAnimatorStateInfo(0);
         var playAnimationSlot = "ActionA";
@@ -516,15 +505,9 @@ public partial class UnifiedController : MonoBehaviour
         this.playMirrored = playMirrored;
         playAnimationNext = clip;
 
-        messages.Add(new AnimationMessage("EMPTY_PLACEHOLDER", Mathf.Infinity));
-        messages.Sort();
-        Stack<AnimationMessage> messageStack = new Stack<AnimationMessage>(messages);
-
         while (playAnimationNext == clip)
         {
-            var result = new AnimationProgress(ProgressStatus.Pending, -1);
-            gameObject.DisplayTextComponent(result, this);
-            yield return result;
+            yield return -1;
         }
         //check if transitioning to this animation in correct slot or in animation in this slot. Else its been aborted
         stateInfo = anim.GetCurrentAnimatorStateInfo(0);
@@ -535,10 +518,7 @@ public partial class UnifiedController : MonoBehaviour
         var finaltime = (isSlotCurrent) ? stateInfo.normalizedTime : nextInfo.normalizedTime;
         while (isAnimInSlot && !(isSlotCurrent || isSlotNext))
         {
-            var message = (finaltime >= messageStack.Peek().triggerTimeNormalized) ? messageStack.Pop() : new AnimationMessage();
-            var midResult = new AnimationProgress(ProgressStatus.Pending, -1, message);
-            gameObject.DisplayTextComponent(midResult, this);
-            yield return midResult;
+            yield return -1;
 
             stateInfo = anim.GetCurrentAnimatorStateInfo(0);
             nextInfo = anim.GetNextAnimatorStateInfo(0);
@@ -549,137 +529,21 @@ public partial class UnifiedController : MonoBehaviour
 
         while ( isAnimInSlot && (isSlotCurrent || isSlotNext))
         {
-            var message = (finaltime >= messageStack.Peek().triggerTimeNormalized) ? messageStack.Pop() : new AnimationMessage();
-            var result = new AnimationProgress(ProgressStatus.InProgress, finaltime, message);
+            yield return finaltime;
 
             stateInfo = anim.GetCurrentAnimatorStateInfo(0);
             nextInfo = anim.GetNextAnimatorStateInfo(0);
             isAnimInSlot = overrideController["PlaceHolder_" + playAnimationSlot] == clip;
             isSlotCurrent = stateInfo.IsName(playAnimationSlot);
             isSlotNext = nextInfo.IsName(playAnimationSlot) && anim.IsInTransition(0);
-            finaltime = (isSlotCurrent) ? stateInfo.normalizedTime : nextInfo.normalizedTime;
-
-            gameObject.DisplayTextComponent(result, this);
-            yield return result;
+            finaltime = (isSlotCurrent) ? stateInfo.normalizedTime : nextInfo.normalizedTime;            
         }
 
-        stateInfo = anim.GetCurrentAnimatorStateInfo(0);
-        nextInfo = anim.GetNextAnimatorStateInfo(0);
-        var finalMessage = (finaltime >= messageStack.Peek().triggerTimeNormalized) ? messageStack.Pop() : new AnimationMessage();
-        var finalResult = new AnimationProgress(ProgressStatus.Complete, finaltime, finalMessage);
-        finaltime = (isSlotCurrent) ? stateInfo.normalizedTime : nextInfo.normalizedTime;
-        gameObject.DisplayTextComponent(finalResult, this);
-        yield return finalResult;
+        yield return finaltime;
     }
 
-
-        /*
-        private IEnumerator<AnimationProgress> _PlayAnimation(AnimationClip clip, bool remainOnNavMesh, bool playMirrored)
-        {
-            if (isLocked || !IsInitialized || clip == null)
-            {
-                var result = new AnimationProgress(ProgressStatus.Aborted, -1);
-                gameObject.DisplayTextComponent(result, this);
-                yield return result;
-                yield break;
-            }
-
-            //clear manual movement
-            animMovement = Vector3.zero;
-            //clear navigation
-            navAgent.isStopped = true;
-            navDestination = transform.position;
-            //clear jump
-            jump = false;
-            //clear playAnimation(recoil)
-            recoil = RecoilCode.None;
-
-            movementSource = ControlMode.AnimatedRoot;
-            this.playMirrored = playMirrored;
-            playAnimationNext = clip;
-
-            var stateInfo = anim.GetCurrentAnimatorStateInfo(0);
-            var nextInfo = anim.GetNextAnimatorStateInfo(0);
-            var stateName = "ActionA";
-            if (anim.GetCurrentAnimatorStateInfo(0).IsName("ActionA"))
-                stateName = "ActionB";
-
-            playAnimationSlot = stateName;
-
-            bool isPlayingAnimation = false;
-
-            //if not playing animation and either its still queued or its in transition, wait til animation is being played
-            while(isPlayingAnimation == false && playAnimationNext == clip)
-            {
-                stateInfo = anim.GetCurrentAnimatorStateInfo(0);
-                nextInfo = anim.GetNextAnimatorStateInfo(0);
-                isPlayingAnimation = stateInfo.IsName(stateName) || nextInfo.IsName(stateName);
-                //if its not playing animation, and its not queued, and its not in transition, its been aborted somehow
-                var result = new AnimationProgress(ProgressStatus.Pending, -1);
-                if (playAnimationNext != clip)
-                    result = new AnimationProgress(ProgressStatus.Aborted, -1);
-                gameObject.DisplayTextComponent(result, this);
-                yield return result;
-                if (playAnimationNext != clip)
-                    yield break;
-            }
-            stateInfo = anim.GetCurrentAnimatorStateInfo(0);
-            nextInfo = anim.GetNextAnimatorStateInfo(0);
-            var finalTime = (stateInfo.IsName(stateName))? stateInfo.normalizedTime : nextInfo.normalizedTime;
-            while (isPlayingAnimation)
-            {
-                var result = new AnimationProgress(ProgressStatus.InProgress, finalTime);
-                gameObject.DisplayTextComponent(result, this);
-                yield return result;
-
-                stateInfo = anim.GetCurrentAnimatorStateInfo(0);
-                nextInfo = anim.GetNextAnimatorStateInfo(0);
-                finalTime = (stateInfo.IsName(stateName)) ? stateInfo.normalizedTime : nextInfo.normalizedTime;
-            }
-
-            if (finalTime < 1)
-            {
-                var result = new AnimationProgress(ProgressStatus.Aborted, finalTime);
-                gameObject.DisplayTextComponent(result, this);
-                yield return result;
-            }
-            else
-            {
-                var result = new AnimationProgress(ProgressStatus.Complete, finalTime);
-                gameObject.DisplayTextComponent(result, this);
-                yield return result;
-            }
-
-            yield break;
-        }
-
-        public IEnumerator PlayAnimation(RecoilCode code, bool remainOnNavMesh = true)
-        {
-            var result = _PlayAnimation(code, remainOnNavMesh);
-            result.MoveNext();
-            return result;
-        }
-        private IEnumerator _PlayAnimation(RecoilCode code, bool remainOnNavMesh)
-        {
-            if (isLocked || !IsInitialized || code == RecoilCode.None) yield break;
-            movementSource = ControlMode.AnimatedRoot;
-
-            //clear manual movement
-            animMovement = Vector3.zero;
-            //clear navigation
-            navAgent.isStopped = true;
-            navDestination = transform.position;
-            //clear jump
-            jump = false;
-            //clear playAnimation
-            playAnimationNext = null;
-
-            recoil = code;
-            yield break;
-        }
-        */
-
-        public void SetHurtBoxActiveState(bool isActive)
+    
+    public void SetHurtBoxActiveState(bool isActive)
     {
         if (!IsInitialized) return;
         foreach (var hurtBox in hurtBoxes)
@@ -700,6 +564,18 @@ public partial class UnifiedController : MonoBehaviour
         return result;
     }
 
+    public List<CapsuleCollider> SetHitBoxActiveState( bool isActive)
+    {
+        List<CapsuleCollider> result = new List<CapsuleCollider>();
+        if (!IsInitialized) return result;
+        foreach (var hitBoxType in hitBoxes.Keys)
+        {
+            result.Add(hitBoxes[hitBoxType]);
+            hitBoxes[hitBoxType].enabled = isActive;
+        }
+        return result;
+    }
+
     public override string ToString()
     {
         return base.ToString() + "\n" +
@@ -712,31 +588,7 @@ public partial class UnifiedController : MonoBehaviour
     }
 }
 
-public class AnimationProgress
-{
-    public readonly ProgressStatus status;
-    public readonly float normalizedTime;
-    public readonly AnimationMessage animationMessage;
 
-    public AnimationProgress(ProgressStatus status, float normalizedTime)
-    {
-        this.status = status;
-        this.normalizedTime = normalizedTime;
-    }
-
-    public AnimationProgress(ProgressStatus status, float normalizedTime, AnimationMessage animationMessage) : this(status, normalizedTime)
-    {
-        this.animationMessage = animationMessage;
-    }
-
-    public override string ToString()
-    {
-        return
-            "ProgressStatus: " + status + "\n" +
-            "NormalizedTime: " + normalizedTime + "\n" +
-            "Message: " + animationMessage;
-    }
-}
 
 
 /*

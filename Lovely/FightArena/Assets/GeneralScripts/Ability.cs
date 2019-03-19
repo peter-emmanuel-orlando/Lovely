@@ -8,10 +8,9 @@ public abstract class Ability
 
     protected readonly UnifiedController uniControl;
 
-    public Ability(UpdateSubscriber SubscribeForUpdate, AnimationEventSubscriber SubscribeForAnimationEvents, TriggerEventSubscriber SubscribeForTriggerEvents, UnifiedController uniControl)
+    public Ability(UpdateSubscriber SubscribeForUpdate, TriggerEventSubscriber SubscribeForTriggerEvents, UnifiedController uniControl)
     {
         SubscribeForUpdate(Update);
-        SubscribeForAnimationEvents(ReceiveAnimationEvents);
         SubscribeForTriggerEvents(ReceiveTriggerEvents);
         this.uniControl = uniControl;
     }
@@ -20,8 +19,6 @@ public abstract class Ability
     public abstract ProgressStatus CheckStatus();
     
     public abstract IEnumerator<ProgressStatus> CastAbility();
-
-    protected abstract void ReceiveAnimationEvents(string message);
 
     protected abstract void ReceiveTriggerEvents(Collider collider);
 

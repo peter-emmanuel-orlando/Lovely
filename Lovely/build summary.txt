@@ -1,8 +1,0 @@
-todo: make rigidbody control rotation instead of navagent
-------------------------------------------------------------------------------------------------
-
- done!: animationprogress enumerator still doesnt report accurate animation times
-
-partial: make abilities implement events based on normalized time returned from animation enumerator
-
-------------------------------------------------------------------------------------------------
