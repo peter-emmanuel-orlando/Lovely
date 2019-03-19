@@ -1,9 +1,11 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+ 
 public abstract class Ability
 {
+    public abstract float Range { get; }
+
     protected readonly UnifiedController uniControl;
 
     public Ability(UpdateSubscriber SubscribeForUpdate, AnimationEventSubscriber SubscribeForAnimationEvents, TriggerEventSubscriber SubscribeForTriggerEvents, UnifiedController uniControl)
@@ -16,7 +18,7 @@ public abstract class Ability
 
 
     public abstract AbilityStatus CheckStatus();
-
+    
     public abstract void Perform();
 
     protected abstract void ReceiveAnimationEvents(string message);

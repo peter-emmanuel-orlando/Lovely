@@ -5,35 +5,43 @@ using UnityEngine;
 
 public abstract class Mind : IDecisionMaker
 {
-    Body body;
-    public Body Body { get { return body; } }
-    IDecisionMaker decisionSource;
-    IPerformable currentPerformable;
-    IEnumerator currentEnumerator;
 
+    //properties
+    private Body body;
+    private IDecisionMaker decisionSource;
+    //private Dictionary<IPerformable, IEnumerator> currentPerformables;
+    private IPerformable currentPerformable;
+    private IEnumerator currentEnumerator;
+    private readonly List<Intel> visibleEnemies = new List<Intel>();
+    private GradientValue perceptionDelayGradient = new GradientValue(2f, 5f);
+    private float currentAlertness = 0;
+    private float lookAroundAfter = 0;
+
+
+    //getters/setters
+    public Body Body { get { return body; } }
+    protected abstract float SightRange { get; }
+    protected float SightRadius { get { return SightRange * 0.75f; } }
+    public List<Intel> VisibleEnemies { get { return new List<Intel>(visibleEnemies); } }
+    private float PerceptionDelay { get { return perceptionDelayGradient.Lerp(currentAlertness); } }
+
+
+    //constuctors
     public Mind(Body body)
     {
         this.body = body;
         body.SubscribeForUpdates(Update);
     }
 
-    public abstract IPerformable GetDecisions();
 
-    public void OverrideDecisionMaker(IDecisionMaker newDecisionSource)
-    {
-        decisionSource = newDecisionSource;
-    }
-    public IDecisionMaker GetCurrentDecisionMaker()
-    {
-        return decisionSource;
-    }
-
-    void Update()
+    //private methods
+    private void Update()
     {
         ManagePerformable();
+        ManagePerception();
     }
 
-    void ManagePerformable()
+    private void ManagePerformable()
     {
         IPerformable newDecision;
 
@@ -54,4 +62,44 @@ public abstract class Mind : IDecisionMaker
             currentEnumerator = null;
         }
     }
+
+    private void ManagePerception()
+    {
+        if(Time.time > lookAroundAfter)
+        {
+            lookAroundAfter = Time.time + PerceptionDelay;
+            LookAround();
+        }
+    }
+
+    private void LookAround()
+    {
+        VisibleEnemies.Clear();
+        var inRange = Physics.OverlapCapsule(body.CameraBone.position, body.CameraBone.forward * SightRange, SightRadius, Physics.AllLayers, QueryTriggerInteraction.Collide);
+        foreach (var col in inRange)
+        {
+            var current = col.GetComponentInParent<ISpawnable>();
+            if(current != null)
+            {
+                VisibleEnemies.Add(new Intel(body.gameObject, current));
+
+            }
+        }
+    }
+
+    //public methods
+    public abstract IPerformable GetDecisions();
+
+    public void OverrideDecisionMaker(IDecisionMaker newDecisionSource)
+    {
+        decisionSource = newDecisionSource;
+    }
+
+    public IDecisionMaker GetCurrentDecisionMaker()
+    {
+        return decisionSource;
+    }
+
+
+
 }

@@ -6,11 +6,11 @@ public partial class PunchCombo
     {
         public readonly AnimationClip punchAnimation;
         public readonly bool isMirrored;
-        public readonly UnifiedController.HitBoxType hitBoxType;
+        public readonly HitBoxType hitBoxType;
         public readonly AnimationClip knockBackAnimation;
         public readonly float deltaHealth;
 
-        public PunchStats(AnimationClip punchAnimation, bool isMirrored, UnifiedController.HitBoxType hitBoxType, AnimationClip knockBackAnimation, float deltaHealth)
+        public PunchStats(AnimationClip punchAnimation, bool isMirrored, HitBoxType hitBoxType, AnimationClip knockBackAnimation, float deltaHealth)
         {
             this.punchAnimation = punchAnimation;
             this.isMirrored = isMirrored;

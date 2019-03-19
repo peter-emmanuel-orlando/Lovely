@@ -17,9 +17,9 @@ public partial class PunchCombo : Ability
     private static readonly AnimationClip knockBackHeavyAnimation = _AnimationPool.GetAnimation("KnockBack_Heavy").AddEventsAtNormalizedTime(new AnimationEvent[] { lockInKnockback, unlockInKnockback }, new float[] { 0f, 0.9f });
     private static readonly PunchStats[] combo1 = new PunchStats[]
     {
-        new PunchStats(punchLowAnimation, false, UnifiedController.HitBoxType.HandR, knockBackModerateAnimation, -5f),
-        new PunchStats(punchMidAnimation, false, UnifiedController.HitBoxType.HandR, knockBackLightAnimation, -4f),
-        new PunchStats(punchHighAnimation, true, UnifiedController.HitBoxType.HandL, knockBackHeavyAnimation, -6f),
+        new PunchStats(punchLowAnimation, false, HitBoxType.HandR, knockBackModerateAnimation, -5f),
+        new PunchStats(punchMidAnimation, false, HitBoxType.HandR, knockBackLightAnimation, -4f),
+        new PunchStats(punchHighAnimation, true, HitBoxType.HandL, knockBackHeavyAnimation, -6f),
     };
     private const float lockPerformFor = 0.2f;
     private const float comboHoldFor = 0.6f;
@@ -33,6 +33,13 @@ public partial class PunchCombo : Ability
     private float resetComboIfPerformedAfter = 0;
     ComboPlaceMarker currentPlaceInCombo = new ComboPlaceMarker();
 
+    public override float Range
+    {
+        get
+        {
+            return 0;//currentPlaceInCombo.GetCurrent().punchAnimation. 
+        }
+    }
 
     public PunchCombo(UpdateSubscriber SubscribeForUpdate, AnimationEventSubscriber SubscribeForAnimationEvents, TriggerEventSubscriber SubscribeForTriggerEvents, UnifiedController inteControl) : base(SubscribeForUpdate, SubscribeForAnimationEvents, SubscribeForTriggerEvents, inteControl)
     { }

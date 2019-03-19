@@ -16,32 +16,32 @@ using UnityEngine;
 /// body loads the prefab of its specific model and avatar and override controller
 /// body also create a new mind of the appropriate type
 /// </summary>
-public class Body : UnifiedController, ISpawnable
+
+public abstract class Body : UnifiedController, ISpawnable
 {
-    private Mind mind;
-    public Mind Mind { get { return mind; } }
-
     [ShowOnly]
     [SerializeField]
-    float health = 100f;
+    float health;
     [ShowOnly]
     [SerializeField]
-    float stamina = 100f;
-    [SerializeField]
-    Gender gender = Gender.Nongendered;
-    [SerializeField]
-    string prefabName = "";
+    float stamina;
 
-    public string PrefabName { get { return prefabName; } }
+    public abstract Mind Mind { get; }
+    public abstract float MaxHealth { get; }
+    public abstract float MaxStamina { get; }
+    public abstract Gender Gender { get; }
+    public abstract string PrefabName { get; }
 
     protected override void Awake()
     {
         base.Awake();
-        if (gender == Gender.Male)
+        health = MaxHealth;
+        stamina = MaxStamina;
+
+        if (Gender == Gender.Male)
             gameObject.name = Names.maleNames.Random();
-        if (gender == Gender.Female)
+        if (Gender == Gender.Female)
             gameObject.name = Names.maleNames.Random();
-        mind = new EmptyMind(this);
     }
 
     //for testing
@@ -88,6 +88,7 @@ public class Body : UnifiedController, ISpawnable
     private Action updateCallbacks = delegate() { };
     private Action<string> animationEventsCallbacks = delegate(string s) { };
     private Action<Collider> triggerEventsCallbacks = delegate(Collider col) { };
+    
     public void SubscribeForUpdates(Action updateMethod)
     {
         updateCallbacks += updateMethod;

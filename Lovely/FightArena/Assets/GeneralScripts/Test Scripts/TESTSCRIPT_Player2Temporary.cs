@@ -17,7 +17,7 @@ public class TESTSCRIPT_Player2Temporary : MonoBehaviour, IDecisionMaker, IPerfo
     {
         performer = GetComponent<Body>().Mind;
         performer.OverrideDecisionMaker(this);
-        punch = new TESTSCRIPT_Punch(performer.Body.SubscribeForUpdates, performer.Body.SubscribeForAnimationEvents, performer.Body.SubscribeForTriggerEvents, performer.Body);
+        //punch = new TESTSCRIPT_Punch(performer.Body.SubscribeForUpdates, performer.Body.SubscribeForAnimationEvents, performer.Body.SubscribeForTriggerEvents, performer.Body);
         head = performer.Body.transform.FindDeepChild("head");
         cam = new GameObject("Camera").AddComponent<Camera>();
         cam.rect = new Rect(0, 0, 1, 0.5f);
