@@ -10,7 +10,7 @@ using System.IO;
 public class _PrefabPool : _MasterComponent<_PrefabPool>
 {
     //the serialized list of animations is neccessary so they can be accessed without any editor scripts
-    //[ShowOnly]
+    [ShowOnly]
     [SerializeField]
     List<GameObject> prefabsGameObjects = new List<GameObject>();
 

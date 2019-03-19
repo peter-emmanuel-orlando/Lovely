@@ -45,7 +45,7 @@ public static class PlayerInput
         var axisName = GetControllerSpecificName(typeof(AxisCode), code, controllerNumber);
         var actualValue = Input.GetAxis(axisName);
         //Debug.Log(actualValue);
-        return actualValue >= axisDownThreshold;
+        return Mathf.Abs(actualValue) >= axisDownThreshold;
     }
     /*
     public static bool GetAsButtonDown(AxisCode code, int controllerNumber)

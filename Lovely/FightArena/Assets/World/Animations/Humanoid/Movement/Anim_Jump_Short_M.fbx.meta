@@ -171,9 +171,8 @@ ModelImporter:
     animationImportErrors: 
     animationImportWarnings: "\nClip 'DefaultMale|Jump_Short' has import animation
       warnings that might lower retargeting quality:\nNote: Activate translation DOF
-      on avatar to improve retargeting quality.\n\t'hips' is inbetween humanoid transforms
-      and has rotation animation that will be discarded.\n\t'chest' is inbetween humanoid
-      transforms and has rotation animation that will be discarded.\n"
+      on avatar to improve retargeting quality.\n\t'chest' is inbetween humanoid transforms
+      and has rotation animation that will be discarded.\n"
     animationRetargetingWarnings: 
     animationDoRetargetingWarnings: 0
     importAnimatedCustomProperties: 0

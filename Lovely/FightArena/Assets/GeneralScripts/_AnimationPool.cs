@@ -10,7 +10,7 @@ using System.IO;
 public class _AnimationPool : _MasterComponent<_AnimationPool>
 {
     //the serialized list of animations is neccessary so they can be accessed without any editor scripts
-    //[ShowOnly]
+    [ShowOnly]
     [SerializeField]
     List<AnimationClip> animations = new List<AnimationClip>();
 
@@ -85,8 +85,12 @@ public class _AnimationPool : _MasterComponent<_AnimationPool>
         foreach (var dirtyPath in allFiles)
         {
             string path = "Assets" + dirtyPath.Replace(Application.dataPath, "").Replace('\\', '/');
-            var data = AssetDatabase.LoadAssetAtPath<AnimationClip>(path);
-            if(data) result.Add(data);
+            var data = AssetDatabase.LoadAllAssetsAtPath(path);
+            foreach (var item in data)
+            {
+                AnimationClip clip = item as AnimationClip;
+                if( clip != null && !clip.name.Contains("__preview__")) result.Add(clip);
+            }
         }
         return result;
     }

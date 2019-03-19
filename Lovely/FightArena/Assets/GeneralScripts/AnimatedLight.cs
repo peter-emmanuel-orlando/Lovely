@@ -1,8 +1,6 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-[ExecuteInEditMode]
-[RequireComponent(typeof(Light))]
 public class AnimatedLight : MonoBehaviour
 {
     [ShowOnly]
@@ -14,11 +12,15 @@ public class AnimatedLight : MonoBehaviour
     [ShowOnly]
     [SerializeField]
     private float completedIterations;
+    [ShowOnly]
+    [SerializeField]
+    protected float evaluationTime;
     [SerializeField]
     private bool reset;
 
     public Light AnimLight { get { return animLight; } }
     public float CurrentTime { get { return currentTime; } }
+    public float NormalizedTime { get { return evaluationTime; } }
     public float CompletedIterations { get { return completedIterations; } }
 
     [SerializeField]
@@ -40,12 +42,19 @@ public class AnimatedLight : MonoBehaviour
     [SerializeField]
     public Gradient colorGradient = new Gradient();
 
-    private void Start()
+    bool isStarted = false;
+    bool isPingPongReverse = false;
+
+    protected virtual void Start()
     {
-        Reset();
+        if(!isStarted)
+        {
+            isStarted = true;
+            Reset();
+        }
     }
 
-    void Update ()
+    protected virtual void Update ()
     {
         if (reset) Reset();
 
@@ -71,29 +80,55 @@ public class AnimatedLight : MonoBehaviour
 
         if (playMode != PlayMode.Paused)
         {
-            if (playMode == PlayMode.Loop)
-                PlayLooping();
-
             currentTime += Time.deltaTime;
+
+            if (playMode == PlayMode.Loop)
+            {
+                evaluationTime += Time.deltaTime;
+                evaluationTime %= lifeTime;
+            }
+            else if (playMode == PlayMode.Reverse)
+            {
+                evaluationTime -= Time.deltaTime;
+                if (evaluationTime < 0)
+                    evaluationTime = lifeTime - evaluationTime;
+            }
+            else if (playMode == PlayMode.Pingpong)
+            {
+                if (isPingPongReverse)
+                {
+                    evaluationTime -= Time.deltaTime;
+                    if (evaluationTime <= 0)
+                        isPingPongReverse = false;
+                }
+                else
+                {
+                    evaluationTime += Time.deltaTime;
+                    if (evaluationTime >= lifeTime)
+                        isPingPongReverse = true;
+                }
+            }
         }
+        Play();
 
     }
 
-    private void PlayLooping()
+    private void Play()
     {
-        var normalizedTime = currentTime / lifeTime;
+        var normalizedTime = evaluationTime / lifeTime;
         animLight.color = colorGradient.Evaluate(normalizedTime);
         animLight.intensity = intensity.Evaluate(normalizedTime) * maxIntensity;
         animLight.range = range.Evaluate(normalizedTime) * maxRange;
     }
     
-    public void Reset()
+    public virtual void Reset()
     {
         reset = false;
-        animLight = GetComponent<Light>();
+        animLight = GetComponentInChildren<Light>();
+        if (animLight == null) throw new UnityException("an AnimatedLight needs a Light somewhere in children!");
         currentTime = 0;
+        evaluationTime = 0;
         completedIterations = 0;
-        playMode = PlayMode.Paused;
         animLight.color = colorGradient.Evaluate(0);
         animLight.intensity = intensity.Evaluate(0) * maxIntensity;
         animLight.range = range.Evaluate(0) * maxRange;
@@ -102,8 +137,14 @@ public class AnimatedLight : MonoBehaviour
     public enum PlayMode
     {
         Loop,
-        //Pingpong,
-        //Reverse
+        Pingpong,
+        Reverse,
         Paused
+    }
+
+    private void OnDrawGizmosSelected()
+    {
+        if (!isStarted) Start();
+        Update();
     }
 }

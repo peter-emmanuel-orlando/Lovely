@@ -78,7 +78,7 @@ public class AudioSpeaker : MonoBehaviour
 
     private void ReceiveSynchAudioTimeEvent(MusicPlayer source, SynchTimeEventArgs e)
     {
-        if(e.newTime >= 0 && e.newTime <= output.clip.samples)
+        if(e.newTime > 0 && e.newTime < output.clip.samples)
             output.timeSamples = e.newTime;
     }
 

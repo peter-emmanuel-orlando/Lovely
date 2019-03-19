@@ -6,8 +6,8 @@ Material:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: New Material
-  m_Shader: {fileID: 4800000, guid: d9c8f45fdc2a3304b95f7824b5040823, type: 3}
+  m_Name: BlindingLight
+  m_Shader: {fileID: 4800000, guid: 8f94ae62466d9b74cabc61d35f94ebb2, type: 3}
   m_ShaderKeywords: _ENABLERIMLIGHT_ON _PERSPECTIVECORRECTION_ON
   m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
@@ -102,7 +102,7 @@ Material:
     - _direction: 0
     - _reflectionAmount: 0.3
     m_Colors:
-    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _Color: {r: 10.680627, g: 10.596857, b: 6.910994, a: 1}
     - _ColorIllum: {r: 1, g: 0, b: 0, a: 1}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _FlatCutoutTint: {r: 16, g: 15.686275, b: 6.4, a: 1}

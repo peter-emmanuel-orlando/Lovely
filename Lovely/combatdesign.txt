@@ -26,6 +26,8 @@ perfect block	R2 (hold) + L2 OR L2 (hold) + R2
 ---------------------------------------------------
 dodge		block (hold) + direction
 ---------------------------------------------------
+ultraRun	dodge x3 -> block (hold) + directions (dodge 3 times to start sprinting)
+---------------------------------------------------
 grab		block (hold) + circle
 ---------------------------------------------------
 basicPunch	circle

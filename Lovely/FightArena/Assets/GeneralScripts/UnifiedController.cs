@@ -152,9 +152,9 @@ public abstract class UnifiedController : MonoBehaviour
         {
             cameraBone = new GameObject("cameraBone").transform;
             cameraBone.SetParent(transform);
-            cameraBone.localPosition = Vector3.zero;
-            cameraBone.localEulerAngles = Vector3.zero;
         }
+        cameraBone.localPosition = Vector3.zero;
+        cameraBone.localEulerAngles = Vector3.zero;
 
 
         navAgent = transform.GetComponent<NavMeshAgent>();
@@ -254,7 +254,7 @@ public abstract class UnifiedController : MonoBehaviour
                 // at animation end, needs to put in physics if not on nav mesh, or put on nav mesh             
                 overrideController["PlaceHolder_" + playAnimationSlot] = playAnimationNext;
                 anim.SetBool("PlayMirrored", playMirrored);
-                anim.CrossFade(playAnimationSlot, 0.01f, 0);
+                anim.CrossFadeInFixedTime(playAnimationSlot, 0.1f, 0);
                 //if not on navmesh, activate body collider
                 playAnimationNext = null;
             }

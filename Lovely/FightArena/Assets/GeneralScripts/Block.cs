@@ -5,7 +5,8 @@ public class Block : Ability
 {
     private static readonly AnimationClip blockAnimation = _AnimationPool.GetAnimation("Block");
 
-    private UnifiedController.PlayToken currentToken;
+    private UnifiedController.PlayToken blockToken;
+    private ProgressStatus status = ProgressStatus.Complete;
 
     public Block(Body body) : base(body)
     {
@@ -22,17 +23,21 @@ public class Block : Ability
 
     public override void CastAbility()
     {
-        if(currentToken == null || !currentToken.FrameByFrameRemainInState())
+        if(blockToken == null || !blockToken.FrameByFrameRemainInState())
         {
+            status = ProgressStatus.Complete;
             //increase mass to simulate poise then set remainonnavmesh to false so physics is received?
-            currentToken = performer.PlayAnimation(blockAnimation, true, false, false);
-            if(currentToken != null)
-                currentToken.FrameByFrameRemainInState();
+            blockToken = performer.PlayAnimation(blockAnimation, true, false, false);
+            if(blockToken != null)
+            {
+                status = ProgressStatus.InProgress;
+                blockToken.FrameByFrameRemainInState();
+            }
         }
     }
-
+    
     public override ProgressStatus CheckStatus()
     {
-        throw new System.NotImplementedException();
+        return status;
     }
 }

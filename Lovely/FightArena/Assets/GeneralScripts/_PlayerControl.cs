@@ -173,7 +173,9 @@ public class PlayerControl : IDecisionMaker, IPerformable
         cam.transform.SetParent(Performer.Body.transform.FindDeepChild("cameraBone"));
         cam.transform.localPosition = Vector3.zero;
         cam.transform.localRotation = Quaternion.identity;
-        cam.nearClipPlane = 0.25f;
+        cam.nearClipPlane = 0.30f;
+        cam.allowMSAA = false;
+
         SetUpSplitScreen();
     }
 
@@ -202,7 +204,7 @@ public class PlayerControl : IDecisionMaker, IPerformable
                 var activatePunch = PlayerInput.GetAsButtonDown(ButtonCode.B, playerNumber);
                 var activateRanged = PlayerInput.GetAsButtonDown(ButtonCode.X, playerNumber);
                 var activateJump = PlayerInput.GetAsButtonDown(ButtonCode.A, playerNumber);
-                var block = PlayerInput.GetAsButton(AxisCode.TriggersL, playerNumber) | PlayerInput.GetAsButton(AxisCode.TriggersR, playerNumber); 
+                var block = PlayerInput.GetAsButton(AxisCode.TriggersL, playerNumber) || PlayerInput.GetAsButton(AxisCode.TriggersR, playerNumber); 
 
                 performerBody.Move(moveSpeedX, moveSpeedZ);
                 performerBody.Look(lookSpeedH, lookSpeedV);
@@ -222,9 +224,16 @@ public class PlayerControl : IDecisionMaker, IPerformable
                 }
                 if (block)
                 {
-                    abilities[CharacterAbilitySlot.Block].CastAbility();
-                    //abilities[CharacterAbilitySlot.Dodge ].CastAbility();
-
+                    if(PlayerInput.GetAsButton(AxisCode.L_XAxis, playerNumber) || PlayerInput.GetAsButton(AxisCode.L_YAxis, playerNumber))
+                    {
+                        var dodge = abilities[CharacterAbilitySlot.Dodge] as Dodge;
+                        if(dodge != null)//cant assume ability will really be of a specific type
+                            dodge.CastAbility(new Vector3(moveSpeedX, 0, moveSpeedZ));
+                        else
+                            abilities[CharacterAbilitySlot.Block].CastAbility();
+                    }
+                    else
+                        abilities[CharacterAbilitySlot.Block].CastAbility();
                 }
                 if (activateJump)
                     performerBody.Jump(new Vector3(moveSpeedX, 1, moveSpeedZ));
