@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(Light))]
+
 public class FairieFireBody : Body, IBodyCanGlow
 {
     Light lightSource;
@@ -26,6 +26,9 @@ public class FairieFireBody : Body, IBodyCanGlow
     {
         fairieFireMind = new FairieFireMind(this);
         base.Awake();
-        lightSource = GetComponent<Light>();
+        lightSource = GetComponentInChildren<Light>();
+        if (lightSource == null)
+            throw new UnityException("FairieFire needs a light component in heiarchy!");
+
     }
 }

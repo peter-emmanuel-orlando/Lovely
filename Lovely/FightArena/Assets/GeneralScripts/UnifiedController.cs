@@ -45,6 +45,7 @@ public partial class UnifiedController : MonoBehaviour
     private bool playMirrored = false;
     private AnimationClip playAnimationNext;
     private bool isLocked = false;
+    private Collider physicsCollider;
     private readonly List<CapsuleCollider> hurtBoxes = new List<CapsuleCollider>();
     private readonly Dictionary<HitBoxType, CapsuleCollider> hitBoxes = new Dictionary<HitBoxType, CapsuleCollider>();
 
@@ -68,6 +69,8 @@ public partial class UnifiedController : MonoBehaviour
     protected void Initialize()
     {
         IsInitialized = true;
+
+        physicsCollider = transform.FindDeepChild("root").GetComponent<Collider>();
 
         cameraBone = transform.FindDeepChild("cameraBone");
         if(cameraBone == null)

@@ -10,6 +10,7 @@ using System.IO;
 public class _AnimationPool : _MasterComponent<_AnimationPool>
 {
     //the serialized list of animations is neccessary so they can be accessed without any editor scripts
+    [ShowOnly]
     [SerializeField]
     List<AnimationClip> animations = new List<AnimationClip>();
 
