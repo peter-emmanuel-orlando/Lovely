@@ -26,7 +26,7 @@ public class WanderPerformable : IPerformable
                 var randomDelta = new Vector3(Random.Range(-10f, 10f), Random.Range(-10f, 10f), Random.Range(-10f, 10f));
                 //NavMeshHit hit;
                 //NavMesh.Raycast(transform.position, transform.position + randomDelta, out hit, NavMesh.AllAreas);
-                NavAgent.destination = transform.position + randomDelta;// hit.position;
+                performer.Body.MoveToDestination(transform.position + randomDelta);// hit.position;
                 Debug.DrawLine(transform.position, NavAgent.destination, Color.green, 1);
             }
             yield return null;

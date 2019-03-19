@@ -240,7 +240,7 @@ public partial class UnifiedController : MonoBehaviour
                 movementSource = ControlMode.Physics;
                 return;
             }
-            if (navAgent.remainingDistance > 0)
+            if (navAgent.remainingDistance > 0 || navAgent.destination != navDestination)
             {
                 navAgent.isStopped = false;
                 navAgent.destination = navDestination;
@@ -270,18 +270,31 @@ public partial class UnifiedController : MonoBehaviour
 
         if (movementSource == ControlMode.Navigation)
         {
+            rb.isKinematic = true;
             rb.MovePosition(navAgent.nextPosition);
         }
         else if(movementSource == ControlMode.AnimNav)
         {
+            rb.isKinematic = true;
             rb.MovePosition(navAgent.nextPosition);
         }
         else if (movementSource == ControlMode.AnimatedRoot)
         {
             if (stayOnNavMesh)
+            {
+                rb.isKinematic = true;
                 rb.MovePosition(navAgent.nextPosition);
+                rb.MoveRotation(rb.rotation * anim.deltaRotation);
+            }
             else
-                rb.MovePosition(rb.position + anim.deltaPosition);
+            {
+                rb.isKinematic = false;
+                rb.velocity = (anim.deltaPosition) / Time.deltaTime;
+                rb.angularDrag = 8f;
+                // not yet working rb.angularVelocity = (anim.deltaRotation.eulerAngles) / Time.deltaTime;
+                //rb.MoveRotation(rb.rotation * anim.deltaRotation);
+                //rb.MovePosition(rb.position + anim.deltaPosition);
+            }
         }
         else if(movementSource == ControlMode.Physics)
         {
@@ -291,6 +304,7 @@ public partial class UnifiedController : MonoBehaviour
                 movementSource = ControlMode.Navigation;
                 navAgent.Warp(tmp.position);
                 rb.isKinematic = true;
+                //rb.freezeRotation = true;
                 isLocked = false;
             }
             else
@@ -370,7 +384,21 @@ public partial class UnifiedController : MonoBehaviour
         animMovement = new Vector3(horizontalSpeedNormalized, 0, forwardSpeedNormalized);
     }
 
-    public void MoveToDestination(Vector3 destination)
+    public IEnumerator TurnToFace(Vector3 lookTarget)
+    {
+        var result = _TurnToFace(lookTarget);
+        result.MoveNext();
+        return result;
+    }
+    private IEnumerator _TurnToFace(Vector3 lookTarget)
+    {
+        var desiredLook = Quaternion.LookRotation(lookTarget - transform.position, transform.up).eulerAngles;
+        deltaDegreesV = desiredLook.x;
+        deltaDegreesH = desiredLook.y;
+        yield break;
+    }
+
+        public void MoveToDestination(Vector3 destination, float stoppingDistance = 1)
     {
         if (isLocked || !IsInitialized) return;
 
@@ -384,6 +412,7 @@ public partial class UnifiedController : MonoBehaviour
         recoil = RecoilCode.None;
 
         movementSource = ControlMode.Navigation;
+        navAgent.stoppingDistance = stoppingDistance;//dont like setting this here
         navDestination = destination;
     }
 

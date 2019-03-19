@@ -9,6 +9,15 @@ public class FightPerformable : IPerformable
 
     public IEnumerator Perform()
     {
+        while(performer.VisibleEnemies.Count > 0)
+        {
+            var currentEnemy = performer.VisibleEnemies[0];
+            while(currentEnemy.distance > 1)
+            {
+                performer.Body.MoveToDestination(currentEnemy.subject.gameObject.transform.position);
+            }
+            yield return null;
+        }
         yield break;
     }
 
