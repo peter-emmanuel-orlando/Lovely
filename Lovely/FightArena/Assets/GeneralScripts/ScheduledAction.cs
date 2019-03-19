@@ -1,6 +1,23 @@
 ﻿using System;
+using System.Collections.Generic;
 
-public struct ScheduledAction
+public class ScheduledActionQueue
+{
+    private readonly ScheduledAction[] inner;
+
+    public ScheduledActionQueue(params ScheduledAction[] scheduledActions)
+    {
+        Array.Sort(scheduledActions);
+        inner = scheduledActions;
+    }
+
+    public Queue<ScheduledAction> GetCopyOfQueue()
+    {
+        return new Queue<ScheduledAction>(inner);
+    }
+}
+
+public struct ScheduledAction : IComparable<ScheduledAction>
 {
     public readonly float time;
     //public readonly Guarentees guarentees;
@@ -16,6 +33,11 @@ public struct ScheduledAction
     public void PerformAction()
     {
         action();
+    }
+
+    public int CompareTo(ScheduledAction other)
+    {
+        return this.time.CompareTo(other.time);
     }
 
     /*

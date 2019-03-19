@@ -1,0 +1,48 @@
+v.1
+
+-combat is based on trying to land a hit and faking out the opponent and dashing
+-basic punch:
+	short dash, quick activation, short active frames, small recovery, small whiff
+-dash punch:
+	longer dash, longer activation,  longer active frames, small recovery, medium whiff
+-throw kunai:
+	interrupt anything, limited supply
+-perfect block:
+	stagger enemy, catch enemy kunai throw back, costs chakra
+-------------------------------------------------------------------------------------
+---------------------------------------------------
+---------------------------------------------------
+jump: 		x
+---------------------------------------------------
+fly		triangle -> x for launch, x to flap, directions to steer
+---------------------------------------------------
+leap 		direction + x
+---------------------------------------------------
+aerial flip	(while leaping) direction+x
+---------------------------------------------------
+block		R2 (hold) OR L2 (hold)
+---------------------------------------------------
+perfect block	R2 (hold) + L2 OR L2 (hold) + R2
+---------------------------------------------------
+dodge		block (hold) + direction
+---------------------------------------------------
+grab		block (hold) + circle
+---------------------------------------------------
+basicPunch	circle
+---------------------------------------------------
+dash		triangle -> circle
+---------------------------------------------------
+dashPunch	(while dashing) circle
+---------------------------------------------------
+throwItem	square
+---------------------------------------------------
+ranged power 	triangle -> square
+---------------------------------------------------
+meditate	triangle (hold)
+---------------------------------------------------
+specialAttack 	triangle -> triangle -> circle
+---------------------------------------------------
+ultimateAttack	triangle -> triangle -> triangle -> circle
+---------------------------------------------------
+---------------------------------------------------
+---------------------------------------------------

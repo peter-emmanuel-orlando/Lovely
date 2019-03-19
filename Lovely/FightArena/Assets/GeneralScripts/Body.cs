@@ -30,7 +30,7 @@ public abstract partial class Body : UnifiedController, ISpawnable
     private int empowermentLevel = 0;
 
     public const int maxEmpowermentLevel = 3;//in sec
-    private const float empowerTime = 4;//in sec
+    public const float empowerTime = 7;//in sec
     private float depowerAfter = 0;//time to reset empowerment
     public event EventHandler<EmpowerChangeEventArgs> EmpowermentChangeEvent;
     private PowerUpEffect powerUpEffects;
@@ -79,17 +79,20 @@ public abstract partial class Body : UnifiedController, ISpawnable
 
         if ( empowermentLevel != 0 && Time.time > depowerAfter)
         {
-            OnEmpowermentChange(this, new EmpowerChangeEventArgs(empowermentLevel, 0));
-            empowermentLevel = 0;
+            ConsumeEmpowerment();
         }
     }
 
     protected virtual void OnEmpowermentChange(object sender, EmpowerChangeEventArgs e)
     {
-        if (EmpowermentChangeEvent != null)
-            EmpowermentChangeEvent(this, e);
+        if( e.newPowerLevel != e.oldPowerLevel)
+        {
+            if (EmpowermentChangeEvent != null)
+                EmpowermentChangeEvent(this, e);
 
-        EmpowerVisualEffect(this, e);
+            empowermentLevel = e.newPowerLevel;
+            EmpowerVisualEffect(this, e);
+        }
     }
     //\/////////////////////////////////////////////////////////////////////////////////////////////
     //\/////////////////////////////////////////////////////////////////////////////////////////////
@@ -99,8 +102,13 @@ public abstract partial class Body : UnifiedController, ISpawnable
         var newEmpowermentLevel = (empowermentLevel + 1) % (maxEmpowermentLevel + 1);
         if(newEmpowermentLevel != empowermentLevel)
             OnEmpowermentChange(this, new EmpowerChangeEventArgs(empowermentLevel, newEmpowermentLevel));
-        empowermentLevel = newEmpowermentLevel;
         depowerAfter = Time.time + empowerTime;
+    }
+
+    public void ConsumeEmpowerment()
+    {
+        if(empowermentLevel != 0)
+            OnEmpowermentChange(this, new EmpowerChangeEventArgs(empowermentLevel, 0));
     }
 
     protected virtual void EmpowerVisualEffect(object sender, EmpowerChangeEventArgs e)

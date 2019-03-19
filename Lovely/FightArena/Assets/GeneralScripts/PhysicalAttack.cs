@@ -7,7 +7,7 @@ public abstract class PhysicalAttack : Ability
 {
     protected abstract AnimationClip AttackAnimation { get; }
     protected abstract AnimationClip RecoilAnimation { get; }
-    protected abstract ScheduledAction[] ScheduledActions { get; }
+    protected abstract ScheduledActionQueue ScheduledActions { get; }
 
     private readonly HashSet<Body> alreadyHit = new HashSet<Body>();
     IEnumerator<ProgressStatus> innerEnumerator;
@@ -39,7 +39,7 @@ public abstract class PhysicalAttack : Ability
     {
         var checkStatus = body.PlayAnimation(AttackAnimation, true, false);
         alreadyHit.Clear();
-        var sa = new Queue<ScheduledAction>(ScheduledActions);
+        var sa = ScheduledActions.GetCopyOfQueue();
 
         var progress = 0f;
         var lastFrame = -1;
