@@ -1,0 +1,229 @@
+fileFormatVersion: 2
+guid: 1427d0f6e5baf0946bb4708a156d6a82
+ModelImporter:
+  serializedVersion: 22
+  fileIDToRecycleName:
+    100000: CloudPlanes
+    100002: Cone
+    100004: Cone.001
+    100006: Cone.002
+    100008: Cone.003
+    100010: Cone.004
+    100012: Cone.005
+    100014: Cone.006
+    100016: Cone.007
+    100018: Cone.008
+    100020: Cone.009
+    100022: Cone.010
+    100024: Cone.011
+    100026: Cone.012
+    100028: Cone.013
+    100030: Cone.014
+    100032: Cone.015
+    100034: Cone.016
+    100036: Cone.017
+    100038: //RootNode
+    100040: MobilClouds
+    100042: DeathLand
+    100044: DesertLand
+    100046: FireLand
+    100048: LightningLand
+    100050: MainMountain
+    100052: OceanLand
+    100054: ShadowLand
+    100056: WinterLand
+    400000: CloudPlanes
+    400002: Cone
+    400004: Cone.001
+    400006: Cone.002
+    400008: Cone.003
+    400010: Cone.004
+    400012: Cone.005
+    400014: Cone.006
+    400016: Cone.007
+    400018: Cone.008
+    400020: Cone.009
+    400022: Cone.010
+    400024: Cone.011
+    400026: Cone.012
+    400028: Cone.013
+    400030: Cone.014
+    400032: Cone.015
+    400034: Cone.016
+    400036: Cone.017
+    400038: //RootNode
+    400040: MobilClouds
+    400042: DeathLand
+    400044: DesertLand
+    400046: FireLand
+    400048: LightningLand
+    400050: MainMountain
+    400052: OceanLand
+    400054: ShadowLand
+    400056: WinterLand
+    2100000: No Name
+    2300000: CloudPlanes
+    2300002: Cone
+    2300004: Cone.001
+    2300006: Cone.002
+    2300008: Cone.003
+    2300010: Cone.004
+    2300012: Cone.005
+    2300014: Cone.006
+    2300016: Cone.007
+    2300018: Cone.008
+    2300020: Cone.009
+    2300022: Cone.010
+    2300024: Cone.011
+    2300026: Cone.012
+    2300028: Cone.013
+    2300030: Cone.014
+    2300032: Cone.015
+    2300034: Cone.016
+    2300036: Cone.017
+    2300038: MobilClouds
+    2300040: DeathLand
+    2300042: DesertLand
+    2300044: FireLand
+    2300046: LightningLand
+    2300048: MainMountain
+    2300050: OceanLand
+    2300052: ShadowLand
+    2300054: WinterLand
+    3300000: CloudPlanes
+    3300002: Cone
+    3300004: Cone.001
+    3300006: Cone.002
+    3300008: Cone.003
+    3300010: Cone.004
+    3300012: Cone.005
+    3300014: Cone.006
+    3300016: Cone.007
+    3300018: Cone.008
+    3300020: Cone.009
+    3300022: Cone.010
+    3300024: Cone.011
+    3300026: Cone.012
+    3300028: Cone.013
+    3300030: Cone.014
+    3300032: Cone.015
+    3300034: Cone.016
+    3300036: Cone.017
+    3300038: MobilClouds
+    3300040: DeathLand
+    3300042: DesertLand
+    3300044: FireLand
+    3300046: LightningLand
+    3300048: MainMountain
+    3300050: OceanLand
+    3300052: ShadowLand
+    3300054: WinterLand
+    4300000: Cone.017
+    4300002: Cone.016
+    4300004: Cone.015
+    4300006: Cone.014
+    4300008: Cone.013
+    4300010: Cone.012
+    4300012: Cone.011
+    4300014: Cone.006
+    4300016: Cone.004
+    4300018: Cone.001
+    4300020: Cone.005
+    4300022: Cone.003
+    4300024: MobilClouds
+    4300026: Cone.010
+    4300028: Cone.009
+    4300030: Cone.008
+    4300032: CloudPlanes
+    4300034: Cone.007
+    4300036: Cone.002
+    4300038: Cone
+    4300040: MainMountain
+    4300042: WinterLand
+    4300044: FireLand
+    4300046: DesertLand
+    4300048: ShadowLand
+    4300050: OceanLand
+    4300052: DeathLand
+    4300054: LightningLand
+  externalObjects: {}
+  materials:
+    importMaterials: 1
+    materialName: 0
+    materialSearch: 1
+    materialLocation: 1
+  animations:
+    legacyGenerateAnimations: 4
+    bakeSimulation: 0
+    resampleCurves: 1
+    optimizeGameObjects: 0
+    motionNodeName: 
+    rigImportErrors: 
+    rigImportWarnings: 
+    animationImportErrors: 
+    animationImportWarnings: 
+    animationRetargetingWarnings: 
+    animationDoRetargetingWarnings: 0
+    importAnimatedCustomProperties: 0
+    importConstraints: 0
+    animationCompression: 1
+    animationRotationError: 0.5
+    animationPositionError: 0.5
+    animationScaleError: 0.5
+    animationWrapMode: 0
+    extraExposedTransformPaths: []
+    extraUserProperties: []
+    clipAnimations: []
+    isReadable: 1
+  meshes:
+    lODScreenPercentages: []
+    globalScale: 1
+    meshCompression: 0
+    addColliders: 0
+    importVisibility: 1
+    importBlendShapes: 1
+    importCameras: 1
+    importLights: 1
+    swapUVChannels: 0
+    generateSecondaryUV: 0
+    useFileUnits: 1
+    optimizeMeshForGPU: 1
+    keepQuads: 0
+    weldVertices: 1
+    preserveHierarchy: 0
+    indexFormat: 0
+    secondaryUVAngleDistortion: 8
+    secondaryUVAreaDistortion: 15.000001
+    secondaryUVHardAngle: 88
+    secondaryUVPackMargin: 4
+    useFileScale: 1
+  tangentSpace:
+    normalSmoothAngle: 60
+    normalImportMode: 0
+    tangentImportMode: 3
+    normalCalculationMode: 4
+  importAnimation: 0
+  copyAvatar: 0
+  humanDescription:
+    serializedVersion: 2
+    human: []
+    skeleton: []
+    armTwist: 0.5
+    foreArmTwist: 0.5
+    upperLegTwist: 0.5
+    legTwist: 0.5
+    armStretch: 0.05
+    legStretch: 0.05
+    feetSpacing: 0
+    rootMotionBoneName: 
+    rootMotionBoneRotation: {x: 0, y: 0, z: 0, w: 1}
+    hasTranslationDoF: 0
+    hasExtraRoot: 0
+    skeletonHasParents: 1
+  lastHumanDescriptionAvatarSource: {instanceID: 0}
+  animationType: 0
+  humanoidOversampling: 1
+  additionalBone: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

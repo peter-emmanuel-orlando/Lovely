@@ -1,0 +1,28 @@
+todo: 
+	-make rigidbody control rotation instead of navagent
+	-transition abilities away from ienumerators
+	-make PrefabPool return an instance rather than the actual prefab
+	-make PrefabPool hold copies of instantiated prefabs so theres no need to go creating and destroying them all the time
+	-generalize range attacks to thrownprojectiles and beam projectiles
+	-make jumping and climbing not just teleport directly to the apropriate spot
+	-add directional poise to unifiedcontroller
+	-make kunai apply effects when colliding with a hitbox as well as a physical object
+
+------------------------------------------------------------------------------------------------
+edited BUT DID NOT TEST scripts imported from fightfightfight.
+
+Added in a sun/moon/sky changing system for night day cycle with multiple directional lights and ambient lighting contribution
+(probably added in prev version)
+
+changed Being class from fightfightfight to Body or Mind classes where appropriate.
+
+added in TrackedObject instead of TrackedGamObject so gameobjects can be tracked without having to inherit from class.
+	TODO! make only monobehaviors implementing the interfaces "derived" from ISpawnable (i.e. ISpawnableFood, ISpawnableBody, etc)
+	trackable, to prevent a tracked thing not being found because its tracked as something else.
+
+Changed intel class to be more in line with more extendible implementation from FightFightFight
+
+Changed Mind into two classes,
+	MindBase is responsible for ticking through performables, and managing the source of performables ONLY
+	Mind is responsible for perception of the outside world, and categorizing those things into friend/foe/food etc
+
