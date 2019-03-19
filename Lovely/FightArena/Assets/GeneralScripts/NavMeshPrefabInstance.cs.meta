@@ -1,10 +1,9 @@
 fileFormatVersion: 2
-guid: 76d096294c5a28d4e964e6cf2781fd1a
+guid: 6f8c72def7ec4de46907a8cc811f7f1e
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences:
-  - m_NavMeshData: {fileID: 23800000, guid: cc62ca8f44b716849a469352c7b45f4c, type: 2}
+  defaultReferences: []
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

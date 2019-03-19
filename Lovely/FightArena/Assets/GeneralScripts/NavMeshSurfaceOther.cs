@@ -6,7 +6,7 @@ namespace UnityEngine.AI
     [DefaultExecutionOrder(-102)]
     [AddComponentMenu("Navigation/NavMeshSurfaceOther", 30)]
     [HelpURL("https://github.com/Unity-Technologies/NavMeshComponents#documentation-draft")]
-    public class NavMeshSurfaceOther : MonoBehaviour, INavMeshModifier
+    public sealed class NavMeshSurfaceOther : TrackedGameObject<NavMeshSurfaceOther>, INavMeshModifier
     {
         [SerializeField]
         int m_AgentTypeID;
@@ -78,8 +78,11 @@ namespace UnityEngine.AI
         public int area { get { return 1; } }//notWalkable, this is for other navmeshstuff though, it will be ignored by this component
         public bool ignoreFromBuild { get { return false; } }
         public bool overrideArea { get { return true; } }
-
         public bool AffectsAgentType(int agentTypeID) { return true; }
+
+        //from TrackedGameObject
+        protected override Bounds Bounds { get { return new Bounds(center + transform.position, size - Vector3.one); } }
+        protected override NavMeshSurfaceOther This { get { return this; } }
 
         static readonly List<NavMeshSurfaceOther> s_NavMeshSurfaces = new List<NavMeshSurfaceOther>();
 
@@ -88,8 +91,16 @@ namespace UnityEngine.AI
             get { return s_NavMeshSurfaces; }
         }
 
-        void OnEnable()
+        
+        static NavMeshSurfaceOther()
         {
+            CellSize = 10f;
+            LocUpdatesPerFrame = 5;
+        } 
+
+        protected override void OnEnable()
+        {
+            base.OnEnable();
             if (!NavMeshModifier.activeModifiers.Contains(this))
                 NavMeshModifier.activeModifiers.Add(this); 
 
@@ -97,8 +108,9 @@ namespace UnityEngine.AI
             AddData();
         }
 
-        void OnDisable()
+        protected override void OnDisable()
         {
+            base.OnDisable();
             NavMeshModifier.activeModifiers.Remove(this);
 
             RemoveData();
