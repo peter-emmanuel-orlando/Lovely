@@ -212,7 +212,7 @@ public abstract class UnifiedController : MonoBehaviour
         SyncAnimation();
         SyncNavigation();
         SyncPhysics();
-        gameObject.DisplayTextComponent(this);
+        //gameObject.DisplayTextComponent(this);
     }
 
     private void SyncAnimation()
@@ -413,8 +413,8 @@ public abstract class UnifiedController : MonoBehaviour
             Debug.DrawLine(centerPos, upperCenter, Color.cyan);
             var samplePositionRadius = Vector3.Distance(centerPos, lowerCenter);
             samplePositionRadius *= 2f;
-            DebugShape.DrawSphere(lowerCenter, samplePositionRadius, Color.yellow, 0.3f);
-            DebugShape.DrawSphere(headPos, samplePositionRadius, Color.green, 0.3f);
+            DebugShape.DrawSphere(lowerCenter, samplePositionRadius, Color.yellow);
+            DebugShape.DrawSphere(headPos, samplePositionRadius, Color.green);
 
             rb.isKinematic = false;
 

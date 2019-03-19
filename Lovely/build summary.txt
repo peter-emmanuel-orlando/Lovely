@@ -8,9 +8,8 @@ todo:
 	-make kunai apply effects when colliding with a hitbox as well as a physical object
 
 ------------------------------------------------------------------------------------------------
-fixed some naming rule violations
-simplified some object initializations
+fixed error where exiting an overlapping compound trigger in modularnavmesh would kick agent from the navmesh. This was accomplished by keeping count of how many times agent has crossed into trigger area, and subtracting how many time agent has left trigger area
 
-added in the modularnavmesh class
-this class bakes a navmesh based on the triggers used as areas. Currently, the "nonwalkable" nav mesh is the built in default navmesharea "jump". this is because of many errors in the verson. These errors are recorded in the "error.txt" document in this folder. The tecnique is proven functional. The next step is baking the navmeshdata directly into the prefab
-add automatically adding navmeshlinks
+added in cube debug shape
+changed debug shapes to be rendered without constantly creating and destroying gameobjects
+changed modular nav mesh class private class AreaOverlap to keep track of a new private class AreaTracking, which keeps the navarea and overlap count together in one class. Class was chosen over struct because of constant updates to overlapCount

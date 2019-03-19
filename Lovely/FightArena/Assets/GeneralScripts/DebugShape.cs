@@ -4,15 +4,33 @@ using UnityEngine;
 
 public static class DebugShape
 {
-    public static void DrawSphere(Vector3 center, float radius, Color color, float lifeTime)
+    private static Mesh sphereMesh;
+    private static Material debugMaterial;
+
+    public static void DrawSphere(Vector3 center, float radius, Color color)
     {
         if(Application.isPlaying)
         {
-            var newDebug = GameObject.Instantiate<GameObject>(_PrefabPool.GetPrefab("DebugSphere").gameObject);
-            newDebug.GetComponent<MeshRenderer>().material.color = color;
-            newDebug.transform.position = center;
-            newDebug.transform.localScale *= radius * 2f;
-            GameObject.Destroy(newDebug, lifeTime);
+            if(debugMaterial == null)
+            {
+                debugMaterial = new Material(Shader.Find("UCLA Game Lab/Wireframe/Single-Sided"));
+            }
+
+            if(sphereMesh == null)
+            {
+                var newDebug = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                sphereMesh = newDebug.GetComponent<MeshFilter>().mesh;
+                GameObject.DestroyImmediate(newDebug);
+            }
+
+
+            var newTransform = new Matrix4x4();
+            newTransform.SetTRS(center, Quaternion.identity, Vector3.one * radius);
+
+            var modifiedMaterial = new Material(debugMaterial);
+            modifiedMaterial.color = color;
+
+            Graphics.DrawMesh(sphereMesh, newTransform, modifiedMaterial, 0);
         }
     }
 }

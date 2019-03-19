@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
@@ -40,6 +41,8 @@ namespace ModularNavMesh
             {
                 foreach (var agent in trackedAgents.Keys)
                 {
+
+                    agent.gameObject.DisplayTextComponent("agent active area:" + Convert.ToString(agent.areaMask, 2) + "\n" + "active area:" + trackedAgents[agent].activeArea + " count:" + trackedAgents[agent].activeArea.overlapCount + "\n" + "secondary area:" + trackedAgents[agent].secondaryArea + " count:" + trackedAgents[agent].secondaryArea.overlapCount + "\n", this);
                     var activeColor = Color.cyan;
                     if (trackedAgents[agent].activeArea == 3) activeColor = Color.magenta;
                     if (trackedAgents[agent].activeArea == 4) activeColor = Color.green;
@@ -47,8 +50,8 @@ namespace ModularNavMesh
                     if (trackedAgents[agent].secondaryArea == 3) secondaryColor = Color.magenta;
                     if (trackedAgents[agent].secondaryArea == 4) secondaryColor = Color.green;
 
-                    DebugShape.DrawSphere(agent.transform.position + Vector3.up, 1, activeColor, .5f);
-                    DebugShape.DrawSphere(agent.transform.position, 1, secondaryColor, .5f);
+                    DebugShape.DrawSphere(agent.transform.position + Vector3.up, 1, activeColor);
+                    DebugShape.DrawSphere(agent.transform.position, 1, secondaryColor);
                 }
             }
         }
@@ -61,17 +64,29 @@ namespace ModularNavMesh
             {
                 if (trackedAgents.ContainsKey(agent))
                 {
-                    if (trackedAgents[agent].activeArea != DefaultArea)
+                    var trackedAgent = trackedAgents[agent];
+                    if (trackedAgent.activeArea != DefaultArea)
                     {
-                        trackedAgents[agent].secondaryArea = trackedAgents[agent].activeArea;
-                        trackedAgents[agent].activeArea = this.DefaultArea;
+                        if(trackedAgent.secondaryArea == DefaultArea)
+                        {
+                            var tmp = trackedAgent.activeArea;
+                            trackedAgent.activeArea = trackedAgent.secondaryArea;
+                            trackedAgent.secondaryArea = tmp;
+                        }
+                        else
+                        {
+                            trackedAgent.secondaryArea = trackedAgent.activeArea;
+                            trackedAgent.activeArea = new AreaTracking(this.DefaultArea);
+                        }
                     }
                 }
                 else
                 {
-                    trackedAgents.Add(agent, new AreaOverlap(DefaultArea, 0));
+                    trackedAgents.Add(agent, new AreaOverlap(new AreaTracking(DefaultArea), new AreaTracking(0)));
                 }
-                agent.areaMask = 1 << trackedAgents[agent].activeArea;
+
+                trackedAgents[agent].activeArea.overlapCount++;
+                agent.areaMask = 1 << trackedAgents[agent].activeArea.area;
             }
         }
 
@@ -80,21 +95,31 @@ namespace ModularNavMesh
             var agent = other.GetComponentInParent<NavMeshAgent>();
             if (agent && trackedAgents.ContainsKey(agent))
             {
-                var tracked = trackedAgents[agent];
+                var trackedAgent = trackedAgents[agent];
                 if (trackedAgents.ContainsKey(agent))
                 {
-                    if (tracked.activeArea == this.DefaultArea)
+                    if (trackedAgent.secondaryArea == this.DefaultArea)
                     {
-                        tracked.activeArea = tracked.secondaryArea;
-                        tracked.secondaryArea = 0;
+                        trackedAgent.secondaryArea.overlapCount--;
+                        if(trackedAgent.secondaryArea.overlapCount <= 0)
+                            trackedAgent.secondaryArea = new AreaTracking(0);
                     }
-                    if (tracked.secondaryArea == this.DefaultArea)
+                    if (trackedAgent.activeArea == this.DefaultArea)
                     {
-                        tracked.secondaryArea = 0;
+                        if(trackedAgent.activeArea.overlapCount > 0)
+                        {
+                            trackedAgent.activeArea.overlapCount--;
+                        }
+
+                        if(trackedAgent.activeArea.overlapCount <= 0)
+                        {
+                            trackedAgent.activeArea = trackedAgent.secondaryArea;
+                            trackedAgent.secondaryArea = new AreaTracking(0);
+                        }
                     }
                 }
 
-                agent.areaMask = 1 << trackedAgents[agent].activeArea;
+                agent.areaMask = 1 << trackedAgents[agent].activeArea.area;
             }
 
 
@@ -103,7 +128,7 @@ namespace ModularNavMesh
             //if the agent isnt on any navmeshsurfaceothers(both its overlap areas are the default area)
             //THEN
             //remove it from the dictionary.
-            if (trackedAgents.ContainsKey(agent) && (!agent || (trackedAgents[agent].secondaryArea == 0 && trackedAgents[agent].activeArea == 0)))
+            if (trackedAgents.ContainsKey(agent) && (!agent || (trackedAgents[agent].secondaryArea.area == 0 && trackedAgents[agent].activeArea.area == 0)))
                 trackedAgents.Remove(agent);
         }
 
@@ -112,13 +137,34 @@ namespace ModularNavMesh
 
         private class AreaOverlap
         {
-            public int activeArea;
-            public int secondaryArea;
+            public AreaTracking activeArea;
+            public AreaTracking secondaryArea;
 
-            public AreaOverlap(int activeArea, int secondaryArea)
+            public AreaOverlap(AreaTracking activeArea, AreaTracking secondaryArea)
             {
                 this.activeArea = activeArea;
                 this.secondaryArea = secondaryArea;
+            }
+        }
+        private class AreaTracking
+        {
+            public int area;
+            public int overlapCount;
+
+            public static implicit operator int(AreaTracking areaTracking)
+            {
+                return areaTracking.area;
+            }
+
+            public AreaTracking(int area, int overlapCount = 0)
+            {
+                this.area = area;
+                this.overlapCount = overlapCount;
+            }
+
+            public override string ToString()
+            {
+                return "NavMeshArea(" + area + ")";
             }
         }
     }
@@ -198,7 +244,7 @@ namespace ModularNavMesh
                 sources.AddRange(addIn);
 
                 var m = new Matrix4x4();
-                m.SetTRS(t.bounds.center, t.transform.rotation, Vector3.one);
+                m.SetTRS( t.bounds.center, t.transform.rotation, Vector3.one);
                 var newModifier = new NavMeshBuildSource()
                 {
                     transform = m,
@@ -256,6 +302,8 @@ namespace ModularNavMesh
                         bound.size = Vector3.one * 2;
                     }
                 }
+
+
                 var trigger = triggers[i];
                 trigger.center = bound.center;
                 trigger.size = bound.size;
@@ -285,18 +333,18 @@ namespace ModularNavMesh
         protected virtual void OnDrawGizmos()
         {
             if (!isActiveAndEnabled) return;
-
-            /*
+            
             foreach (var col in GetComponents<Collider>())
             {
                 Gizmos.color = Color.yellow;
+                //DebugShape.DrawSphere
                 Gizmos.DrawWireCube(col.bounds.center, col.bounds.size);
             }
-            */
+
             foreach (var bound in triggerBounds)
             {
                 Gizmos.color = Color.green;
-                Gizmos.DrawWireCube(transform.position + bound.center, bound.size);
+                Gizmos.DrawWireCube(transform.TransformPoint(bound.center), bound.size);
             }
         }
 

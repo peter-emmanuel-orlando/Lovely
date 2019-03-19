@@ -468,8 +468,8 @@ namespace UnityEngine.AI
                     if (trackedAgents[agent].secondaryArea == 3) secondaryColor = Color.magenta;
                     if (trackedAgents[agent].secondaryArea == 4) secondaryColor = Color.green;
 
-                    DebugShape.DrawSphere(agent.transform.position + Vector3.up, 1, activeColor, .5f);
-                    DebugShape.DrawSphere(agent.transform.position, 1, secondaryColor, .5f);
+                    DebugShape.DrawSphere(agent.transform.position + Vector3.up, 1, activeColor);
+                    DebugShape.DrawSphere(agent.transform.position, 1, secondaryColor);
                 }
             }
         }
