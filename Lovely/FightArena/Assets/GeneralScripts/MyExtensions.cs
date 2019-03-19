@@ -50,6 +50,24 @@ static class MyExtensions
     }
 
 
+    public static float Pow(this float f, int pow)
+    {
+        var result = 1f;
+        for (int i = 0; i < pow; i++)
+        {
+            result *= f;
+        }
+        return f;
+    }
+    public static float GetSign(this float f)
+    {
+        var result = 0f;
+        if(f != 0)
+            result = f / Mathf.Abs(f);
+        return f;
+    }
+
+
     public static Texture2D GetRTPixels(this RenderTexture rt)
     {
         // Remember currently active render texture

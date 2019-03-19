@@ -187,7 +187,7 @@ public abstract class UnifiedController : MonoBehaviour
         //rb.hideFlags = HideFlags.HideInInspector;
         rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
         rb.isKinematic = true;
-        rb.useGravity = true;
+        rb.useGravity = false;
         rb.mass = 77.7f;
         rb.angularDrag = 50f;
         rb.drag = 1f;
@@ -765,7 +765,8 @@ public abstract class UnifiedController : MonoBehaviour
     {
         additionalPhysics += delegate ()
         {
-            this.requirePhysicsTimeLength = requirePhysicsTimeLength;
+            this.requirePhysicsTimeLength = Mathf.Max(this.requirePhysicsTimeLength,requirePhysicsTimeLength);
+            //this.requirePhysicsTimeLength = requirePhysicsTimeLength;
             rb.AddForce(force, forceMode);
         };
     }

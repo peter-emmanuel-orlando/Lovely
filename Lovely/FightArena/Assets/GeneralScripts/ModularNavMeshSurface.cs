@@ -128,7 +128,7 @@ namespace ModularNavMesh
             //if the agent isnt on any navmeshsurfaceothers(both its overlap areas are the default area)
             //THEN
             //remove it from the dictionary.
-            if (trackedAgents.ContainsKey(agent) && (!agent || (trackedAgents[agent].secondaryArea.area == 0 && trackedAgents[agent].activeArea.area == 0)))
+            if (agent && trackedAgents.ContainsKey(agent) && (!agent || (trackedAgents[agent].secondaryArea.area == 0 && trackedAgents[agent].activeArea.area == 0)))
                 trackedAgents.Remove(agent);
         }
 
