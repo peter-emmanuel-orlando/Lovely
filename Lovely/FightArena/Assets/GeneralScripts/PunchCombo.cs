@@ -91,8 +91,12 @@ public partial class PunchCombo : Ability
                 var enumerator = uniControl.PlayAnimation(current.punchAnimation, true, current.isMirrored);
                 lockPerformUntil = Time.time + lockPerformFor;
                 resetComboIfPerformedAfter = Time.time + current.punchAnimation.length + comboHoldFor;
+                //var testmessages = new Stack<string>(new string[] {"openmessages", "closemessage" });
                 while (enumerator.MoveNext())
                 {
+                    var time = enumerator.Current.normalizedTime;
+                    if (time > 0.3f)
+                        ReceiveAnimationEvents("testmessage. Time: " + time);
                     yield return enumerator.Current.status;
                 }
             }

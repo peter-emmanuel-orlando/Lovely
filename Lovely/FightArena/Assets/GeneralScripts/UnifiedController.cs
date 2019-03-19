@@ -532,17 +532,25 @@ public partial class UnifiedController : MonoBehaviour
         var isSlotCurrent = stateInfo.IsName(playAnimationSlot);
         var isSlotNext = nextInfo.IsName(playAnimationSlot);// && anim.IsInTransition(0);
         var finaltime = (isSlotCurrent) ? stateInfo.normalizedTime : nextInfo.normalizedTime;
-        if(isAnimInSlot)
+        while (isAnimInSlot && !(isSlotCurrent || isSlotNext))
         {
             var midResult = new AnimationProgress(ProgressStatus.Pending, -1);
             gameObject.DisplayTextComponent(midResult, this);
             yield return midResult;
+
+            stateInfo = anim.GetCurrentAnimatorStateInfo(0);
+            nextInfo = anim.GetNextAnimatorStateInfo(0);
+            isAnimInSlot = overrideController["PlaceHolder_" + playAnimationSlot] == clip;
+            isSlotCurrent = stateInfo.IsName(playAnimationSlot);
+            isSlotNext = nextInfo.IsName(playAnimationSlot);// && anim.IsInTransition(0);
         }// else return aborted
 
         while ( isAnimInSlot && (isSlotCurrent || isSlotNext))
         {
             var result = new AnimationProgress(ProgressStatus.InProgress, finaltime);
 
+            stateInfo = anim.GetCurrentAnimatorStateInfo(0);
+            nextInfo = anim.GetNextAnimatorStateInfo(0);
             isAnimInSlot = overrideController["PlaceHolder_" + playAnimationSlot] == clip;
             isSlotCurrent = stateInfo.IsName(playAnimationSlot);
             isSlotNext = nextInfo.IsName(playAnimationSlot) && anim.IsInTransition(0);
@@ -551,6 +559,9 @@ public partial class UnifiedController : MonoBehaviour
             gameObject.DisplayTextComponent(result, this);
             yield return result;
         }
+
+        stateInfo = anim.GetCurrentAnimatorStateInfo(0);
+        nextInfo = anim.GetNextAnimatorStateInfo(0);
         var finalResult = new AnimationProgress(ProgressStatus.Complete, finaltime);
         finaltime = (isSlotCurrent) ? stateInfo.normalizedTime : nextInfo.normalizedTime;
         gameObject.DisplayTextComponent(finalResult, this);

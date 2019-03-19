@@ -6,11 +6,10 @@ Material:
   m_ObjectHideFlags: 0
   m_PrefabParentObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
-  m_Name: Glass
+  m_Name: Starfield
   m_Shader: {fileID: 4800000, guid: d9c8f45fdc2a3304b95f7824b5040823, type: 3}
-  m_ShaderKeywords: _ALPHAPREMULTIPLY_ON _EMISSION _ENABLERIMLIGHT_ON _PERSPECTIVECORRECTION_ON
-    _SMOOTHNESS_TEXTURE_ALBEDO_CHANNEL_A
-  m_LightmapFlags: 1
+  m_ShaderKeywords: _ENABLERIMLIGHT_ON
+  m_LightmapFlags: 4
   m_EnableInstancingVariants: 0
   m_DoubleSidedGI: 0
   m_CustomRenderQueue: -1
@@ -40,19 +39,15 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _FlatCutoutTex:
-        m_Texture: {fileID: 0}
+        m_Texture: {fileID: 2800000, guid: 43b66fe20f3f53548825ad0961e79655, type: 3}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MainTex:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _Matcap:
-        m_Texture: {fileID: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
     - _MatcapTex:
-        m_Texture: {fileID: 10300, guid: 0000000000000000f000000000000000, type: 0}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _MetallicGlossMap:
@@ -67,46 +62,38 @@ Material:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
-    - _tex1:
-        m_Texture: {fileID: 10300, guid: 0000000000000000f000000000000000, type: 0}
-        m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0, y: 0}
     m_Floats:
-    - _AlphaOffset: 0.108
     - _BreakRimLight: 0
     - _BumpScale: 1
     - _Cutoff: 0.5
     - _DetailNormalMapScale: 1
-    - _DstBlend: 10
+    - _DstBlend: 0
     - _EnableRimLight: 1
-    - _FlatCutoutAlpha: 0
+    - _FlatCutoutAlpha: 1
     - _FlatCutoutExtraAlpha: 0
-    - _GlossMapScale: 0.557
-    - _Glossiness: 0.821
+    - _GlossMapScale: 1
+    - _Glossiness: 0.5
     - _GlossyReflections: 1
-    - _MainTexAlpha: 0.395
-    - _Metallic: 0.302
-    - _Mode: 3
+    - _MainTexAlpha: 0
+    - _Metallic: 0
+    - _Mode: 0
     - _OcclusionStrength: 1
     - _Parallax: 0.02
-    - _PerspectiveCorrection: 1
-    - _RimLightIntensity: 18
+    - _RimLightIntensity: 13.85
     - _RimLightPulseFreq: 0
     - _ScrollXSpeed: 0
     - _ScrollYSpeed: 2
-    - _SmoothnessTextureChannel: 1
+    - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1
     - _UVSec: 0
-    - _ZWrite: 0
-    - _ZoomLevel: 21.1
-    - _reflectionAmount: 0
+    - _ZWrite: 1
+    - _ZoomLevel: 5.2
     m_Colors:
-    - _Color: {r: 1, g: 1, b: 1, a: 0.20392157}
-    - _ColorIllum: {r: 1, g: 1, b: 1, a: 1}
-    - _EmissionColor: {r: 0.6603774, g: 0.1027946, b: 0.1027946, a: 1}
-    - _FlatCutoutTint: {r: 0.17528482, g: 0.9528302, b: 0.74726444, a: 1}
-    - _RimLightBottom: {r: 0.29803923, g: 1, b: 0, a: 0.39215687}
-    - _RimLightLeft: {r: 0.29803923, g: 1, b: 0, a: 0.4}
-    - _RimLightRight: {r: 0.29624772, g: 1, b: 0, a: 0.48235294}
-    - _RimLightTop: {r: 0.29803923, g: 1, b: 0, a: 0.5372549}
+    - _Color: {r: 1, g: 1, b: 1, a: 1}
+    - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
+    - _FlatCutoutTint: {r: 1, g: 1, b: 1, a: 1}
+    - _RimLightBottom: {r: 0.7254902, g: 0, b: 1, a: 1}
+    - _RimLightLeft: {r: 0.7254902, g: 0, b: 1, a: 1}
+    - _RimLightRight: {r: 0.7254902, g: 0, b: 1, a: 1}
+    - _RimLightTop: {r: 0.7263489, g: 0, b: 1, a: 1}

@@ -69,8 +69,7 @@ public abstract class Body : UnifiedController, ISpawnable
             var newColor = Color.Lerp(modifier, baseColor, 0.5f);
             bodyMesh.material.color = (health <= 0f)? Color.red : newColor;
         }
-        anim.SetFloat("BreathingLabor", 1f - (stamina / 100));
-        
+        anim.SetFloat("BreathingLabor", 1f - (stamina / 100));        
     }
 
     private void _ReceiveAnimationEvents(string message)
