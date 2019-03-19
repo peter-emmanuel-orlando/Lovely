@@ -222,11 +222,13 @@ namespace UnityEngine.AI
                 var scale = m.transform.lossyScale;
                 var msize = new Vector3(m.size.x * Mathf.Abs(scale.x), m.size.y * Mathf.Abs(scale.y), m.size.z * Mathf.Abs(scale.z));
 
-                var src = new NavMeshBuildSource();
-                src.shape = NavMeshBuildSourceShape.ModifierBox;
-                src.transform = Matrix4x4.TRS(mcenter, m.transform.rotation, Vector3.one);
-                src.size = msize;
-                src.area = m.area;
+                var src = new NavMeshBuildSource
+                {
+                    shape = NavMeshBuildSourceShape.ModifierBox,
+                    transform = Matrix4x4.TRS(mcenter, m.transform.rotation, Vector3.one),
+                    size = msize,
+                    area = m.area
+                };
                 sources.Add(src);
             }
         }
@@ -255,11 +257,13 @@ namespace UnityEngine.AI
                     continue;
                 if (!m.AffectsAgentType(m_AgentTypeID))
                     continue;
-                var markup = new NavMeshBuildMarkup();
-                markup.root = m.transform;
-                markup.overrideArea = m.overrideArea;
-                markup.area = m.modifiedArea;
-                markup.ignoreFromBuild = m.ignoreFromBuild;
+                var markup = new NavMeshBuildMarkup()
+                {
+                    root = m.transform,
+                    overrideArea = m.overrideArea,
+                    area = m.modifiedArea,
+                    ignoreFromBuild = m.ignoreFromBuild
+                };
                 markups.Add(markup);
             }
 
@@ -448,7 +452,7 @@ namespace UnityEngine.AI
 
         private void Awake()
         {
-            gameObject.layer = LayerMask.NameToLayer("CollideAll");
+            gameObject.layer = LayerMask.NameToLayer("ModularNavMesh");
         }
 
         private void Update()

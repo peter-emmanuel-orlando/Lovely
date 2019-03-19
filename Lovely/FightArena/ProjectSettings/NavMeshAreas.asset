@@ -11,35 +11,13 @@ NavMeshProjectSettings:
     cost: 1
   - name: Jump
     cost: 2
-  - name: WalkableMain
+  - name: WalkableA
     cost: 1
-  - name: WalkableOther
+  - name: WalkableB
     cost: 1
-  - name: 
+  - name: WalkableC
     cost: 1
-  - name: 
-    cost: 1
-  - name: 
-    cost: 1
-  - name: 
-    cost: 1
-  - name: 
-    cost: 1
-  - name: 
-    cost: 1
-  - name: 
-    cost: 1
-  - name: 
-    cost: 1
-  - name: 
-    cost: 1
-  - name: 
-    cost: 1
-  - name: 
-    cost: 1
-  - name: 
-    cost: 1
-  - name: test
+  - name: WalkableD
     cost: 1
   - name: 
     cost: 1
@@ -67,7 +45,29 @@ NavMeshProjectSettings:
     cost: 1
   - name: 
     cost: 1
-  - name: Untraversable
+  - name: 
+    cost: 1
+  - name: 
+    cost: 1
+  - name: 
+    cost: 1
+  - name: 
+    cost: 1
+  - name: 
+    cost: 1
+  - name: 
+    cost: 1
+  - name: 
+    cost: 1
+  - name: 
+    cost: 1
+  - name: 
+    cost: 1
+  - name: 
+    cost: 1
+  - name: 
+    cost: 1
+  - name: 
     cost: 1
   m_LastAgentTypeID: -1372625422
   m_Settings:

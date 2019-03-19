@@ -65,9 +65,11 @@ public static class WARNING_UNTESTED_SkinnedMeshCombiner
                 textures.Add(smr.material.mainTexture as Texture2D);
             }
 
-            CombineInstance ci = new CombineInstance();
-            ci.mesh = smr.sharedMesh;
-            ci.transform = smr.transform.localToWorldMatrix;
+            CombineInstance ci = new CombineInstance
+            {
+                mesh = smr.sharedMesh,
+                transform = smr.transform.localToWorldMatrix
+            };
             combineInstances.Add(ci);
 
 

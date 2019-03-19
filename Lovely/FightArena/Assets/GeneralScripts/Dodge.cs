@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Dodge : Ability
 {
-    private static AnimationClip[] dodgeDirections = new AnimationClip[]
+    private static readonly AnimationClip[] dodgeDirections = new AnimationClip[]
     {
         _AnimationPool.GetAnimation("Dodge_N_M"),
         _AnimationPool.GetAnimation("Dodge_F_M"),

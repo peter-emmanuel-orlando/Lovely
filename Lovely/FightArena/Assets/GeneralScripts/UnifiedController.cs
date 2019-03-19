@@ -25,8 +25,8 @@ public abstract class UnifiedController : MonoBehaviour
     public Transform CameraBone { get { return cameraBone; } }
     public NavMeshAgent NavAgent { get { return navAgent; } }
 
-    private float lookHMaxSpeed = 300;//deg per sec
-    private float lookVMaxSpeed = 300;
+    private readonly float lookHMaxSpeed = 300;//deg per sec
+    private readonly float lookVMaxSpeed = 300;
 
     private float RunSpeed { get { return overrideController["DefaultMale|RunForward"].averageSpeed.z; } }
 

@@ -22,3 +22,9 @@ radios play songs from your MyMusic folder, cinemas play videos from your MyMovi
 -some version of social media where you can keep track of the people you actually know, and the specific stats of their personalities, i.e. likes roses, hates dogs, birthday aug 14 etc
 
 -people speak a different language so player doesnt have to sit through repetitive everyday chatter. When player is among friends, or npc's are around friendly npc's, they will just begin to chat by themselves. There wont be subtitles for this chatter. When it comes time for the missions or stuff the player needs to understand, itll have subtitles
+
+-buying properties and businesses should unlock new gameplay, even if just a minigame
+
+-specialty vehicles and uniforms should unlock new gameplay where you are able to impersonate that figure, ie pose as a police man and do police missions, pose as an ice cream man and sell ice cream.
+
+-interactive items shsould be interactive. the gym should let you work out, the fridge should let you get food, the couch should let you sit, the stripper pole should let you strip

@@ -5,11 +5,12 @@ todo:
 	-make PrefabPool hold copies of instantiated prefabs so theres no need to go creating and destroying them all the time
 	-generalize range attacks to thrownprojectiles and beam projectiles
 	-make jumping and climbing not just teleport directly to the apropriate spot
-	-make kunai apply effects when colliding with a hitbox as whel as a physical object
+	-make kunai apply effects when colliding with a hitbox as well as a physical object
 
 ------------------------------------------------------------------------------------------------
-very minor bugfixes
+fixed some naming rule violations
+simplified some object initializations
 
-TODO!!!!! COMPLETELY CHANGE THE WAY NAVMESHSURFACEOTHER GATHERS SOURCES
-
-instead of gathering children or volume or whatever, itll have a list of triggers. the triggers are also the walkable volume of the surface. Navmeshsurfaceother should only gather the triggers instead of the normal gathering method
+added in the modularnavmesh class
+this class bakes a navmesh based on the triggers used as areas. Currently, the "nonwalkable" nav mesh is the built in default navmesharea "jump". this is because of many errors in the verson. These errors are recorded in the "error.txt" document in this folder. The tecnique is proven functional. The next step is baking the navmeshdata directly into the prefab
+add automatically adding navmeshlinks
