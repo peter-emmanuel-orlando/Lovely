@@ -168,6 +168,7 @@ public class PlayerControl : IDecisionMaker, IPerformable
             cam = new GameObject("Camera").AddComponent<Camera>();
         if (cam.GetComponent<AudioListener>() == null)
             SingleAudioListner.AttachAudioListner(cam.gameObject);
+        cam.allowHDR = true;
 
         
 

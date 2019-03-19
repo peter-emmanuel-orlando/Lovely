@@ -147,6 +147,7 @@ public partial class UnifiedController : MonoBehaviour
             cameraBone = new GameObject("cameraBone").transform;
             cameraBone.SetParent(transform);
             cameraBone.localPosition = Vector3.zero;
+            cameraBone.localEulerAngles = Vector3.zero;
         }
 
 

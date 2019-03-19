@@ -68,10 +68,12 @@ public abstract class Projectile : MonoBehaviour, ISpawnable
     protected abstract void ApplyEffectsOnce(Body hitBody);
     protected abstract void ApplyEffectsEveryFrame(Body hitBody);
     protected abstract void OnEnable();
+    //Projectiles are currently cast immidiantly upon enable, this may not be the desired behavior
+    //protected abstract void CastProjectile();
 
     private CollisionTracker collisionTracker;
 
-    private void Awake()
+    protected virtual void Awake()
     {
         collisionTracker = new CollisionTracker(this);
         OnHitEvent += OnHit;

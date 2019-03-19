@@ -18,8 +18,7 @@ public class _AnimationPool : _MasterComponent<_AnimationPool>
     bool setTrueToManuallyUpdate = false;
 
     static Dictionary<string, AnimationClip> animationsDict;
-
-
+    
     protected override void Awake()
     {
         base.Awake();

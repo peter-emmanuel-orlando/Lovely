@@ -10,20 +10,19 @@ using UnityEditor;
 [InitializeOnLoad]
 [ExecuteInEditMode]
 #endif
-[DefaultExecutionOrder(-150)]
 public class _Master : MonoBehaviour
 {
-    public static _Master masterSingleton;
+    public static _Master master;
     public static _Master MasterSingleton
     {
         get
         {
-            if (masterSingleton == null)
+            if (master == null)
             {
                 try { OnLoad(); }
-                catch (Exception) { throw new MasterNotFoundInSceneException("there is no master component!"); }
+                catch (Exception) { throw new MasterNotFoundInSceneException("there is no master component, or you are trying to access it before awake!"); }
             }
-            return masterSingleton;
+            return master;
         }
     }
 
@@ -33,17 +32,17 @@ public class _Master : MonoBehaviour
     [InitializeOnLoadMethod]
     public static void OnLoad()
     {
-        masterSingleton = GameObject.FindObjectOfType<_Master>();
-        if (masterSingleton == null)
+        master = GameObject.FindObjectOfType<_Master>();
+        if (master == null)
         {
-            masterSingleton = new GameObject("Master").AddComponent<_Master>();
-            var gameObject = masterSingleton.gameObject;
+            master = new GameObject("Master").AddComponent<_Master>();
+            var gameObject = master.gameObject;
         }
         foreach (var type in typeof(MasterComponentBase).Assembly.GetTypes().Where(type => type.IsSubclassOf(typeof(MasterComponentBase))))
         {
             if (type.IsAbstract) continue;
-            if(masterSingleton.gameObject.GetComponent(type) == null)
-                masterSingleton.gameObject.AddComponent(type);
+            if(master.gameObject.GetComponent(type) == null)
+                master.gameObject.AddComponent(type);
         }
     }
 
@@ -58,20 +57,14 @@ public class _Master : MonoBehaviour
         else
         {
             this.gameObject.name = "Master";
-            masterSingleton = this;
-            foreach (var type in typeof(MasterComponentBase).Assembly.GetTypes().Where(type => type.IsSubclassOf(typeof(MasterComponentBase))))
-            {
-                if (type.IsAbstract) continue;
-                if (masterSingleton.gameObject.GetComponent(type) == null)
-                    masterSingleton.gameObject.AddComponent(type);
-            }
+            master = this;
         }
     }
 
     private void Start()
     {
         this.gameObject.name = "Master";
-        masterSingleton = this;
+        master = this;
         if (Application.isPlaying)
             DontDestroyOnLoad(this.gameObject);
     }

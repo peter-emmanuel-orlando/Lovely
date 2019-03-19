@@ -2,14 +2,13 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class BloodNovaBeam : Projectile
+public class AzuriteDart : Projectile
 { 
-    private ProjectileStats projectileStats = new ProjectileStats("BloodNovaBeam");
+    private ProjectileStats projectileStats = new ProjectileStats("AzuriteDart");
     protected AnimationClip recoilAnimation;
-    private GradientValue beamSize = new GradientValue(0, 30);
-    private float currentTime = 0;
-    private const float timeForFullLength = 0.5f;
-    private float damage = 30f;
+    private Rigidbody rb;
+    private float damage = 10f;
+    private float lifeTime = 10f;
 
     protected override event ColliderEventHandler OnHitEvent;
 
@@ -20,18 +19,24 @@ public class BloodNovaBeam : Projectile
 
     }
 
+
     protected override void Awake()
     {
         base.Awake();
-        recoilAnimation = _AnimationPool.GetAnimation("KnockBack_Heavy");
+        recoilAnimation = _AnimationPool.GetAnimation("KnockBack_Light");
+        rb = GetComponentInChildren<Rigidbody>();
+        if (rb == null) throw new UnityException("an AzuriteDart needs a rigidbody for colission ");
     }
 
-    private void Update()
+    private void Start()
     {
-        transform.localScale =  Vector3.one + Vector3.forward * beamSize.Lerp(currentTime / timeForFullLength);
-        currentTime += Time.deltaTime;
-        if (currentTime >= timeForFullLength)
-            Destroy(this.gameObject);
+        rb.AddRelativeForce(Vector3.forward * 20, ForceMode.VelocityChange);
+        Destroy(this.gameObject, lifeTime);
+    }
+
+    private void OnCollisionEnter(Collision collision)
+    {
+        Destroy(this);
     }
 
     private void OnTriggerEnter(Collider other)
@@ -62,14 +67,18 @@ public class BloodNovaBeam : Projectile
             else
                 hitBody.ApplyAbilityEffects(null, -Mathf.Abs(damage), recoilAnimation);
         }
+        Destroy(this);
     }
 
 }
 
-public class BloodNovaBeamAttack : ProjectileAttack
+//beamAttack class, animation is beamattack animation, animationStats come from generic T
+//throw dart class, different animation, same implementation
+
+public class AzuriteDartAttack : ProjectileAttack
 {
-    ProjectileStats projectileStats = new ProjectileStats("BloodNovaBeam");
-    public BloodNovaBeamAttack(Body body) : base(body)
+    ProjectileStats projectileStats = new ProjectileStats("AzuriteDart");
+    public AzuriteDartAttack(Body body) : base(body)
     {
 
     }
@@ -86,7 +95,7 @@ public class BloodNovaBeamAttack : ProjectileAttack
 
     protected override float[] NormalizedProjectileSpawnTimes { get { return new float[] {0.8f }; } }
 
-    protected override Vector3 SpawnedProjectileNewLocation { get { return performer.SetHitBoxActiveState(HitBoxType.HandR,false).transform.position; } }
+    protected override Vector3 SpawnedProjectileNewLocation { get { return performer.SetHitBoxActiveState(HitBoxType.HandL,false).transform.position; } }
 
     protected override Quaternion SpawnedProjectileNewRotation { get { return performer.transform.rotation; } }
 
@@ -94,7 +103,7 @@ public class BloodNovaBeamAttack : ProjectileAttack
 
     protected override ScheduledAction[] OtherScheduledActions { get { return new ScheduledAction[] { }; } }
 
-    protected override AnimationClip AbilityAnimation { get { return _AnimationPool.GetAnimation("PowerBlast"); } }
+    protected override AnimationClip AbilityAnimation { get { return _AnimationPool.GetAnimation("ThrowKunai"); } }
 
 
 }

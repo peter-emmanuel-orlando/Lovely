@@ -34,7 +34,10 @@ public class _PrefabPool : _MasterComponent<_PrefabPool>
     {
         if(setTrueToManuallyUpdate)
         {
+#if UNITY_EDITOR
             prefabsGameObjects = GatherAllPrefabs();
+            SetUpDictionary();
+#endif
             setTrueToManuallyUpdate = false;
         }
     }
@@ -57,10 +60,10 @@ public class _PrefabPool : _MasterComponent<_PrefabPool>
 
     public static ISpawnable GetPrefab(string prefabName)
     {
-        if (prefabName == null) SetUpDictionary();
+        if (prefabsDict == null) SetUpDictionary();
         if (prefabsDict.ContainsKey(prefabName)) return prefabsDict[prefabName];
         else
-            throw new KeyNotFoundException("there is no animation by the name of '" + prefabName + "' in the pool");
+            throw new KeyNotFoundException("there is no prefab by the name of '" + prefabName + "' in the pool");
     }
 
     public bool ContainsKey(string key)
@@ -77,8 +80,9 @@ public class _PrefabPool : _MasterComponent<_PrefabPool>
         foreach (var dirtyPath in allFiles)
         {
             string path = "Assets" + dirtyPath.Replace(Application.dataPath, "").Replace('\\', '/');
-            var data = AssetDatabase.LoadAssetAtPath<GameObject>(path).GetComponent<ISpawnable>();
-            if(data != null && data.gameObject != null) result.Add(data.gameObject);
+            var go = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+            var data = go.GetComponent<ISpawnable>();
+            if (data != null && data.gameObject != null) result.Add(data.gameObject);
         }
         return result;
     }
