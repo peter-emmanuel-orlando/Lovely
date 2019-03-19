@@ -73,8 +73,8 @@ InputManager:
     m_Name: L_XAxis_5
     descriptiveName: keyboardHorizontal
     descriptiveNegativeName: keyboardHorizontal
-    negativeButton: left
-    positiveButton: right
+    negativeButton: 
+    positiveButton: 
     altNegativeButton: a
     altPositiveButton: d
     gravity: 3
@@ -153,8 +153,8 @@ InputManager:
     m_Name: L_YAxis_5
     descriptiveName: KeyboardVertical
     descriptiveNegativeName: KeyboardVertical
-    negativeButton: down
-    positiveButton: up
+    negativeButton: 
+    positiveButton: 
     altNegativeButton: s
     altPositiveButton: w
     gravity: 3

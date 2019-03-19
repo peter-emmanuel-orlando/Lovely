@@ -3,6 +3,44 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+
+[RequireComponent(typeof(Body))]
+public class TESTSCRIPT_PlayerUnifiedController : MonoBehaviour
+{
+    PlayerControlDecisionMaker decisionMaker;
+    Mind mind;
+    private void Start()
+    {
+        var mind = GetComponent<Body>().Mind;
+        decisionMaker = new PlayerControlDecisionMaker(mind);
+        mind.OverrideDecisionMaker(decisionMaker);
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+/*
 public class TESTSCRIPT_PlayerUnifiedController : Being
 {
     Ability punch;
@@ -56,3 +94,4 @@ public class TESTSCRIPT_PlayerUnifiedController : Being
         }
     }    
 }
+*/

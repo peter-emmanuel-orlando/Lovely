@@ -5,26 +5,15 @@ using UnityEngine;
 
 public class TESTSCRIPT_Punch : Ability
 {
-    //possibleMessages sent through the animationEvent system:
-    //LockInAnimation:True;
-    //LockInAnimation:False;
-    //CanMoveInAnimation:True;
-    //CanMoveInAnimation:False;
-    //WindUp:Start
-    //WindUp:End
-    //ActiveFrames:Start
-    //ActiveFrames:End
-    //RecoveryFrames:Start
-    //RecoveryFrames:End
 
-    static AnimationEvent activeFramesStart = AnimationEventMessages.GetActiveFramesStartEvent(0.2f);
-    static AnimationEvent activeFramesEnd = AnimationEventMessages.GetActiveFramesEndEvent(0.9f);
+    static AnimationEvent activeFramesStart = AnimationEventMessages.GetActiveFramesStartEvent(0);
+    static AnimationEvent activeFramesEnd = AnimationEventMessages.GetActiveFramesEndEvent(0);
 
     static AnimationEvent lockInKnockback = AnimationEventMessages.GetAnimationLockEvent(0);
-    static AnimationEvent unlockInKnockback = AnimationEventMessages.GetAnimationUnlockEvent(1);
+    static AnimationEvent unlockInKnockback = AnimationEventMessages.GetAnimationUnlockEvent(0);
 
-    static AnimationClip punchAnimation = _AnimationPool.GetAnimation("Punch_Mid_R").AddEventsToAnimation(activeFramesStart, activeFramesEnd);
-    static AnimationClip knockBackAnimation = _AnimationPool.GetAnimation("KnockBack_Heavy").AddEventsToAnimation(lockInKnockback, unlockInKnockback);
+    static AnimationClip punchAnimation = _AnimationPool.GetAnimation("Punch_Mid_R").AddEventsAtNormalizedTime(new AnimationEvent[] { activeFramesStart, activeFramesEnd }, new float[] {0.2f, 0.9f });
+    static AnimationClip knockBackAnimation = _AnimationPool.GetAnimation("KnockBack_Heavy").AddEventsAtNormalizedTime(new AnimationEvent[] { lockInKnockback, unlockInKnockback }, new float[] { 0f, 0.9f });
 
     bool isActive = false;
     UnifiedController enemyController;
@@ -39,7 +28,7 @@ public class TESTSCRIPT_Punch : Ability
 
     public override void Perform()
     {
-        inteControl.PlayAnimation(punchAnimation);
+        uniControl.PlayAnimation(punchAnimation);
     }
 
     protected override void ReceiveAnimationEvents(string message)
@@ -47,8 +36,8 @@ public class TESTSCRIPT_Punch : Ability
         Debug.Log(this + "received an animationEvent message: " + message);
         if (message == AnimationEventMessages.activeFramesStart)
         {
-            inteControl.SetHitBoxActiveState(UnifiedController.HitBoxType.HandR, true);
-            var handR = inteControl.transform.FindDeepChild("hand.R");
+            uniControl.SetHitBoxActiveState(UnifiedController.HitBoxType.HandR, true);
+            var handR = uniControl.transform.FindDeepChild("hand.R");
             var tmp = GameObject.CreatePrimitive(PrimitiveType.Sphere);
             tmp.transform.SetParent(handR);
             tmp.transform.localPosition = Vector3.zero;
@@ -57,8 +46,8 @@ public class TESTSCRIPT_Punch : Ability
         }
         if (message == AnimationEventMessages.activeFramesEnd)
         {
-            inteControl.SetHitBoxActiveState(UnifiedController.HitBoxType.HandR, false);
-            var handR = inteControl.transform.FindDeepChild("hand.R");
+            uniControl.SetHitBoxActiveState(UnifiedController.HitBoxType.HandR, false);
+            var handR = uniControl.transform.FindDeepChild("hand.R");
             isActive = false;
         }
     }
@@ -67,12 +56,12 @@ public class TESTSCRIPT_Punch : Ability
     {
         if(collider.gameObject.layer == LayerMask.NameToLayer("HurtBox") && isActive)
         {
-            Debug.Log("I [" + inteControl + "] punched: " + collider.attachedRigidbody.gameObject);
-            var cont = collider.GetComponentInParent<Being>();
+            Debug.Log("I [" + uniControl + "] punched: " + collider.attachedRigidbody.gameObject);
+            var cont = collider.GetComponentInParent<UnifiedController>();
             if (cont != null)
             {
-                inteControl.transform.LookAt(cont.transform);
-                cont.transform.LookAt(inteControl.transform);
+                uniControl.transform.LookAt(cont.transform);
+                cont.transform.LookAt(uniControl.transform);
                 cont.PlayAnimation(knockBackAnimation);
             }
         }

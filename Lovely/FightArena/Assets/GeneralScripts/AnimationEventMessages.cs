@@ -9,7 +9,7 @@ public static class AnimationEventMessages
     public const string activeFramesStart = "ActiveFrames:Start";
     public const string activeFramesEnd = "ActiveFrames:End";
     public const string animationLock = "AnimationLock:Lock";
-    public const string animationUnlock = "AnimationLock:Unock";
+    public const string animationUnlock = "AnimationLock:Unlock";
 
     public static AnimationEvent GetEvent(float time, string stringParameter)
     {
@@ -44,5 +44,21 @@ public static class AnimationEventMessages
             clip.AddEvent(evnt);
         }
         return clip;
+    }
+
+    public static AnimationClip AddEventsAtNormalizedTime(this AnimationClip clip, AnimationEvent[] animEvent, float[] normalizedTimes)
+    {
+        if (animEvent.Length != normalizedTimes.Length) throw new System.Exception("both arrays must have the same length!");
+        for (int i = 0; i < animEvent.Length; i++)
+        {
+            animEvent[i].time = GetTimeFromNormalized(clip, normalizedTimes[i]);
+            clip.AddEvent(animEvent[i]);
+        }
+        return clip;
+    }
+
+    public static float GetTimeFromNormalized(this AnimationClip clip, float normalizedTime)
+    {
+        return normalizedTime * clip.length;
     }
 }

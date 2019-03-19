@@ -4,14 +4,14 @@ using UnityEngine;
 
 public abstract class Ability
 {
-    protected readonly UnifiedController inteControl;
+    protected readonly UnifiedController uniControl;
 
-    public Ability(UpdateSubscriber SubscribeForUpdate, AnimationEventSubscriber SubscribeForAnimationEvents, TriggerEventSubscriber SubscribeForTriggerEvents, UnifiedController inteControl)
+    public Ability(UpdateSubscriber SubscribeForUpdate, AnimationEventSubscriber SubscribeForAnimationEvents, TriggerEventSubscriber SubscribeForTriggerEvents, UnifiedController uniControl)
     {
         SubscribeForUpdate(Update);
         SubscribeForAnimationEvents(ReceiveAnimationEvents);
         SubscribeForTriggerEvents(ReceiveTriggerEvents);
-        this.inteControl = inteControl;
+        this.uniControl = uniControl;
     }
 
 

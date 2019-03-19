@@ -21,6 +21,7 @@ public class UnifiedController : MonoBehaviour
     Animator anim;
     Rigidbody rb;
 
+    Transform cameraBone;
 
     float lookHMaxSpeed = 300;//deg per sec
     float lookVMaxSpeed = 300;
@@ -37,7 +38,7 @@ public class UnifiedController : MonoBehaviour
     bool stayOnNavMesh = false;
     bool playMirrored = false;
     AnimationClip playAnimationNext;
-    float holdAnimationTimeLength = 0.2f;
+    float holdAnimationTimeLength = 0.5f;
     float holdAnimationUntill = 0f;
     bool isLocked = false;
 
@@ -53,6 +54,7 @@ public class UnifiedController : MonoBehaviour
     //string currentAnimatorState { get { anim.GetAnimatorTransitionInfo(0).IsName("flight -> shot") } }
 
 
+    bool IsInitialized = false;
 
     protected virtual void Awake()
     {
@@ -61,7 +63,16 @@ public class UnifiedController : MonoBehaviour
 
     protected void Initialize()
     {
+        IsInitialized = true;
         holdAnimationUntill = Time.time;
+
+        cameraBone = transform.FindDeepChild("cameraBone");
+        if(cameraBone == null)
+        {
+            cameraBone = new GameObject("cameraBone").transform;
+            cameraBone.SetParent(transform);
+            cameraBone.localPosition = Vector3.zero;
+        }
 
         foreach (var collider in transform.GetComponentsInChildren<Collider>())
         {
@@ -119,6 +130,7 @@ public class UnifiedController : MonoBehaviour
 
     protected virtual void Update()
     {
+        if (!IsInitialized) return;
         SyncAnimation();
         SyncNavigation();
         SyncPhysics();
@@ -136,10 +148,10 @@ public class UnifiedController : MonoBehaviour
             //looking up/down or left/right is the domain of the animation system
             transform.localRotation = transform.localRotation * Quaternion.Euler(0, deltaDegreesH, 0);
             //only set lookV if it is between +- maxAngle;
-            Quaternion temp = Camera.main.transform.localRotation * Quaternion.Euler(deltaDegreesV, 0, 0);
+            Quaternion temp = cameraBone.localRotation * Quaternion.Euler(deltaDegreesV, 0, 0);
             if (Quaternion.Angle(Quaternion.identity, temp) < 90f)
-                Camera.main.transform.localRotation = temp;
-            var lookVerticalDegrees = -Vector3.SignedAngle(transform.forward, Camera.main.transform.forward, transform.right);
+                cameraBone.localRotation = temp;
+            var lookVerticalDegrees = -Vector3.SignedAngle(transform.forward, cameraBone.forward, transform.right);
             anim.SetFloat("LookVertical", lookVerticalDegrees / 90f);
         }
         else if (movementSource == ControlMode.Navigation)
@@ -151,10 +163,9 @@ public class UnifiedController : MonoBehaviour
         else if (movementSource == ControlMode.AnimatedRoot)
         {
             
-            if(playAnimationNext != null && Time.time >= holdAnimationUntill)
+            if(playAnimationNext != null)
             {
                 // at animation end, needs to put in physics if not on nav mesh, or put on nav mesh
-                holdAnimationUntill = Time.time + holdAnimationTimeLength;
                 var placeHolder = "PlaceHolder_ActionA";
                 var stateName = "ActionA";
                 if (anim.GetCurrentAnimatorStateInfo(0).IsName("ActionA"))
@@ -298,7 +309,8 @@ public class UnifiedController : MonoBehaviour
     //the moement is the animated movement bound to the navmesh
     public void Move(float horizontalSpeedNormalized, float forwardSpeedNormalized)
     {
-        if (isLocked) return;
+
+        if (isLocked || !IsInitialized) return;
         movementSource = ControlMode.AnimNav;
 
         //clear navigation
@@ -312,8 +324,8 @@ public class UnifiedController : MonoBehaviour
 
     public void MoveToDestination(Vector3 destination)
     {
-        if (isLocked)
-            return;
+        if (isLocked || !IsInitialized) return;
+
         movementSource = ControlMode.Navigation;
         navDestination = destination;
     }
@@ -321,8 +333,10 @@ public class UnifiedController : MonoBehaviour
     //unless stayOnNavMesh == true, use physics colliders while animating
     public void PlayAnimation(AnimationClip clip, bool remainOnNavMesh = true, bool playMirrored = false)
     {
-        if (isLocked) return;
+        if (isLocked || !IsInitialized || Time.time <= holdAnimationUntill) return;
 
+        holdAnimationUntill = Time.time + holdAnimationTimeLength;
+        //Debug.Log("play " + clip);
         this.playMirrored = playMirrored;
 
         //clear navigation
@@ -340,6 +354,7 @@ public class UnifiedController : MonoBehaviour
 
     public void SetHurtBoxActiveState(bool isActive)
     {
+        if (!IsInitialized) return;
         foreach (var hurtBox in hurtBoxes)
         {
             hurtBox.enabled = isActive;
@@ -348,7 +363,8 @@ public class UnifiedController : MonoBehaviour
 
     public void SetHitBoxActiveState(HitBoxType hitBoxType, bool isActive)
     {
-        if(hitBoxes.ContainsKey(hitBoxType))
+        if (!IsInitialized) return;
+        if (hitBoxes.ContainsKey(hitBoxType))
             hitBoxes[hitBoxType].enabled = isActive;
     }
 }
