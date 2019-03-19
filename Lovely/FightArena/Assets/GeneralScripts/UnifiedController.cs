@@ -167,6 +167,8 @@ public abstract class UnifiedController : MonoBehaviour
         //navAgent.updateRotation = false;
         navAgent.speed = float.MaxValue;
         navDestination = transform.position;
+        //TEMPORARY WORKAROUNT todo
+        navAgent.areaMask &= ~(1 << NavMesh.GetAreaFromName("Jump"));
 
         anim = transform.GetComponent<Animator>();
         if (anim == null) anim = gameObject.AddComponent<Animator>();
@@ -187,7 +189,7 @@ public abstract class UnifiedController : MonoBehaviour
         //rb.hideFlags = HideFlags.HideInInspector;
         rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
         rb.isKinematic = true;
-        rb.useGravity = false;
+        rb.useGravity = true;
         rb.mass = 77.7f;
         rb.angularDrag = 50f;
         rb.drag = 1f;
@@ -454,6 +456,7 @@ public abstract class UnifiedController : MonoBehaviour
             }
         }
 
+        //additionalPhysics = null;//consume physics regardless of its use above
         deltaPosForPhys = Vector3.zero;
         deltaRotForPhys = Quaternion.identity;
 
@@ -763,12 +766,34 @@ public abstract class UnifiedController : MonoBehaviour
     }
     public void AddForce(Vector3 force, ForceMode forceMode, float requirePhysicsTimeLength)
     {
-        additionalPhysics += delegate ()
+        var poise = 8f;
+        if(force.sqrMagnitude < poise.Pow(2) && navAgent.isOnNavMesh)
         {
-            this.requirePhysicsTimeLength = Mathf.Max(this.requirePhysicsTimeLength,requirePhysicsTimeLength);
-            //this.requirePhysicsTimeLength = requirePhysicsTimeLength;
-            rb.AddForce(force, forceMode);
-        };
+            navAgent.Move(force * Time.deltaTime);
+        }
+        else
+        {
+            //need to set mode to physics if using this, else multiple calls will stack
+            //clear manual movement
+            animMovement = Vector3.zero;
+            //clear navigation
+            if(navAgent.isOnNavMesh)
+                navAgent.isStopped = true;
+            navDestination = transform.position;
+            //clear playAnimation
+            playAnimationNext = null;
+            //clear playAnimation(recoil)
+            recoil = RecoilCode.None;
+
+            isLocked = true;
+            movementSource = ControlMode.Physics;
+            additionalPhysics += delegate ()
+            {
+                this.requirePhysicsTimeLength = Mathf.Max(this.requirePhysicsTimeLength, requirePhysicsTimeLength, Time.deltaTime);
+                //this.requirePhysicsTimeLength = requirePhysicsTimeLength;
+                rb.AddForce(force, forceMode);
+            };
+        }
     }
     /*
     public void AddForce(Vector3 force, ForceMode forceMode, bool requirePhysicsUntilRest)

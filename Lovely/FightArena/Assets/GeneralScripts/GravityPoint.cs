@@ -13,6 +13,7 @@ public class GravityPoint : MonoBehaviour
     float minDistance = 50f;
     float maxDistance = 100f;
 
+    [SerializeField]
     float gravityForce = 10f;
     SphereCollider trigger;
 

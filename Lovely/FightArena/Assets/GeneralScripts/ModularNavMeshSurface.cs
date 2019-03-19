@@ -20,6 +20,18 @@ namespace ModularNavMesh
 
         private static readonly Dictionary<NavMeshAgent, AreaOverlap> trackedAgents = new Dictionary<NavMeshAgent, AreaOverlap>();
 
+        private IEnumerator Start()
+        {
+            //wait 3 frames
+            yield return null;
+            yield return null;
+            yield return null;
+            var agents = GameObject.FindObjectsOfType<NavMeshAgent>();
+            foreach (var agent in agents)
+            {
+                agent.areaMask &= ~(1<<NavMesh.GetAreaFromName("Jump"));
+            }
+        }
 
         protected override void OnEnable()
         {

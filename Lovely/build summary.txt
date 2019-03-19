@@ -5,9 +5,13 @@ todo:
 	-make PrefabPool hold copies of instantiated prefabs so theres no need to go creating and destroying them all the time
 	-generalize range attacks to thrownprojectiles and beam projectiles
 	-make jumping and climbing not just teleport directly to the apropriate spot
+	-add directional poise to unifiedcontroller
 	-make kunai apply effects when colliding with a hitbox as well as a physical object
 
 ------------------------------------------------------------------------------------------------
-DID NOT ADD IN CUBE DEBUG SHAPE
+fixed error causing nullrefexception when closing unity in player control
+fixed stopcannotbecalled on nav agent error for navagents experiencing physics off of the navmesh
 
-added in the concept of arbitrary gravity, which pulls objects towards them. It comes in two varieties, the point and the plane. The point pulls directly towards itself, whereas the plane pulls in a direction.
+fixed error in UnifiedController where applying physics from multiple sources would override the previous requirephysicstimelength
+
+added in the concept of poise to Unified controller. Forces less than the poise ammount slide character along the navmesh, whereas forces greater than poise put the creature under control of the physics engine 

@@ -157,26 +157,29 @@ public class PlayerControl : IDecisionMaker, IPerformable
 
     public void ControlBody(Body body)
     {
-        if (performerBody != null && cam != null)
-            GameObject.Destroy(cam);
-        performerBody = body;
-        Performer.OverrideDecisionMaker(this);
-        //punch = new PunchCombo(Performer.Body.SubscribeForUpdates, Performer.Body.SubscribeForAnimationEvents, Performer.Body.SubscribeForTriggerEvents, Performer.Body);
-        head = Performer.Body.transform.FindDeepChild("head");
-        cam = body.GetComponentInChildren<Camera>();
-        if (cam == null)
-            cam = GameObject.Instantiate<GameObject>( _PrefabPool.GetPrefab("PlayerCamera").gameObject).GetComponent<Camera>();
-        if (cam.GetComponent<AudioListener>() == null)
-            SingleAudioListner.AttachAudioListner(cam.gameObject);
-        cam.allowHDR = true;
-        cam.fieldOfView = 60;
-        cam.transform.SetParent(Performer.Body.transform.FindDeepChild("cameraBone"));
-        cam.transform.localPosition = Vector3.zero;
-        cam.transform.localRotation = Quaternion.identity;
-        cam.nearClipPlane = 0.30f;
-        cam.allowMSAA = false;
+        if(body)
+        {
+            if (performerBody != null && cam != null)
+                GameObject.Destroy(cam);
+            performerBody = body;
+            Performer.OverrideDecisionMaker(this);
+            //punch = new PunchCombo(Performer.Body.SubscribeForUpdates, Performer.Body.SubscribeForAnimationEvents, Performer.Body.SubscribeForTriggerEvents, Performer.Body);
+            head = Performer.Body.transform.FindDeepChild("head");
+            cam = body.GetComponentInChildren<Camera>();
+            if (cam == null)
+                cam = GameObject.Instantiate<GameObject>(_PrefabPool.GetPrefab("PlayerCamera").gameObject).GetComponent<Camera>();
+            if (cam.GetComponent<AudioListener>() == null)
+                SingleAudioListner.AttachAudioListner(cam.gameObject);
+            cam.allowHDR = true;
+            cam.fieldOfView = 60;
+            cam.transform.SetParent(Performer.Body.transform.FindDeepChild("cameraBone"));
+            cam.transform.localPosition = Vector3.zero;
+            cam.transform.localRotation = Quaternion.identity;
+            cam.nearClipPlane = 0.30f;
+            cam.allowMSAA = false;
 
-        SetUpSplitScreen();
+            SetUpSplitScreen();
+        }
     }
 
     public void GiveUpBody()
