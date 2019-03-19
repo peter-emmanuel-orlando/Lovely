@@ -27,8 +27,9 @@ public class AzuriteDart : Projectile
 
     }
 
-    private void Start()
+    protected override void Start()
     {
+        base.Start();
         rb.AddRelativeForce(Vector3.forward * 20, ForceMode.VelocityChange);
         Destroy(this.gameObject, lifeTime);
     }

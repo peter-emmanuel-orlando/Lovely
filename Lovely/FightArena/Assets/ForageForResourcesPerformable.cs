@@ -21,13 +21,13 @@ public class ForageForResourcesPerformable : Performable
     ItemType resourcesToSearchFor;
     float SearchRadius { get { return Performer.SightRadius; } }
 
-    public ForageForResourcesPerformable(Mind performer, ItemType resourcesToSearchFor)
+    public ForageForResourcesPerformable(Mind performer, ItemType resourcesToSearchFor) : base(performer)
     {
         base._performer = performer;
         this.resourcesToSearchFor = resourcesToSearchFor;
     }
 
-    public ForageForResourcesPerformable(Mind performer)
+    public ForageForResourcesPerformable(Mind performer) : base(performer)
     {
         base._performer = performer;
         this.resourcesToSearchFor = (ItemType)0xFF;

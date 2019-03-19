@@ -4,18 +4,18 @@ using UnityEngine;
 
 public abstract class HumanBody : Body
 {
-    private readonly CharacterAbilities characterAbilities = new CharacterAbilities();
-    public override CharacterAbilities CharacterAbilities { get { return characterAbilities; } }
-
-
     protected override void Awake()
     {
+        BloodMax = 100;
+        CaloriesMax = 4;
+        StaminaMax = 100;
         base.Awake();
-        characterAbilities[CharacterAbilitySlot.BasicPunchCombo] = new Punch(this);
-        characterAbilities[CharacterAbilitySlot.DashPunch] = new DashPunch(this);
-        characterAbilities[CharacterAbilitySlot.ThrowItem] = new AzuriteDartAttack(this);
-        characterAbilities[CharacterAbilitySlot.RangedPower] = new BloodNovaBeamAttack(this);
-        characterAbilities[CharacterAbilitySlot.Dodge] = new Dodge(this);
-        characterAbilities[CharacterAbilitySlot.Block] = new Block(this);
+        CharacterAbilities[CharacterAbilitySlot.BasicPunchCombo] = new Punch(this);
+        CharacterAbilities[CharacterAbilitySlot.DashPunch] = new DashPunch(this);
+        CharacterAbilities[CharacterAbilitySlot.ThrowItem] = new AzuriteDartAttack(this);
+        CharacterAbilities[CharacterAbilitySlot.RangedPower] = new BloodNovaBeamAttack(this);
+        CharacterAbilities[CharacterAbilitySlot.Dodge] = new Dodge(this);
+        CharacterAbilities[CharacterAbilitySlot.Block] = new Block(this);
+
     }
 }

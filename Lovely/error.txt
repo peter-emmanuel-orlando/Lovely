@@ -1,3 +1,0 @@
-when a navmeshmodifier is exactly at ground height, and overrideArea is set to not walkable, nav meshes that are baked will treat the edges an non traversable as expected but the center will not have the area overridden
-
-creating a navmeshsource modifierbox only works with built in layer walkable and jump, not "Not Walkable" nor custom layers

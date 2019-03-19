@@ -36,5 +36,11 @@ public enum CharacterAbilitySlot
     Dodge,
     Meditate,
     SpecialAttack,
-    UltimateAttack
+    UltimateAttack,
+
+    //everyday abilities
+    //LayDown
+    //Sit,
+    //Eat,
+    //Harvest
 }

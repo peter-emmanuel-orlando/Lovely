@@ -10,8 +10,6 @@ public class HumanFemaleBody : HumanBody
     public override Mind Mind { get { return femaleMind; } }
     public override string PrefabName { get { return "HumanFemale"; } }
     public override Gender Gender { get { return Gender.Female; } }
-    public override float MaxHealth { get { return 100f; } }
-    public override float MaxStamina { get { return 100f; } }    
 
     protected override void Awake()
     {

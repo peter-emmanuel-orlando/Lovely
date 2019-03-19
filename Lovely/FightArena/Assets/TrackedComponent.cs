@@ -25,11 +25,14 @@ public static class TrackedComponent<T> where T : MonoBehaviour, ISpawnable
         {
             if (Time.frameCount > lastUpdateFrameCount)
             {
-                for (int i = 0; i < locUpdatesPerFrame; i++)
-                {
-                    //untrack
-                    //track
+                var a = objToPosList.Keys.ToArray();
+                foreach (var item in a)
+                {                        
+                    Untrack(item);
+                    if (item != null)
+                        Track(item);
                 }
+                lastUpdateFrameCount = Time.frameCount;
             }
             yield return null;
         }
@@ -92,7 +95,6 @@ public static class TrackedComponent<T> where T : MonoBehaviour, ISpawnable
 
         foreach (var roundedPos in objToPosList[m])
         {
-            if (roundedPos == null) continue;
             if (posToObjList.ContainsKey(roundedPos))
             {
                 if (posToObjList[roundedPos].Contains(m))
@@ -114,15 +116,18 @@ public static class TrackedComponent<T> where T : MonoBehaviour, ISpawnable
     //sorted by distance
     public static T[] GetOverlapping(Vector3 sourcePos, float radius)
     {
-        throw new NotImplementedException();
+        //throw new NotImplementedException();
         //todo : finish this
+        var bounds = new Bounds(sourcePos, Vector3.one * radius);
+        return GetOverlapping(bounds);
+
         var roundedPos = GetRoundedPos(sourcePos);
         List<T> result = new List<T>();
         if (posToObjList.ContainsKey(roundedPos))
         {
             foreach (var item in posToObjList[roundedPos])
             {
-                if (item.Bounds.Contains(sourcePos))
+                if (item.Bounds.Contains(sourcePos) )
                     result.Add(item);
             }
         }

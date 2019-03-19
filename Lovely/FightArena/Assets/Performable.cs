@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -30,7 +31,18 @@ public abstract class Performable : IPerformable
 
 	//body looks at this when performable is complete to determine whether to call onSuccess or Onfaliure
 	protected bool _success = true;
-	public bool Success{get{return _success;}}
+
+    protected Performable(Mind performer)
+    {
+        if (performer == null) throw new ArgumentNullException();
+        _performer = performer;
+    }
+
+    protected Performable()
+    {
+    }
+
+    public bool Success{get{return _success;}}
 
 	public abstract IEnumerator Perform ();
 

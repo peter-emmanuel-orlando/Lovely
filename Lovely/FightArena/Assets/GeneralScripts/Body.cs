@@ -19,35 +19,53 @@ using UnityEngine;
 
 public abstract class Body : UnifiedController, ISpawnable
 {
+    //seperate into bodyBase and body
+
     public GameObject GameObject { get { return (this == null) ? null : gameObject; } }
     public Transform Transform { get { return (this == null) ? null : transform; } }
-    public Bounds Bounds { get { return bodyMesh.bounds; } }
+    public Bounds Bounds { get { if (this == null) return new Bounds(); else if (bodyMesh == null) return new Bounds(transform.position, Vector3.zero); else return bodyMesh.bounds; } }
 
     [ShowOnly]
     [SerializeField]
-    private float health;
+    private float blood = float.MaxValue;//reaching 0 blood and being passes out
     [ShowOnly]
     [SerializeField]
-    private float stamina;
+    private float stamina = float.MaxValue;//max is further limited by a penalty value, based on other stats
+    [ShowOnly]
+    [SerializeField]
+    private float calories = float.MaxValue;//num days calories will last. ie 1 calorie is enough for 1 day.
+    [ShowOnly]
+    [SerializeField]
+    private float bloodMax = float.MaxValue;//reaching 0 blood and being passes out
+    [ShowOnly]
+    [SerializeField]
+    private float staminaMax = float.MaxValue;//max is further limited by a penalty value, based on other stats
+    [ShowOnly]
+    [SerializeField]
+    private float caloriesMax = float.MaxValue;//num days calories will last. ie 1 calorie is enough for 1 day.
     [ShowOnly]
     [SerializeField]
     private int empowermentLevel = 0;
-
-    public const int maxEmpowermentLevel = 3;//in sec
-    public const float empowerTime = 7;//in sec
-    private float depowerAfter = 0;//time to reset empowerment
-    public event EmpowerChangeEventHandler EmpowermentChangeEvent;
-    private PowerUpEffect powerUpEffects;
+    [ShowOnly]
+    [SerializeField]
     private ItemPack backpack = new ItemPack();
-
-    public int EmpowermentLevel { get { return empowermentLevel; } }
+    
     public abstract Mind Mind { get; }
-    public abstract float MaxHealth { get; }
-    public abstract float MaxStamina { get; }
+
+
+    public float BloodMax { get { return bloodMax; } protected set { bloodMax = value; } }
+    public float StaminaMax { get { return staminaMax; } protected set { staminaMax = value; } }
+    public float CaloriesMax { get { return caloriesMax; } protected set { caloriesMax = value; } }
+    //public float caloriesMax { get { return _caloriesMax; } protected set { _caloriesMax = value; } }
+    //public float bloodMax { get { return _bloodMax; } protected set { _bloodMax = value; } }
     public abstract Gender Gender { get; }
     public abstract string PrefabName { get; }
-    public abstract CharacterAbilities CharacterAbilities { get; }
+    private readonly CharacterAbilities characterAbilities = new CharacterAbilities();
+    public CharacterAbilities CharacterAbilities { get { return characterAbilities; } }
     public ItemPack Backpack { get { return backpack; } protected set { backpack = value; } }
+    public float Calories { get { return calories; } protected set { calories = value; } }
+    public float Blood { get { return blood; } protected set { blood = value; } }
+    public float Stamina { get { return stamina; } protected set { stamina = value; } }
 
 
     SkinnedMeshRenderer bodyMesh;
@@ -55,16 +73,18 @@ public abstract class Body : UnifiedController, ISpawnable
     public event CharDeathEventHandler CharDeathEvent;
 
 
-
     //\/////////////////////////////////////////////////////////////////////////////////////////////
     //events and override events
     protected override void Awake()
     {
         base.Awake();
+        TrackedComponent<Body>.Track(this);
+
         InitializeDamageBoxes();
 
-        health = MaxHealth;
-        stamina = MaxStamina;
+        blood = BloodMax;
+        stamina = StaminaMax;
+        calories = CaloriesMax;
 
         if (Gender == Gender.Male)
             gameObject.name = Names.maleNames.Random();
@@ -76,38 +96,20 @@ public abstract class Body : UnifiedController, ISpawnable
     protected override void Update()
     {
         base.Update();
+
         if (bodyMesh == null)
             bodyMesh = GetComponentInChildren<SkinnedMeshRenderer>();
-
         if (bodyMesh != null && bodyMesh.material.HasProperty("_Color"))
         {
             var baseColor = bodyMesh.sharedMaterial.color;
-            var modifier = Color.Lerp(Color.magenta, Color.green, health / 100f);
+            var modifier = Color.Lerp(Color.magenta, Color.green, blood / 100f);
             var newColor = Color.Lerp(modifier, baseColor, 0.5f);
-            bodyMesh.material.color = (health <= 0f) ? Color.red : newColor;
+            bodyMesh.material.color = (blood <= 0f) ? Color.red : newColor;
         }
-        anim.SetFloat("BreathingLabor", 1f - (stamina / 100));
-
-        if (empowermentLevel != 0 && Time.time > depowerAfter)
-        {
-            ConsumeEmpowerment();
-        }
+        UpdateBodyStats();
+        UpdateEmpowerment();
     }
-
-    protected virtual void OnEmpowermentChange(Body sender, EmpowerChangeEventArgs e)
-    {
-        if (e.newPowerLevel != e.oldPowerLevel)
-        {
-            if (EmpowermentChangeEvent != null)
-                EmpowermentChangeEvent(this, e);
-
-            //overriding classes should modify e
-            empowermentLevel = e.newPowerLevel;
-            //e.finalized = true
-            UpdateEmpowerVisualEffect(this, e);
-        }
-    }
-
+    
     protected virtual void OnCharDeath(Body sender, CharDeathEventArgs e)
     {
         if (CharDeathEvent != null)
@@ -118,7 +120,22 @@ public abstract class Body : UnifiedController, ISpawnable
     //\/////////////////////////////////////////////////////////////////////////////////////////////
     //\/////////////////////////////////////////////////////////////////////////////////////////////
 
- 
+    #region [[[ empowerment and events ]]]
+
+    public int EmpowermentLevel { get { return empowermentLevel; } }
+    public const int maxEmpowermentLevel = 3;//in sec
+    public const float empowerTime = 7;//in sec
+    private float depowerAfter = 0;//time to reset empowerment after
+    public event EmpowerChangeEventHandler EmpowermentChangeEvent;
+    private PowerUpEffect powerUpEffects;
+
+    private void UpdateEmpowerment()
+    {
+        if (empowermentLevel != 0 && Time.time > depowerAfter)
+        {
+            ConsumeEmpowerment();
+        }
+    }
     public void Empower()
     {
         var newEmpowermentLevel = (empowermentLevel + 1) % (maxEmpowermentLevel + 1);
@@ -133,7 +150,21 @@ public abstract class Body : UnifiedController, ISpawnable
             OnEmpowermentChange(this, new EmpowerChangeEventArgs(empowermentLevel, 0));
     }
 
-    protected virtual void UpdateEmpowerVisualEffect(Body sender, EmpowerChangeEventArgs e)
+    protected virtual void OnEmpowermentChange(Body sender, EmpowerChangeEventArgs e)
+    {
+        if (e.newPowerLevel != e.oldPowerLevel)
+        {
+            if (EmpowermentChangeEvent != null)
+                EmpowermentChangeEvent(this, e);
+
+            //overriding classes should modify e
+            empowermentLevel = e.newPowerLevel;
+            //e.finalized = true
+            UpdateEmpowerVisualEffect(e);
+        }
+    }
+
+    protected virtual void UpdateEmpowerVisualEffect(EmpowerChangeEventArgs e)
     {
         if (powerUpEffects == null)
         {
@@ -143,17 +174,45 @@ public abstract class Body : UnifiedController, ISpawnable
         }
         powerUpEffects.SetPowerLevel(e.newPowerLevel);
     }
-    
+
+    #endregion
+
     //can be attacks or augments, good or bad
     public void ApplyAbilityEffects(Mind damager, float deltaHealth, AnimationClip effectAnimation)
     {
-        health += deltaHealth;
+        blood += deltaHealth;
         PlayInterruptAnimation(effectAnimation);
-        if(health <= 0)
+        if(blood <= 0)
             OnCharDeath(this, new CharDeathEventArgs());
     }
 
+    public bool GetMaintinenceAssignment(Body being, ref IPerformable assignment)
+    {
+        var assignedPerformable = true;
+        assignment = new EmptyPerformable();
+        return assignedPerformable;
+    }
 
+    public bool GetRestAssignment(Body being, ref IPerformable assignment)
+    {
+        var assignedPerformable = true;
+        assignment = new SleepPerformable(this.Mind, () => { return true; });
+        return assignedPerformable;
+    }
+
+    private void UpdateBodyStats()
+    {
+        calories -= GameTime.DeltaTimeGameDays;
+        blood += GameTime.DeltaTimeGameDays;
+        if (Mind.CurrentPerformable != null)
+        {
+            calories += Mind.CurrentPerformable.DeltaCalories * GameTime.DeltaTimeGameDays;//num days calories will last.
+            blood += Mind.CurrentPerformable.DeltaBlood * GameTime.DeltaTimeGameDays;//reaching 0 blood and being passes out
+        }
+        calories = Mathf.Clamp(calories, 0, CaloriesMax);
+        blood = Mathf.Clamp(blood, 0, BloodMax);
+        anim.SetFloat("BreathingLabor", 1f - (stamina / 100));
+    }
 
     private readonly List<CapsuleCollider> hurtBoxes = new List<CapsuleCollider>();
     private readonly Dictionary<HitBoxType, CapsuleCollider> hitBoxes = new Dictionary<HitBoxType, CapsuleCollider>();

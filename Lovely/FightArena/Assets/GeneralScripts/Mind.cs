@@ -9,29 +9,40 @@ using System;
 //responsible for...
 //  perceiving the world around. this means quering all the spawnables in sight range and classifying them as friend/enemy/resource/danger etc.
 public abstract class Mind : MindBase
-{    
-    readonly List<BodyIntel> visibleEnemies = new List<BodyIntel>();
-    readonly List<BodyIntel> visibleAllies = new List<BodyIntel>();
-    readonly List<BodyIntel> allBodiesInSightRange = new List<BodyIntel>();
-    readonly Dictionary<ItemType, List<ResourceIntel>> allResourcesInSightRange = Item.GetItemTypeDictionary<List<ResourceIntel>>();
-
-
-    //getters/setters
-    public ActivityState currentState { get { return (CurrentPerformable != null) ? CurrentPerformable.ActivityType : ActivityState.Nothing; } }
-    public abstract float SightRadius { get; }
-    //public abstract float SightArc { get; } todo: implement this
-    public List<BodyIntel> VisibleEnemies { get { return new List<BodyIntel>(visibleEnemies); } }//change so they return an array
-    public List<BodyIntel> VisibleAllies { get { return new List<BodyIntel>(visibleAllies); } }
-    public List<BodyIntel> AllBeingsInSightRange { get { return new List<BodyIntel>(allBodiesInSightRange); } }
-    public ResourceIntel[] GetResourcesInSight( ItemType type)
-    {
-        return allResourcesInSightRange[type].ToArray();
-    }
+{
 
     public Mind(Body body) : base(body)
     {
 
     }
+
+    protected override void ReceiveUpdates(object senter, EventArgs e)
+    {
+        LookAround();
+        UpdateMindStats();
+        //I want mind to look around before it makes decisions, so this is after
+        base.ReceiveUpdates(senter, e);
+        Body.gameObject.DisplayTextComponent(this);
+    }
+
+
+    //====================================================================================================================================================================================
+    //========================================================Perceiving and categorizing the world around================================================================================
+    //====================================================================================================================================================================================
+ 
+    #region [[[ perceiving and categorizing world ]]]
+    readonly List<BodyIntel> visibleEnemies = new List<BodyIntel>();
+    readonly List<BodyIntel> visibleAllies = new List<BodyIntel>();
+    readonly List<BodyIntel> allBodiesInSightRange = new List<BodyIntel>();
+    readonly Dictionary<ItemType, List<ResourceIntel>> allResourcesInSightRange = Item.GetItemTypeDictionary<List<ResourceIntel>>();
+    
+    public List<BodyIntel> VisibleEnemies { get { return new List<BodyIntel>(visibleEnemies); } }//change so they return an array
+    public List<BodyIntel> VisibleAllies { get { return new List<BodyIntel>(visibleAllies); } }
+    public List<BodyIntel> AllBeingsInSightRange { get { return new List<BodyIntel>(allBodiesInSightRange); } }
+    public ResourceIntel[] GetResourcesInSight(ItemType type) { return allResourcesInSightRange[type].ToArray(); }
+
+    public abstract float SightRadius { get; }//move to body
+    //public abstract float SightArc { get; }//move to body
 
     private void LookAround()
     {
@@ -53,19 +64,164 @@ public abstract class Mind : MindBase
         visibleEnemies.Sort();
     }
 
-
-
-
     //determines if another being is a friend, enemy, or whatever.
     public virtual Relationship GetRelationship(Mind other)
     {
         return new Relationship(0, 0, false, false);
     }
 
-
-    public bool IsVisible<T>(Intel<T> intel) where T : MonoBehaviour
+    public virtual bool IsVisible(RelativePositionInfo other)
     {
-        return intel.distance <= SightRadius;
+        return (other.distance <= SightRadius);// && other.angle < SightArc) || (other.distance < 5f);
+    }
+
+    #endregion
+
+    //====================================================================================================================================================================================
+    //========================================================STATS FOR MIND==============================================================================================================
+    //====================================================================================================================================================================================
+
+    #region [[[ mind stats ]]]
+    float wakefulness = float.MaxValue;//decreases when awake, depletes quicker when performing taxing tasks, increases 1.5x speed when sleeping
+    float excitement = float.MaxValue;//depletes awake or asleep. Tedious work takes chunks from this. recreation activities increase this
+    float spirituality = float.MaxValue;//depletes awake or asleep. recreation activities increase this. Tedious Work or seedy activities takes chunks from this
+    float socialization = float.MaxValue;//depletes when awake. increases when working or playing together
+    //bool isAwake = true;//doesnt work well. other performables may not set properly
+    //awake condition. sleeping and awakening should happen internally
+    //public putToSleep(func awake conditions)
+    //public Awaken()
+
+    float wakefulnessMax = float.MaxValue;
+    float excitementMax = float.MaxValue;
+    float spiritualityMax = float.MaxValue;
+    float socializationMax = float.MaxValue;
+
+    //number of in-game days of each stat Mind has left
+    public float Wakefulness { get { return wakefulness; } protected set { wakefulness = value; } }
+    public float Excitement { get { return excitement; } protected set { excitement = value; } }
+    public float Spirituality { get { return spirituality; } protected set { spirituality = value; } }
+    public float Socialization { get { return socialization; } protected set { socialization = value; } }
+    public bool IsAwake { get { if (CurrentPerformable == null) return true; else return !CurrentPerformable.IsSleepActivity; } }
+
+    //max number of in-game days of each stat Mind can hold
+    public float WakefulnessMax { get { return wakefulnessMax; } protected set { wakefulnessMax = value; } }
+    public float ExcitementMax { get { return excitementMax; } protected set { excitementMax = value; } }
+    public float SpiritualityMax { get { return spiritualityMax; } protected set { spiritualityMax = value; } }
+    public float SocializationMax { get { return socializationMax; } protected set { socializationMax = value; } }
+    #endregion
+
+    #region [[[ from body, here for convenience ]]]
+    public float Calories { get { return Body.Calories; } }
+    public float CaloriesMax { get { return Body.CaloriesMax; } }
+    public float Blood { get { return Body.Blood; } }
+    public float BloodMax { get { return Body.BloodMax; } }
+    public float Stamina { get { return Body.Stamina; } }
+    public float StaminaMax { get { return Body.CaloriesMax; } }
+
+    public ItemPack Backpack { get { return Body.Backpack; } }
+    #endregion
+
+    #region [[[ active period stats ]]]
+    float activePeriodStart = 0;
+    float workPeriodLength = 0.25f * GameTime.DaysToHours;
+    float recreationPeriodLength = 0.5f * GameTime.DaysToHours;
+
+    public void SetActivePeriods(float activePeriodStart, float workPeriodLength, float recreationPeriodLength, bool isNormalizedLength)
+    {
+        if (isNormalizedLength)
+        {
+            workPeriodLength *= GameTime.DaysToHours;
+            recreationPeriodLength *= GameTime.DaysToHours;
+        }
+        this.activePeriodStart = Mathf.Clamp(activePeriodStart, 0f, GameTime.DaysToHours) % GameTime.DaysToHours;
+        this.workPeriodLength = Mathf.Clamp(workPeriodLength, 0f, GameTime.DaysToHours);
+        this.recreationPeriodLength = Mathf.Clamp(recreationPeriodLength, 0f, GameTime.DaysToHours - workPeriodLength);
+    }
+
+    protected virtual float DefaultActivePeriodStart { get { return 0; } }
+    protected virtual float DefaultWorkPeriodLengthNormalized { get { return 0.2f; } }
+    protected virtual float DefaultrecreationPeriodLengthNormalized { get { return 0.5f; } }
+
+    //active period, recreation period, rest priod
+    public float ActivePeriodStart { get { return activePeriodStart; } }//time of active period, and work start
+
+    public float WorkPeriodStart { get { return ActivePeriodStart; } }//same as active period start
+    public float WorkPeriodLength { get { return workPeriodLength; } }//how long the work period lasts
+    public float WorkPeriodEnd { get { return (WorkPeriodStart + WorkPeriodLength) % GameTime.DaysToHours; } }//time of work period start
+
+    public float RecreationPeriodStart { get { return WorkPeriodEnd; } }//same as work period end
+    public float RecreationPeriodLength { get { return recreationPeriodLength; } }//how long the recreation period lasts
+    public float RecreationPeriodEnd { get { return (RecreationPeriodStart + RecreationPeriodLength) % GameTime.DaysToHours; } }//time of recreation period end
+
+    public float SleepPeriodStart { get { return RecreationPeriodEnd; } }//same as recreation period end
+    public float SleepPeriodLength { get { return Mathf.Clamp(GameTime.DaysToHours - WorkPeriodLength - RecreationPeriodLength, 0f, float.MaxValue); } }//how long the sleepationn period lasts
+    public float SleepPeriodEnd { get { return (SleepPeriodStart + SleepPeriodLength) % GameTime.DaysToHours; } }//time of sleep period end
+
+    public bool IsWorkPeriod { get { return GameTime.IsBetweenHours(GameTime.Hour, WorkPeriodStart, WorkPeriodEnd); } }
+    public bool IsRecreationPeriod { get { return GameTime.IsBetweenHours(GameTime.Hour, RecreationPeriodStart, RecreationPeriodEnd); } }
+    public bool IsSleepPeriod { get { return GameTime.IsBetweenHours(GameTime.Hour, SleepPeriodStart, SleepPeriodEnd); } }
+    #endregion
+
+
+    void UpdateMindStats()
+    {
+        //decrement all stats because of time
+        wakefulness -= GameTime.DeltaTimeGameDays;
+        excitement -= GameTime.DeltaTimeGameDays;
+        spirituality -= GameTime.DeltaTimeGameDays;
+        socialization -= GameTime.DeltaTimeGameDays;
+        
+        //decrease stats based on performable
+        if (CurrentPerformable != null)
+        {
+            wakefulness += CurrentPerformable.DeltaWakefulness * GameTime.DeltaTimeGameDays * ((CurrentState == ActivityState.Rest && IsSleepPeriod) ? 2f : 1f);//decreases when awake, depletes quicker when performing taxing tasks, increases 1.5x speed when sleeping
+            excitement += CurrentPerformable.DeltaExcitement * GameTime.DeltaTimeGameDays;//depletes awake or asleep. Tedious work takes chunks from this. recreation activities increase this
+            spirituality += CurrentPerformable.DeltaSpirituality * GameTime.DeltaTimeGameDays;//depletes awake or asleep. recreation activities increase this. Tedious Work or seedy activities takes chunks from this
+            socialization += CurrentPerformable.DeltaSocialization * GameTime.DeltaTimeGameDays;//depletes when awake. increases when working or playing together
+        }
+
+        //clamp resulting stats
+        wakefulness = Mathf.Clamp(wakefulness, 0, WakefulnessMax);
+        excitement = Mathf.Clamp(excitement, 0, ExcitementMax);
+        spirituality = Mathf.Clamp(spirituality, 0, SpiritualityMax);
+        socialization = Mathf.Clamp(socialization, 0, SocializationMax);
+    }
+    //++++++++++++++++=====================================================
+
+
+    public override string ToString()
+    {
+        string s =
+            "wakefulness: " + wakefulness + "\n" +
+            "wakefulnessMax: " + WakefulnessMax + "\n" +
+            "--------------------------------------------\n" +
+            "excitement: " + excitement + "\n" +
+            "excitementMax: " + ExcitementMax + "\n" +
+            "--------------------------------------------\n" +
+            "spirituality: " + spirituality + "\n" +
+            "spiritualityMax: " + SpiritualityMax + "\n" +
+            "--------------------------------------------\n" +
+            "socialization: " + socialization + "\n" +
+            "socializationMax: " + SocializationMax + "\n" +
+            "--------------------------------------------\n" +
+            "calories: " + Calories + "\n" +
+            "caloriesMax: " + CaloriesMax + "\n" +
+            "--------------------------------------------\n" +
+            "blood: " + Blood + "\n" +
+            "bloodMax: " + BloodMax + "\n" +
+            "--------------------------------------------\n" +
+            "\n" +
+            "isAwake: " + IsAwake + "\n" +
+            "IsWorkPeriod: " + IsWorkPeriod + "\n" +
+            "IsRecreationPeriod: " + IsRecreationPeriod + "\n" +
+            "IsSleepPeriod: " + IsSleepPeriod + "\n" +
+            "--------------------------------------------\n" +
+            "\n" +
+            "ActivityState: " + CurrentState + "\n" +
+            "currentPerformable: " + CurrentPerformable + "\n" +
+            "decisionMaker: " + DecisionSource + "\n"
+        ;
+        return s;
     }
 }
 

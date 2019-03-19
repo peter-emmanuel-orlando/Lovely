@@ -676,7 +676,7 @@ public abstract class UnifiedController : MonoBehaviour
             return result;
         }
 
-        public void ExitWhenComplete()
+        public void ExitWhenComplete()//change to PauseWhenComplete
         {
             controller.anim.SetBool("ExitWhenComplete", true);
         }

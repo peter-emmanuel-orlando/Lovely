@@ -7,17 +7,10 @@ public class FairieFireBody : Body, IBodyCanGlow
 {
     Light lightSource;
     private FairieFireMind fairieFireMind;
-
-
-
-    private readonly CharacterAbilities characterAbilities = new CharacterAbilities();
-
-    public override CharacterAbilities CharacterAbilities { get { return characterAbilities; } }
+    
     public override Mind Mind { get { return fairieFireMind; } }
     public override string PrefabName { get { return "FairieFire"; } }
     public override Gender Gender { get { return Gender.Nongendered; } }
-    public override float MaxHealth { get { return 50f; } }
-    public override float MaxStamina { get { return float.MaxValue; } }
 
     public Color GlowColor
     {
@@ -28,6 +21,8 @@ public class FairieFireBody : Body, IBodyCanGlow
     protected override void Awake()
     {
         fairieFireMind = new FairieFireMind(this);
+        BloodMax = 50f;
+        StaminaMax = float.MaxValue;
         base.Awake();
         lightSource = GetComponentInChildren<Light>();
         if (lightSource == null)

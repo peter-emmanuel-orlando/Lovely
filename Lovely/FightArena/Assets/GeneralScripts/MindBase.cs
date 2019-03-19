@@ -18,6 +18,8 @@ public abstract class MindBase : IDecisionMaker
     //getters/setters
     public Body Body { get { return body; } }
     public IPerformable CurrentPerformable { get { return currentPerformable; } }
+    public IDecisionMaker DecisionSource { get { return decisionSource; } }
+    public ActivityState CurrentState { get { return (CurrentPerformable != null) ? CurrentPerformable.ActivityType : ActivityState.Nothing; } }
 
 
     //constuctors
@@ -25,7 +27,6 @@ public abstract class MindBase : IDecisionMaker
     {
         this.body = body;
         body.UpdateEvent += ReceiveUpdates;
-        decisionSource = this;
     }
 
 
@@ -40,9 +41,9 @@ public abstract class MindBase : IDecisionMaker
         IPerformable newDecision;
 
         if (decisionSource == null)
-            decisionSource = this;
-
-        newDecision = decisionSource.GetDecisions();
+            newDecision = GetDecisions();
+        else
+            newDecision = decisionSource.GetDecisions();
 
         if (newDecision != currentPerformable)
         {
@@ -63,15 +64,8 @@ public abstract class MindBase : IDecisionMaker
     public void OverrideDecisionMaker(IDecisionMaker newDecisionSource)
     {
         decisionSource = newDecisionSource;
-        if (decisionSource == null)
-            decisionSource = this;
-    }
+    }  
 
-    public IDecisionMaker GetCurrentDecisionMaker()
-    {
-        return (decisionSource == null)? this : decisionSource;
-    }
-    
 }
 
 
