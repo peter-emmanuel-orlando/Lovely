@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 
-public partial class ComboAbility
+public partial class AttackCombo
 {
     private struct AttackInfo
     {

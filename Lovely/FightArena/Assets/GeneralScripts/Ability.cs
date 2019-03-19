@@ -9,15 +9,15 @@ public abstract class Ability
 
     protected readonly Body body;
 
-    public Ability( Body body)
+    public Ability(Body body)
     {
         this.body = body;
     }
 
 
-    public abstract ProgressStatus CheckStatus();
-    
+    public abstract ProgressStatus CheckStatus();    
     public abstract IEnumerator<ProgressStatus> CastAbility();
+
     
 }
 

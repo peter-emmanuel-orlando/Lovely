@@ -5,13 +5,15 @@ using UnityEngine;
 
 public class PhysicalAttack : Ability
 {
-    float deltaHealth;
+    AnimationClip animation = _AnimationPool.GetAnimation("Strike_Mid_R");
+    float deltaHealth = 5;
+    IEnumerator innerEnumerator;
 
-
+    //string animation name
     public PhysicalAttack(Body body) : base( body)
     {
-        body.UpdateEvent += Update;
-        body.TriggerEnterEvent += TriggerEnter;
+        body.UpdateEvent += ReceiveUpdate;
+        body.OnTriggerEnterEvent += ReceiveOnTriggerEnter;
     }
 
     public override float Range
@@ -22,27 +24,44 @@ public class PhysicalAttack : Ability
         }
     }
 
-    private void TriggerEnter(object sender, TriggerEventArgs e)
-    {
-
-    }
-
-    private void Update(object sender, EventArgs e)
-    {
-
-    }
-
     public override IEnumerator<ProgressStatus> CastAbility()
     {
-        Debug.Log("firk");
-        body.PlayAnimation(_AnimationPool.GetAnimation("strike"),0,1,false);
-        //throw new System.NotImplementedException();
-        return null;
+        IEnumerator<ProgressStatus> result = null;
+        if(innerEnumerator == null)
+        {
+            result = CastAbilityEnumerator();
+            result.MoveNext();
+            innerEnumerator = result;
+        }
+        return result;
+    }
+
+    private IEnumerator<ProgressStatus> CastAbilityEnumerator()
+    {
+        var enumerator = body.PlayAnimation(animation, true);
+        body.SetHitBoxActiveState(HitBoxType.HandR, true);
+        while(enumerator != null && enumerator.MoveNext())
+        {
+            yield return ProgressStatus.InProgress;
+        }
+        body.SetHitBoxActiveState(HitBoxType.HandR, false);
+        yield return ProgressStatus.Complete;
+        yield break;
     }
 
     public override ProgressStatus CheckStatus()
     {
         throw new System.NotImplementedException();
     }
-    
+
+    private void ReceiveOnTriggerEnter(object sender, TriggerEventArgs tArgs)
+    {
+        throw new System.NotImplementedException();
+    }
+
+    private void ReceiveUpdate(object sender, EventArgs e)
+    {
+        if (innerEnumerator != null && !innerEnumerator.MoveNext())
+            innerEnumerator = null;
+    }
 }

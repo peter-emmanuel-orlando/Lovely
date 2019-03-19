@@ -57,8 +57,9 @@ public abstract class Body : UnifiedController, ISpawnable
 
     //for testing
     SkinnedMeshRenderer bodyMesh;
-    private void _Update()
+    protected override void Update()
     {
+        base.Update();
         if(bodyMesh == null)
             bodyMesh = GetComponentInChildren<SkinnedMeshRenderer>();
 
@@ -71,24 +72,13 @@ public abstract class Body : UnifiedController, ISpawnable
         }
         anim.SetFloat("BreathingLabor", 1f - (stamina / 100));        
     }
-    
 
-    private void _OnTriggerStay(Collider collider)
-    {
-
-    }
 
     //can be attacks or augments, good or bad
     public void ApplyAbilityEffects(Mind damager, float deltaHealth, AnimationClip effectAnimation)
     {
-        gameObject.DisplayTextComponent("i was hit by " + damager);
-        TurnToFace(damager.Body.transform.position);
         health += deltaHealth;
-        PlayRecoilAnimation(effectAnimation, true);
+        PlayRecoilAnimation(effectAnimation);
     }
-
-
-
-
-
+    
 }

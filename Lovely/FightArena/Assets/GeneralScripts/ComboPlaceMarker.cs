@@ -1,6 +1,6 @@
 ﻿using System;
 
-public partial class ComboAbility
+public partial class AttackCombo
 {
     private class ComboTracker
     {
