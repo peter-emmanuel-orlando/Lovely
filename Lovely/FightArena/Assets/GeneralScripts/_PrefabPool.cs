@@ -81,7 +81,7 @@ public class _PrefabPool : _MasterComponent<_PrefabPool>
         {
             string path = "Assets" + dirtyPath.Replace(Application.dataPath, "").Replace('\\', '/');
             Debug.unityLogger.logEnabled = false;
-            var go = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+            var go = (GameObject)AssetDatabase.LoadMainAssetAtPath(path);
             Debug.unityLogger.logEnabled = true;
             var data = go.GetComponent<ISpawnable>();
             if (data != null && data.gameObject != null) result.Add(data.gameObject);

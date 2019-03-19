@@ -2,7 +2,7 @@
 {
     public interface INavMeshModifier
     {
-        int area { get; }
+        int modifiedArea { get; }
         bool ignoreFromBuild { get;  }
         bool overrideArea { get; }
         GameObject gameObject { get; }

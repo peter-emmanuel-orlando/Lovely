@@ -6,7 +6,7 @@ namespace UnityEngine.AI
     [DefaultExecutionOrder(-102)]
     [AddComponentMenu("Navigation/NavMeshSurfaceOther", 30)]
     [HelpURL("https://github.com/Unity-Technologies/NavMeshComponents#documentation-draft")]
-    public sealed class NavMeshSurfaceOther : TrackedGameObject<NavMeshSurfaceOther>, INavMeshModifier
+    public abstract class NavMeshSurfaceBase : MonoBehaviour
     {
         [SerializeField]
         int m_AgentTypeID;
@@ -73,46 +73,23 @@ namespace UnityEngine.AI
         Vector3 m_LastPosition = Vector3.zero;
         Quaternion m_LastRotation = Quaternion.identity;
 
-        //from INavMeshModifier
-        public MonoBehaviour monoBehaviour { get { return this; } }
-        public int area { get { return 1; } }//notWalkable, this is for other navmeshstuff though, it will be ignored by this component
-        public bool ignoreFromBuild { get { return false; } }
-        public bool overrideArea { get { return true; } }
-        public bool AffectsAgentType(int agentTypeID) { return true; }
 
-        //from TrackedGameObject
-        protected override Bounds Bounds { get { return new Bounds(center + transform.position, size - Vector3.one); } }
-        protected override NavMeshSurfaceOther This { get { return this; } }
+        static readonly List<NavMeshSurfaceBase> s_NavMeshSurfaces = new List<NavMeshSurfaceBase>();
 
-        static readonly List<NavMeshSurfaceOther> s_NavMeshSurfaces = new List<NavMeshSurfaceOther>();
-
-        public static List<NavMeshSurfaceOther> activeSurfaces
+        public static List<NavMeshSurfaceBase> activeSurfaces
         {
             get { return s_NavMeshSurfaces; }
         }
 
         
-        static NavMeshSurfaceOther()
+        protected virtual void OnEnable()
         {
-            CellSize = 10f;
-            LocUpdatesPerFrame = 5;
-        } 
-
-        protected override void OnEnable()
-        {
-            base.OnEnable();
-            if (!NavMeshModifier.activeModifiers.Contains(this))
-                NavMeshModifier.activeModifiers.Add(this); 
-
             Register(this);
             AddData();
         }
 
-        protected override void OnDisable()
+        protected virtual void OnDisable()
         {
-            base.OnDisable();
-            NavMeshModifier.activeModifiers.Remove(this);
-
             RemoveData();
             Unregister(this);
         }
@@ -198,7 +175,7 @@ namespace UnityEngine.AI
             return NavMeshBuilder.UpdateNavMeshDataAsync(data, GetBuildSettings(), sources, sourcesBounds);
         }
 
-        static void Register(NavMeshSurfaceOther surface)
+        static void Register(NavMeshSurfaceBase surface)
         {
             if (s_NavMeshSurfaces.Count == 0)
                 NavMesh.onPreUpdate += UpdateActive;
@@ -207,7 +184,7 @@ namespace UnityEngine.AI
                 s_NavMeshSurfaces.Add(surface);
         }
 
-        static void Unregister(NavMeshSurfaceOther surface)
+        static void Unregister(NavMeshSurfaceBase surface)
         {
             s_NavMeshSurfaces.Remove(surface);
 
@@ -269,7 +246,8 @@ namespace UnityEngine.AI
             {
                 modifiers =  new List<INavMeshModifier>( NavMeshModifier.activeModifiers);
             }
-            modifiers.RemoveAll(x => x.Equals(this));
+            var parentSurf = transform.parent.GetComponent<NavMeshSurfaceOther>();
+            modifiers.RemoveAll(x => x.Equals(this) || x.Equals(parentSurf));
 
             foreach (var m in modifiers)
             {
@@ -280,7 +258,7 @@ namespace UnityEngine.AI
                 var markup = new NavMeshBuildMarkup();
                 markup.root = m.transform;
                 markup.overrideArea = m.overrideArea;
-                markup.area = m.area;
+                markup.area = m.modifiedArea;
                 markup.ignoreFromBuild = m.ignoreFromBuild;
                 markups.Add(markup);
             }
@@ -392,7 +370,7 @@ namespace UnityEngine.AI
                 return false;
 
             // An instance can share asset reference only with its prefab parent
-            var prefab = UnityEditor.PrefabUtility.GetCorrespondingObjectFromSource(this) as NavMeshSurfaceOther;
+            var prefab = UnityEditor.PrefabUtility.GetCorrespondingObjectFromSource(this) as NavMeshSurfaceBase;
             if (prefab != null && prefab.navMeshData == navMeshData)
                 return false;
 
@@ -441,5 +419,124 @@ namespace UnityEngine.AI
             }
         }
 #endif
+    }
+
+    public class NavMeshSurfaceOther : NavMeshSurfaceBase, INavMeshModifier
+    {
+        //from INavMeshModifier
+        public MonoBehaviour monoBehaviour { get { return this; } }
+        public int modifiedArea { get { return 1; } }//notWalkable, this is for other navmeshstuff though, it will be ignored by this component
+        public bool ignoreFromBuild { get { return false; } }
+        public bool overrideArea { get { return true; } }
+        public bool AffectsAgentType(int agentTypeID) { return true; }
+
+        private static readonly Dictionary<NavMeshAgent, AreaOverlap> trackedAgents = new Dictionary<NavMeshAgent, AreaOverlap>();
+
+
+        protected override void OnEnable()
+        {
+            base.OnEnable();
+            if (!NavMeshModifier.activeModifiers.Contains(this))
+                NavMeshModifier.activeModifiers.Add(this);
+        }
+
+        protected override void OnDisable()
+        {
+            base.OnDisable();
+            NavMeshModifier.activeModifiers.Remove(this);
+        }
+
+        private void Awake()
+        {
+            gameObject.layer = LayerMask.NameToLayer("CollideAll");
+        }
+
+        private void Update()
+        {
+            if(Application.isPlaying)
+            {
+                foreach (var agent in trackedAgents.Keys)
+                {
+                    var activeColor = Color.cyan;
+                    if (trackedAgents[agent].activeArea == 3) activeColor = Color.magenta;
+                    if (trackedAgents[agent].activeArea == 4) activeColor = Color.green;
+                    var secondaryColor = Color.cyan;
+                    if (trackedAgents[agent].secondaryArea == 3) secondaryColor = Color.magenta;
+                    if (trackedAgents[agent].secondaryArea == 4) secondaryColor = Color.green;
+
+                    DebugShape.DrawSphere(agent.transform.position + Vector3.up, 1, activeColor, .5f);
+                    DebugShape.DrawSphere(agent.transform.position, 1, secondaryColor, .5f);
+                }
+            }
+        }
+
+        private void OnTriggerEnter(Collider other)
+        {
+            //if this is called multiple times on the same agent, the activeArea will already be this  one so no changes would be made
+            var agent = other.GetComponentInParent<NavMeshAgent>();
+            if(agent)
+            {
+                if(trackedAgents.ContainsKey(agent))
+                { 
+                    if(trackedAgents[agent].activeArea != defaultArea)
+                    {
+                        trackedAgents[agent].secondaryArea = trackedAgents[agent].activeArea;
+                        trackedAgents[agent].activeArea = this.defaultArea;
+                    }                
+                }
+                else
+                {
+                    trackedAgents.Add(agent, new AreaOverlap(defaultArea, 0));
+                }
+                agent.areaMask = 1 << trackedAgents[agent].activeArea;
+            }
+        }
+
+        private void OnTriggerExit(Collider other)
+        {
+            var agent = other.GetComponentInParent<NavMeshAgent>();
+            if (agent && trackedAgents.ContainsKey(agent))
+            {
+                var tracked = trackedAgents[agent];
+                if (trackedAgents.ContainsKey(agent))
+                {
+                    if (tracked.activeArea == this.defaultArea)
+                    {
+                        tracked.activeArea = tracked.secondaryArea;
+                        tracked.secondaryArea = 0;
+                    }
+                    if (tracked.secondaryArea == this.defaultArea)
+                    {
+                        tracked.secondaryArea = 0;
+                    }
+                }
+
+                agent.areaMask = 1 << trackedAgents[agent].activeArea;
+            }
+
+
+            //if the agent has been destroyed but its in the dictionary
+            //OR
+            //if the agent isnt on any navmeshsurfaceothers(both its overlap areas are the default area)
+            //THEN
+            //remove it from the dictionary.
+            if (trackedAgents.ContainsKey(agent) && (!agent || (trackedAgents[agent].secondaryArea == 0 && trackedAgents[agent].activeArea == 0)))
+                trackedAgents.Remove(agent);
+        }
+
+        //if two Enters or two Exits are called on the same frame, then the agent is waarping to positions, or moving fast enough essentially be warping positions, or the triggers are too close
+        //in this case you have to just try the layers and see which works.
+
+        private class AreaOverlap
+        {
+            public int activeArea;
+            public int secondaryArea;
+
+            public AreaOverlap(int activeArea, int secondaryArea)
+            {
+                this.activeArea = activeArea;
+                this.secondaryArea = secondaryArea;
+            }
+        }
     }
 }

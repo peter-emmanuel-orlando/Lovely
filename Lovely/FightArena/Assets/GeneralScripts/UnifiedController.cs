@@ -193,8 +193,8 @@ public abstract class UnifiedController : MonoBehaviour
     private void InnerUpdate()
     {
         if (!IsInitialized) return;
-
-        var surf = TrackedGameObject<NavMeshSurfaceOther>.GetOverlapping(transform.position);
+        /*
+        var surf = TrackedGameObject<NavMeshSurfaceBase>.GetOverlapping(transform.position);
         if(surf.Length > 0)
         {
             var s = surf[0];
@@ -203,7 +203,7 @@ public abstract class UnifiedController : MonoBehaviour
         else
         {
             navAgent.areaMask = 1 << NavMesh.GetAreaFromName("WalkableMain");
-        }
+        }*/
 
         SyncAnimation();
         SyncNavigation();

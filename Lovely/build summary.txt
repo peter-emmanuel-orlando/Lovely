@@ -9,4 +9,5 @@ todo:
 
 ------------------------------------------------------------------------------------------------
 
-completed trackedObject and NavMEshSurfaceOther. Both are now fully operational, but mostly untested. So far utilizing these precludes the possibility of any other navMeshAreas because they completely overwrite the nav meesh area mask. This isnt neccessairily a requirement of the components and is more my not understanding bit shift operations and & | ~ operators with ints. THeoretically compatability with other navmeshareas can be added, with caveats. nested areas are also theoretically possible
+changed navmeshsurface other to work based on triggers
+added in nested and overlaping surfaces
