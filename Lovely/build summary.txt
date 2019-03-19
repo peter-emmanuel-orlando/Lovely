@@ -1,6 +1,14 @@
-todo: make rigidbody control rotation instead of navagent
+todo: 
+	-make rigidbody control rotation instead of navagent
+	-transition abilities away from ienumerators
 ------------------------------------------------------------------------------------------------
- now based on standardised .net events pattern rather than homebrew option
+begun transition away from using ienumerators for frame by frame status reporting for methods.
+Previously body returned an IEnumerator<float> and the object getting the enumerator would
+call movenext each frame to get the progress on how far along the animation was in normalized time.
+Now body returns a "PlayToken" object with the method " float GetProgress()" which will give the
+normalized time representing how far along the animation is. If the animation is not queued or in
+progress, the function returns -1. This may be what they call a "magic number" which i hear is bad 
+practice, I dont know.
 
 partial: make abilities implement events based on normalized time returned from animation enumerator
 

@@ -46,6 +46,7 @@ public partial class UnifiedController : MonoBehaviour
     private AnimationClip playAnimationNext;
     private string playAnimationSlot = "ActionA";
     private IEnumerator<float> playAnimationEnumerator;
+    PlayToken currentToken;
     private bool isLocked = false;
     private Collider physicsCollider;
     private readonly List<CapsuleCollider> hurtBoxes = new List<CapsuleCollider>();
@@ -260,7 +261,7 @@ public partial class UnifiedController : MonoBehaviour
                 // at animation end, needs to put in physics if not on nav mesh, or put on nav mesh             
                 overrideController["PlaceHolder_" + playAnimationSlot] = playAnimationNext;
                 anim.SetBool("PlayMirrored", playMirrored);
-                anim.CrossFade(playAnimationSlot, 0.0f, 0);                
+                anim.CrossFade(playAnimationSlot, 0.01f, 0);                
                 //if not on navmesh, activate body collider
                 playAnimationNext = null;
             }
@@ -273,6 +274,7 @@ public partial class UnifiedController : MonoBehaviour
 
                 if ( !isInTransition && !isStateA && !isStateB && !isStateJump)
                 {
+                    currentToken = null;
                     var tmp = new NavMeshHit();
                     if (NavMesh.SamplePosition(transform.position, out tmp, 2f, NavMesh.AllAreas))
                     {
@@ -535,36 +537,77 @@ public partial class UnifiedController : MonoBehaviour
     }
 
     //needs to lock when appropriate
-    //unless stayOnNavMesh == true, use physics colliders while animating    
-    public IEnumerator<float> PlayRecoilAnimation(AnimationClip clip, bool remainOnNavMesh = true, bool playMirrored = false)
+    //unless stayOnNavMesh == true, use physics colliders while animating  
+    public AnimatorClipInfo[] GetCurrentAnimations()
     {
-        //clear manual movement
-        animMovement = Vector3.zero;
-        //clear navigation
-        navAgent.isStopped = true;
-        navDestination = transform.position;
-        //clear jump
-        jump = false;
-        //clear playAnimation(recoil)
-        recoil = RecoilCode.None;
-
-        movementSource = ControlMode.AnimatedRoot;
-        IEnumerator<float> result = null;
-        if(clip != null)
-        {
-            result = _PlayAnimation(clip, remainOnNavMesh, playMirrored);
-            result.MoveNext();
-            playAnimationEnumerator = result;
-        }
-        return result;
-
+        var clips = anim.GetCurrentAnimatorClipInfo(0);
+        return clips;
     }
-    public IEnumerator<float> PlayAnimation(AnimationClip clip, bool remainOnNavMesh = true, bool playMirrored = false)
+
+    /// <summary>
+    /// return value is normalized time. -1 indicates animation is neither playing nor queued
+    /// </summary>
+    public class PlayToken
+    {
+        public readonly UnifiedController controller;
+        public readonly AnimationClip clip;
+
+        internal PlayToken(UnifiedController controller, AnimationClip clip)
+        {
+            this.controller = controller;
+            this.clip = clip;
+        }
+
+        //internal readonly int uniqueID; checking for reference equality, dont need id
+
+
+        //-1 indicates it isnt in progress
+        public float GetProgress()
+        {
+            var result = -1f;
+            if (this == controller.currentToken)
+            {
+                var stateInfo = controller.anim.GetCurrentAnimatorStateInfo(0);
+                var nextInfo = controller.anim.GetNextAnimatorStateInfo(0);
+
+                var isAnimInSlot = controller.overrideController["PlaceHolder_" + controller.playAnimationSlot] == clip;
+                var isSlotCurrent = stateInfo.IsName(controller.playAnimationSlot);
+                var isSlotNext = nextInfo.IsName(controller.playAnimationSlot);// && anim.IsInTransition(0);
+                var isInTransition = controller.anim.IsInTransition(0);
+
+                if (isAnimInSlot && isSlotNext && isInTransition)
+                {
+                    result = nextInfo.normalizedTime;
+                }
+                else if (isAnimInSlot && isSlotCurrent)
+                {
+                    result = stateInfo.normalizedTime;
+                }
+                else
+                {
+                    //anim hasnt started yet.
+                    result = 0;
+                }
+            }
+            return result;
+        }
+    }
+
+
+    public PlayToken PlayAnimation(AnimationClip clip, bool remainOnNavMesh = true, bool playMirrored = false)
     {
         if (isLocked || !IsInitialized || clip == null)
         {
             return null;
         }
+
+        var result = PlayInterruptAnimation(clip, remainOnNavMesh, playMirrored);
+        currentToken = result;
+        return result;
+    }
+
+    public PlayToken PlayInterruptAnimation(AnimationClip clip, bool remainOnNavMesh = true, bool playMirrored = false)
+    {
         //clear manual movement
         animMovement = Vector3.zero;
         //clear navigation
@@ -577,62 +620,24 @@ public partial class UnifiedController : MonoBehaviour
 
         movementSource = ControlMode.AnimatedRoot;
 
-        var result = _PlayAnimation(clip, remainOnNavMesh, playMirrored);
-        result.MoveNext();
-        playAnimationEnumerator = result;
-        return result;
-    }
-    private IEnumerator<float> _PlayAnimation(AnimationClip clip, bool remainOnNavMesh, bool playMirrored)
-    {
         this.remainOnNavMesh = remainOnNavMesh;
         var stateInfo = anim.GetCurrentAnimatorStateInfo(0);
         var nextInfo = anim.GetNextAnimatorStateInfo(0);
-        var playAnimationSlot = "ActionA";
+        playAnimationSlot = "ActionA";
         if (anim.GetCurrentAnimatorStateInfo(0).IsName("ActionA"))
             playAnimationSlot = "ActionB";
         this.playMirrored = playMirrored;
         playAnimationNext = clip;
 
         isLocked = true;
-        while (playAnimationNext == clip)
-        {
-            yield return -1;
-        }
-        //check if transitioning to this animation in correct slot or in animation in this slot. Else its been aborted
-        stateInfo = anim.GetCurrentAnimatorStateInfo(0);
-        nextInfo = anim.GetNextAnimatorStateInfo(0);
-        var isAnimInSlot = overrideController["PlaceHolder_" + playAnimationSlot] == clip;
-        var isSlotCurrent = stateInfo.IsName(playAnimationSlot);
-        var isSlotNext = nextInfo.IsName(playAnimationSlot);// && anim.IsInTransition(0);
-        var finaltime = (isSlotCurrent) ? stateInfo.normalizedTime : nextInfo.normalizedTime;
-        while (isAnimInSlot && !(isSlotCurrent || isSlotNext))
-        {
-            yield return -1;
 
-            stateInfo = anim.GetCurrentAnimatorStateInfo(0);
-            nextInfo = anim.GetNextAnimatorStateInfo(0);
-            isAnimInSlot = overrideController["PlaceHolder_" + playAnimationSlot] == clip;
-            isSlotCurrent = stateInfo.IsName(playAnimationSlot);
-            isSlotNext = nextInfo.IsName(playAnimationSlot);// && anim.IsInTransition(0);
-        }// else return aborted
-
-        while ( isAnimInSlot && (isSlotCurrent || isSlotNext))
-        {
-            yield return finaltime;
-
-            stateInfo = anim.GetCurrentAnimatorStateInfo(0);
-            nextInfo = anim.GetNextAnimatorStateInfo(0);
-            isAnimInSlot = overrideController["PlaceHolder_" + playAnimationSlot] == clip;
-            isSlotCurrent = stateInfo.IsName(playAnimationSlot);
-            isSlotNext = nextInfo.IsName(playAnimationSlot) && anim.IsInTransition(0);
-            finaltime = (isSlotCurrent) ? stateInfo.normalizedTime : nextInfo.normalizedTime;            
-        }
-
-        isLocked = false;
-        yield return finaltime;
+        var result = new PlayToken(this, clip);
+        currentToken = result;
+        return result;
     }
 
-    
+
+
     public void SetHurtBoxActiveState(bool isActive)
     {
         if (!IsInitialized) return;

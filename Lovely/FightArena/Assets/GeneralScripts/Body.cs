@@ -78,7 +78,7 @@ public abstract class Body : UnifiedController, ISpawnable
     public void ApplyAbilityEffects(Mind damager, float deltaHealth, AnimationClip effectAnimation)
     {
         health += deltaHealth;
-        PlayRecoilAnimation(effectAnimation);
+        PlayInterruptAnimation(effectAnimation);
     }
     
 }
