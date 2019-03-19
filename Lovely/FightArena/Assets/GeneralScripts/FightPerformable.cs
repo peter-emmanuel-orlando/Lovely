@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class FightPerformable : IPerformable
 {
-    Mind performer;
+    private Mind performer;
 
     public FightPerformable(Mind performer)
     {
@@ -61,8 +61,10 @@ public class FightPerformable : IPerformable
                 yield return null;
             }
             //what if no attacks?
-            var statusEnumerator = performer.AllAbilities[0].CastAbility();
-            while(statusEnumerator != null && statusEnumerator.MoveNext())
+            var chosenAbility = performer.Body.CharacterAbilities[CharacterAbilitySlot.DashPunch];
+            chosenAbility.CastAbility();
+           
+            while (chosenAbility != null && chosenAbility.CheckStatus() == ProgressStatus.InProgress)
             {
                 yield return null;
             }

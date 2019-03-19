@@ -4,12 +4,14 @@ using UnityEngine;
 
 public abstract class HumanBody : Body
 {
-    private readonly List<Ability> bodyAbilities = new List<Ability>();    
-    public override List<Ability> BodyAbilities { get { return new List<Ability>(bodyAbilities); } }
+    private readonly CharacterAbilities characterAbilities = new CharacterAbilities();
+    public override CharacterAbilities CharacterAbilities { get { return characterAbilities; } }
+
 
     protected override void Awake()
     {
         base.Awake();
-        bodyAbilities.Add(new PhysicalAttack(this));
+        characterAbilities[CharacterAbilitySlot.BasicPunchCombo] = new Punch(this);
+        characterAbilities[CharacterAbilitySlot.DashPunch] = new DashPunch(this);
     }
 }

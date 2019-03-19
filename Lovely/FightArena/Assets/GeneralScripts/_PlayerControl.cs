@@ -8,6 +8,8 @@ public class _PlayerControl : MonoBehaviour
 {
     [SerializeField]
     int controllerNumber;
+    [SerializeField]
+    Vector3 cameraOffset;
 
     PlayerControl playerControl;
 
@@ -32,6 +34,10 @@ public class _PlayerControl : MonoBehaviour
                 controllerNumber = playerControl.playerNumber;
                 playerControl.ControlBody(GetComponent<Body>());
             }
+        }
+        if(playerControl != null)
+        {
+            playerControl.cameraOffset = cameraOffset;
         }
 
         if(PlayerControl.GetPlayer(5).IsFree)
@@ -111,9 +117,9 @@ public class PlayerControl : IDecisionMaker, IPerformable
 
     Body performerBody;
     public Mind Performer { get { return performerBody.Mind; } }
-    Ability punch { get { return Performer.AllAbilities[0]; } }
+    CharacterAbilities abilities { get { return Performer.Body.CharacterAbilities; } }
     Transform head;
-    Vector3 cameraOffset = Vector3.zero;//offset from the head
+    internal Vector3 cameraOffset = Vector3.zero;//offset from the head
     Camera cam;
 
     public bool IsFree { get { return performerBody == null; } }
@@ -151,28 +157,37 @@ public class PlayerControl : IDecisionMaker, IPerformable
     {
         return this;
     }
-
+    
     public IEnumerator Perform()
     {
         while (true)
         {
             if(performerBody != null)
             {
-                cam.transform.position = head.position + performerBody.transform.InverseTransformVector(cameraOffset);
+                cam.transform.position = head.position + performerBody.transform.TransformVector(cameraOffset);
                 var moveSpeedX = PlayerInput.GetAsAxis(AxisCode.L_XAxis, playerNumber);
                 var moveSpeedZ = PlayerInput.GetAsAxis(AxisCode.L_YAxis, playerNumber);
                 var lookSpeedV = PlayerInput.GetAsAxis(AxisCode.R_YAxis, playerNumber);
                 var lookSpeedH = PlayerInput.GetAsAxis(AxisCode.R_XAxis, playerNumber);
                 var activatePunch = PlayerInput.GetAsButtonDown(ButtonCode.B, playerNumber);
                 var activateJump = PlayerInput.GetAsButtonDown(ButtonCode.A, playerNumber);
+                var empower = PlayerInput.GetAsButtonDown(ButtonCode.Y, playerNumber);
 
                 performerBody.Move(moveSpeedX, moveSpeedZ);
                 performerBody.Look(lookSpeedH, lookSpeedV);
-                //performerMind.Body.Look(lookSpeedH, lookSpeedV);
                 if (activatePunch)
-                    punch.CastAbility();
+                {
+                    if(performerBody.EmpowermentLevel > 0)
+                        abilities[CharacterAbilitySlot.DashPunch].CastAbility();
+                    else
+                        abilities[CharacterAbilitySlot.BasicPunchCombo].CastAbility();
+
+
+                }
                 if (activateJump)
                     performerBody.Jump();
+                if (empower)
+                    performerBody.Empower();
             }
             yield return null;
         }

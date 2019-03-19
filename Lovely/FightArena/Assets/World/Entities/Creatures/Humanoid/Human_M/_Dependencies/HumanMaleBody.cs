@@ -13,16 +13,6 @@ public class HumanMaleBody : HumanBody
     public override float MaxHealth { get { return 100f; } }
     public override float MaxStamina { get { return 100f; } }
 
-    public override List<Ability> BodyAbilities
-    {
-        get
-        {
-            var result = new List<Ability>(maleBodyAbilities);
-            result.AddRange(base.BodyAbilities);
-            return result;
-        }
-    }
-
     protected override void Awake()
     {
         maleMind = new HumanMaleMind(this);

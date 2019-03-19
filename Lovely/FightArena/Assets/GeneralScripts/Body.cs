@@ -17,32 +17,38 @@ using UnityEngine;
 /// body also create a new mind of the appropriate type
 /// </summary>
 
-public abstract class Body : UnifiedController, ISpawnable
+public abstract partial class Body : UnifiedController, ISpawnable
 {
     [ShowOnly]
     [SerializeField]
-    float health;
+    private float health;
     [ShowOnly]
     [SerializeField]
-    float stamina;
+    private float stamina;
+    [ShowOnly]
+    [SerializeField]
+    private int empowermentLevel = 0;
 
+    public const int maxEmpowermentLevel = 3;//in sec
+    private const float empowerTime = 4;//in sec
+    private float depowerAfter = 0;//time to reset empowerment
+    public event EventHandler<EmpowerChangeEventArgs> EmpowermentChangeEvent;
+    private PowerUpEffect powerUpEffects;
+
+    public int EmpowermentLevel { get { return empowermentLevel; } }
     public abstract Mind Mind { get; }
     public abstract float MaxHealth { get; }
     public abstract float MaxStamina { get; }
     public abstract Gender Gender { get; }
     public abstract string PrefabName { get; }
-    public abstract List<Ability> BodyAbilities { get; }
-    public List<Ability> AllAbilities
-    {
-        get
-        {
-            var result = new List<Ability>(BodyAbilities);
-            if(Mind != null)
-                result.AddRange(Mind.MindAbilities);
-            return result;
-        }
-    }
+    public abstract CharacterAbilities CharacterAbilities { get; }
+    SkinnedMeshRenderer bodyMesh;
 
+
+
+
+    //\/////////////////////////////////////////////////////////////////////////////////////////////
+    //events and override events
     protected override void Awake()
     {
         base.Awake();
@@ -53,10 +59,9 @@ public abstract class Body : UnifiedController, ISpawnable
             gameObject.name = Names.maleNames.Random();
         if (Gender == Gender.Female)
             gameObject.name = Names.maleNames.Random();
-    }
 
-    //for testing
-    SkinnedMeshRenderer bodyMesh;
+    }
+    
     protected override void Update()
     {
         base.Update();
@@ -70,9 +75,44 @@ public abstract class Body : UnifiedController, ISpawnable
             var newColor = Color.Lerp(modifier, baseColor, 0.5f);
             bodyMesh.material.color = (health <= 0f)? Color.red : newColor;
         }
-        anim.SetFloat("BreathingLabor", 1f - (stamina / 100));        
+        anim.SetFloat("BreathingLabor", 1f - (stamina / 100));
+
+        if ( empowermentLevel != 0 && Time.time > depowerAfter)
+        {
+            OnEmpowermentChange(this, new EmpowerChangeEventArgs(empowermentLevel, 0));
+            empowermentLevel = 0;
+        }
     }
 
+    protected virtual void OnEmpowermentChange(object sender, EmpowerChangeEventArgs e)
+    {
+        if (EmpowermentChangeEvent != null)
+            EmpowermentChangeEvent(this, e);
+
+        EmpowerVisualEffect(this, e);
+    }
+    //\/////////////////////////////////////////////////////////////////////////////////////////////
+    //\/////////////////////////////////////////////////////////////////////////////////////////////
+
+    public void Empower()
+    {
+        var newEmpowermentLevel = (empowermentLevel + 1) % (maxEmpowermentLevel + 1);
+        if(newEmpowermentLevel != empowermentLevel)
+            OnEmpowermentChange(this, new EmpowerChangeEventArgs(empowermentLevel, newEmpowermentLevel));
+        empowermentLevel = newEmpowermentLevel;
+        depowerAfter = Time.time + empowerTime;
+    }
+
+    protected virtual void EmpowerVisualEffect(object sender, EmpowerChangeEventArgs e)
+    {
+        if (powerUpEffects == null)
+        {
+            powerUpEffects = GameObject.Instantiate<GameObject>(_PrefabPool.GetPrefab("PowerUpEffect").gameObject).GetComponent<PowerUpEffect>();
+            powerUpEffects.transform.SetParent(transform);
+            powerUpEffects.transform.localPosition = Vector3.zero;
+        }
+        powerUpEffects.SetPowerLevel(e.newPowerLevel);
+    }
 
     //can be attacks or augments, good or bad
     public void ApplyAbilityEffects(Mind damager, float deltaHealth, AnimationClip effectAnimation)

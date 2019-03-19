@@ -419,7 +419,6 @@ GameObject:
   - component: {fileID: 4543927893375746}
   - component: {fileID: 33722762408232496}
   - component: {fileID: 23736399784026290}
-  - component: {fileID: 136440625497632754}
   m_Layer: 9
   m_Name: Earrings
   m_TagString: Untagged
@@ -1395,7 +1394,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1339464740402814}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 215.6315, y: 62.94487, z: 600.80273}
+  m_LocalPosition: {x: 218.7576, y: 62.922215, z: 604.136}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4906277739348702}
@@ -2224,19 +2223,6 @@ CapsuleCollider:
   m_Enabled: 1
   m_Radius: 0.5
   m_Height: 1
-  m_Direction: 1
-  m_Center: {x: 0, y: 0.1, z: 0}
---- !u!136 &136440625497632754
-CapsuleCollider:
-  m_ObjectHideFlags: 1
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1391469121184886}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  m_Radius: 0.05
-  m_Height: 0.3
   m_Direction: 1
   m_Center: {x: 0, y: 0.1, z: 0}
 --- !u!136 &136471834179160998

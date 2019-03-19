@@ -1,9 +1,12 @@
 todo: 
 	-make rigidbody control rotation instead of navagent
 	-transition abilities away from ienumerators
-------------------------------------------------------------------------------------------------
-fixed playanimation so that remainonnavmesh no longer holds body stationary
+	-make PrefabPool return an instance rather than the actual prefab
+	-make PrefabPool hold copies of instantiated prefabs so theres no need to go creating and destroying them all the time
 
 partial: make abilities implement events based on normalized time returned from animation enumerator
 
 ------------------------------------------------------------------------------------------------
+
+added in the concept of a power level
+ developed a primitive fight system THAT I AM GOING TO STICK TO

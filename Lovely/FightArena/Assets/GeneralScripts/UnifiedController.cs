@@ -12,8 +12,8 @@ using UnityEngine;
 public partial class UnifiedController : MonoBehaviour
 {
     [SerializeField]
-    public Avatar avatar;  
-    
+    public Avatar avatar;
+
     [SerializeField]
     public AnimatorOverrideController overrideController;
 
@@ -53,7 +53,7 @@ public partial class UnifiedController : MonoBehaviour
     private readonly Dictionary<HitBoxType, CapsuleCollider> hitBoxes = new Dictionary<HitBoxType, CapsuleCollider>();
 
     private enum ControlMode
-    { AnimNav = 0,  Navigation, AnimatedRoot, Physics }
+    { AnimNav = 0, Navigation, AnimatedRoot, Physics }
 
     private ControlMode movementSource = ControlMode.AnimNav;
 
@@ -71,7 +71,7 @@ public partial class UnifiedController : MonoBehaviour
 
 
     //*////////////////////////////////////////////////////////////////////////
-    //events and callbacks
+    #region events and callbacks
     //---------------------------------------------------------------------------
     public event EventHandler AwakeEvent;
     public event EventHandler UpdateEvent;
@@ -91,7 +91,7 @@ public partial class UnifiedController : MonoBehaviour
     protected virtual void Update()
     {
         InnerUpdate();
-        if(UpdateEvent != null)
+        if (UpdateEvent != null)
             UpdateEvent(this, new EventArgs());
     }
     protected virtual void OnDestroy()
@@ -117,12 +117,15 @@ public partial class UnifiedController : MonoBehaviour
             OnTriggerExitEvent(this, new TriggerEventArgs(other));
     }
 
+    #endregion
     //---------------------------------------------------------------
     //***************************************************************
 
 
 
 
+    //todo get avatar and override controller from the prefab pool, or in this classes case from abstract avatar and abstract oCtrl which will
+    //come from inheriting class
 
 
     private void InnerAwake()
@@ -141,7 +144,7 @@ public partial class UnifiedController : MonoBehaviour
         physicsCollider = transform.FindDeepChild("root").GetComponent<Collider>();
 
         cameraBone = transform.FindDeepChild("cameraBone");
-        if(cameraBone == null)
+        if (cameraBone == null)
         {
             cameraBone = new GameObject("cameraBone").transform;
             cameraBone.SetParent(transform);
@@ -205,7 +208,7 @@ public partial class UnifiedController : MonoBehaviour
 
     private void InnerUpdate()
     {
-        if (!IsInitialized) return;        
+        if (!IsInitialized) return;
         SyncAnimation();
         SyncNavigation();
         SyncPhysics();
@@ -244,7 +247,7 @@ public partial class UnifiedController : MonoBehaviour
         }
         else if (movementSource == ControlMode.AnimatedRoot)
         {
-            if(recoil != RecoilCode.None)
+            if (recoil != RecoilCode.None)
             {
                 isLocked = true;
                 anim.CrossFade(Enum.GetName(typeof(RecoilCode), recoil), 0.01f, 0);
@@ -253,26 +256,26 @@ public partial class UnifiedController : MonoBehaviour
             {
                 isLocked = true;
                 var isStateJump = anim.GetCurrentAnimatorStateInfo(0).IsName("Jump");
-                if(!isStateJump) anim.CrossFade("Jump", 0.01f, 0);
+                if (!isStateJump) anim.CrossFade("Jump", 0.01f, 0);
                 jump = false;
-            }            
-            else if(playAnimationNext != null)
+            }
+            else if (playAnimationNext != null)
             {
                 // at animation end, needs to put in physics if not on nav mesh, or put on nav mesh             
                 overrideController["PlaceHolder_" + playAnimationSlot] = playAnimationNext;
                 anim.SetBool("PlayMirrored", playMirrored);
-                anim.CrossFade(playAnimationSlot, 0.01f, 0);                
+                anim.CrossFade(playAnimationSlot, 0.01f, 0);
                 //if not on navmesh, activate body collider
                 playAnimationNext = null;
             }
-            else 
+            else
             {
                 var isInTransition = anim.IsInTransition(0);
                 var isStateA = anim.GetCurrentAnimatorStateInfo(0).IsName("ActionA");
                 var isStateB = anim.GetCurrentAnimatorStateInfo(0).IsName("ActionB");
                 var isStateJump = anim.GetCurrentAnimatorStateInfo(0).IsName("Jump");
 
-                if ( !isInTransition && !isStateA && !isStateB && !isStateJump)
+                if (!isInTransition && !isStateA && !isStateB && !isStateJump)
                 {
                     currentToken = null;
                     var tmp = new NavMeshHit();
@@ -292,10 +295,10 @@ public partial class UnifiedController : MonoBehaviour
             anim.SetFloat("SpeedForward", 0);
         }
     }
-    
+
     private void SyncNavigation()
     {
-        if(movementSource == ControlMode.AnimNav)
+        if (movementSource == ControlMode.AnimNav)
         {
             var tmp = new NavMeshHit();
             if (!NavMesh.SamplePosition(transform.position, out tmp, 2f, NavMesh.AllAreas))
@@ -305,10 +308,10 @@ public partial class UnifiedController : MonoBehaviour
             }
             navAgent.Move(anim.deltaPosition);
         }
-        else if(movementSource == ControlMode.Navigation)
+        else if (movementSource == ControlMode.Navigation)
         {
             var tmp = new NavMeshHit();
-            if (!NavMesh.SamplePosition(transform.position, out tmp, 2f, NavMesh.AllAreas ))
+            if (!NavMesh.SamplePosition(transform.position, out tmp, 2f, NavMesh.AllAreas))
             {
                 movementSource = ControlMode.Physics;
                 return;
@@ -317,7 +320,7 @@ public partial class UnifiedController : MonoBehaviour
             {
                 //warp the position and rotation to be matched up with rigidbody
                 navAgent.isStopped = false;
-                if(navAgent.destination != navDestination)
+                if (navAgent.destination != navDestination)
                     navAgent.destination = navDestination;
             }
             else
@@ -326,7 +329,7 @@ public partial class UnifiedController : MonoBehaviour
                 navDestination = transform.position;
             }
         }
-        else if(movementSource == ControlMode.AnimatedRoot)
+        else if (movementSource == ControlMode.AnimatedRoot)
         {
             //navAgent.nextPosition = transform.position;
             if (remainOnNavMesh)
@@ -346,14 +349,14 @@ public partial class UnifiedController : MonoBehaviour
         if (movementSource == ControlMode.Navigation)
         {
             rb.isKinematic = true;
-            if(!navAgent.pathPending)//haspath?
+            if (!navAgent.pathPending)//haspath?
             {
                 rb.MovePosition(navAgent.nextPosition);
                 //rb.MoveRotation(Quaternion.LookRotation(navAgent.desiredVelocity, transform.up));
             }
             //use a turntoface to update rotation to face navagent velocity
         }
-        else if(movementSource == ControlMode.AnimNav)
+        else if (movementSource == ControlMode.AnimNav)
         {
             rb.isKinematic = true;
             rb.MovePosition(navAgent.nextPosition);
@@ -376,7 +379,7 @@ public partial class UnifiedController : MonoBehaviour
                 //rb.MovePosition(rb.position + anim.deltaPosition);
             }
         }
-        else if(movementSource == ControlMode.Physics)
+        else if (movementSource == ControlMode.Physics)
         {
             var tmp = new NavMeshHit();
             if (NavMesh.SamplePosition(transform.position, out tmp, 2f, NavMesh.AllAreas))
@@ -493,17 +496,17 @@ public partial class UnifiedController : MonoBehaviour
         navAgent.stoppingDistance = stoppingDistance;//dont like setting this here
         navDestination = destination;
 
-        while(navAgent.pathPending && !(navAgent.pathStatus == NavMeshPathStatus.PathComplete || navAgent.pathStatus == NavMeshPathStatus.PathPartial))
+        while (navAgent.pathPending && !(navAgent.pathStatus == NavMeshPathStatus.PathComplete || navAgent.pathStatus == NavMeshPathStatus.PathPartial))
         {
-            if(navDestination != destination)
+            if (navDestination != destination)
             {
                 yield return ProgressStatus.Aborted;
                 yield break;
             }
             else
-                yield return ProgressStatus.Pending;
+                yield return ProgressStatus.InProgress;//ProgressStatus.Pending;
         }
-        while(navAgent.remainingDistance > 0)
+        while (navAgent.remainingDistance > 0)
         {
             if ((navDestination != destination) || (!navAgent.isOnNavMesh && !navAgent.isOnOffMeshLink))
             {
@@ -515,7 +518,7 @@ public partial class UnifiedController : MonoBehaviour
         }
 
         yield return ProgressStatus.Complete;
-        yield break;        
+        yield break;
     }
 
     public void Jump()
@@ -637,7 +640,7 @@ public partial class UnifiedController : MonoBehaviour
     }
 
 
-
+    //make these based on string boneName
     public void SetHurtBoxActiveState(bool isActive)
     {
         if (!IsInitialized) return;
@@ -659,7 +662,7 @@ public partial class UnifiedController : MonoBehaviour
         return result;
     }
 
-    public List<CapsuleCollider> SetHitBoxActiveState( bool isActive)
+    public List<CapsuleCollider> SetHitBoxActiveState(bool isActive)
     {
         List<CapsuleCollider> result = new List<CapsuleCollider>();
         if (!IsInitialized) return result;

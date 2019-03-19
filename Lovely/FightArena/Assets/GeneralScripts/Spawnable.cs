@@ -4,11 +4,8 @@ using UnityEngine;
 
 public class Spawnable : MonoBehaviour, ISpawnable
 {
-    [SerializeField]
-    string prefabName;
-
     public string PrefabName
     {
-        get { return prefabName; }
+        get { return gameObject.name; }
     }
 }

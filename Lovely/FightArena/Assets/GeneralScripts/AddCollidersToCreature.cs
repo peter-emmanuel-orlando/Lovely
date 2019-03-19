@@ -1,4 +1,4 @@
-﻿#if UNITY_EDITOR
+﻿
 
 using System.Collections;
 using System.Collections.Generic;
@@ -7,7 +7,7 @@ using UnityEngine;
 [ExecuteInEditMode]
 public class AddCollidersToCreature : MonoBehaviour
 {
-
+#if UNITY_EDITOR
     [SerializeField]
     bool finalize = false;
     [SerializeField]
@@ -83,7 +83,6 @@ public class AddCollidersToCreature : MonoBehaviour
         }
 
     }
+#endif
 }
 
-
-#endif

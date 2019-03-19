@@ -1,10 +1,9 @@
 ﻿public enum ProgressStatus
 {
-    Uninitialized = 0,
-    Pending,
-    InProgress,
-    Complete, 
+    Complete,
     Aborted,
+    //Pending,
+    InProgress
 }
 
 

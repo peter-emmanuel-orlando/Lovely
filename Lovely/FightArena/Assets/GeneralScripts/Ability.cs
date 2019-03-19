@@ -16,7 +16,7 @@ public abstract class Ability
 
 
     public abstract ProgressStatus CheckStatus();    
-    public abstract IEnumerator<ProgressStatus> CastAbility();
+    public abstract void CastAbility();
 
     
 }

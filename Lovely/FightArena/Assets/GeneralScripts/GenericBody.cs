@@ -15,12 +15,14 @@ public class GenericBody : Body
 
     EmptyMind emptyMind;
 
+    private readonly CharacterAbilities characterAbilities = new CharacterAbilities();
+
+    public override CharacterAbilities CharacterAbilities { get { return characterAbilities; } }
     public override Mind Mind { get { return emptyMind; } }
     public override string PrefabName { get { return prefabName; } }
     public override Gender Gender { get { return gender; } }
     public override float MaxHealth { get { return maxHealth; } }
     public override float MaxStamina { get { return maxStamina; } }
-    public override List<Ability> BodyAbilities { get { return new List<Ability>(); } }
 
     protected override void Awake()
     {

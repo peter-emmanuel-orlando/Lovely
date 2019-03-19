@@ -9,9 +9,7 @@ public class EmptyMind : Mind
     {
 
     }
-
-    public override List<Ability> MindAbilities { get { return new List<Ability>(); } }
-
+    
     protected override float SightRange { get { return 10f;} }
 
     public override IPerformable GetDecisions()

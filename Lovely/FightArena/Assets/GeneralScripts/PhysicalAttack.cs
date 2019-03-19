@@ -3,16 +3,16 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PhysicalAttack : Ability
+public abstract class PhysicalAttack : Ability
 {
-    AnimationClip attackAnimation = _AnimationPool.GetAnimation("Strike_Mid_R");
-    AnimationClip recoilAnimation = _AnimationPool.GetAnimation("KnockBack_Heavy");
+    protected abstract AnimationClip AttackAnimation { get; }
+    protected abstract AnimationClip RecoilAnimation { get; }
+    protected abstract ScheduledAction[] ScheduledActions { get; }
 
-    float deltaHealth = 5;
-    IEnumerator innerEnumerator;
+    private readonly HashSet<Body> alreadyHit = new HashSet<Body>();
+    IEnumerator<ProgressStatus> innerEnumerator;
 
-    //string animation name
-    public PhysicalAttack(Body body) : base( body)
+    public PhysicalAttack(Body body) : base(body)
     {
         body.UpdateEvent += ReceiveUpdate;
         body.OnTriggerEnterEvent += ReceiveOnTriggerEnter;
@@ -26,124 +26,47 @@ public class PhysicalAttack : Ability
         }
     }
 
-
-    struct ScheduledAction
+    public override void CastAbility()//bool guarenteeEvents = false) // guarentee results makes sure events last at least one frame
     {
-        public readonly float time;
-        public readonly Guarentees guarentees;
-        private readonly Action action;
-
-        public ScheduledAction(float time, Action action) : this(time, Guarentees.None, action)
-        {        }
-
-        public ScheduledAction(float time, Guarentees options, Action action)
+        if (innerEnumerator == null && !body.IsLocked)
         {
-            if (action == null) throw new ArgumentNullException();
-            this.time = time;
-            this.guarentees = options;
-            this.action = action;
-        }
-
-        public void PerformAction()
-        {
-            action();
-        }
-
-        public enum Guarentees
-        {
-            None = 0,
-            GuarenteeExecution,
-            GuarenteeFrame
+            innerEnumerator = CastAbilityEnumerator();
+            innerEnumerator.MoveNext();
         }
     }
 
-    public override IEnumerator<ProgressStatus> CastAbility()//bool guarenteeEvents = false) // guarentee results makes sure events last at least one frame
-    {
-        IEnumerator<ProgressStatus> result = null;
-        if(innerEnumerator == null && !body.IsLocked)
-        {
-            result = CastAbilityEnumerator();
-            result.MoveNext();
-            innerEnumerator = result;
-        }
-        return result;
-    }
-    /*
     private IEnumerator<ProgressStatus> CastAbilityEnumerator()
     {
-        var checkStatus = body.PlayAnimation(attackAnimation, true, false);
+        var checkStatus = body.PlayAnimation(AttackAnimation, true, false);
         alreadyHit.Clear();
+        var sa = new Queue<ScheduledAction>(ScheduledActions);
+
         var progress = 0f;
-        var sa = new Queue<ScheduledAction>();
-        sa.Enqueue(new ScheduledAction(0.2f, () => { body.SetHitBoxActiveState(HitBoxType.HandR, true); }));
-        sa.Enqueue(new ScheduledAction(0.8f, () => { body.SetHitBoxActiveState(HitBoxType.HandR, false); }));
+        var lastFrame = -1;
 
-        var lastUpdated = -1;
-        while (progress  != -1 && progress < 1)
+        while (progress < 1)
         {
-            progress = checkStatus.GetProgress();
-            if(Time.frameCount > lastUpdated )
+            var newProgress = checkStatus.GetProgress();
+            if (newProgress == -1)
+                break;
+            else
             {
-                lastUpdated = Time.frameCount;
-                while (sa.Count > 0 && progress > sa.Peek().time)
+                progress = newProgress;
+                if (lastFrame != Time.frameCount && sa.Count > 0 && progress > sa.Peek().time)
                 {
-                    var toExecute = sa.Dequeue();
-                    toExecute.PerformAction();
-                    if (toExecute.guarentees == ScheduledAction.Guarentees.GuarenteeFrame)
-                        break;
+                    lastFrame = Time.frameCount;
+                    sa.Dequeue().PerformAction();
                 }
+                yield return ProgressStatus.InProgress;
             }
-            yield return ProgressStatus.InProgress;
         }
-
         while (sa.Count > 0)
-        {
-            if (Time.frameCount > lastUpdated)
-            {
-                lastUpdated = Time.frameCount;
-                var toExecute = sa.Dequeue();
-                if (toExecute.guarentees == ScheduledAction.Guarentees.GuarenteeExecution)
-                {
-                    toExecute.PerformAction();
-                }
-                if (toExecute.guarentees == ScheduledAction.Guarentees.GuarenteeFrame)
-                {
-                    toExecute.PerformAction();
-                    yield return ProgressStatus.InProgress;
-                }
-            }
-        }
-        
-        yield return ProgressStatus.Complete;
-        yield break;
-    }
-    */
-
-        //still affected by how many times called on same frame
-    private IEnumerator<ProgressStatus> CastAbilityEnumerator()
-    {
-        var checkStatus = body.PlayAnimation(attackAnimation, true, false);
-        alreadyHit.Clear();
-        var progress = 0f;
-        var sa = new Queue<ScheduledAction>();
-        sa.Enqueue(new ScheduledAction(0.2f, () => { body.SetHitBoxActiveState(HitBoxType.HandR, true); }));
-        sa.Enqueue(new ScheduledAction(0.8f, () => { body.SetHitBoxActiveState(HitBoxType.HandR, false); }));
-        var lastPerformed = -1;
-        while (progress != -1 && progress < 1)
-        {
-            progress = checkStatus.GetProgress();
-            if (lastPerformed != Time.frameCount && sa.Count > 0 && progress > sa.Peek().time)
-            {
-                lastPerformed = Time.frameCount;
-                sa.Dequeue().PerformAction();
-            }
-            yield return ProgressStatus.InProgress;
-        }
-        while(sa.Count > 0)
         {
             sa.Dequeue().PerformAction();
         }
-
+        //if (progress < 1)
+        //    yield return ProgressStatus.Aborted;
+        //else
         yield return ProgressStatus.Complete;
         yield break;
     }
@@ -151,20 +74,22 @@ public class PhysicalAttack : Ability
 
     public override ProgressStatus CheckStatus()
     {
-        throw new System.NotImplementedException();
+        var result = ProgressStatus.Complete;
+        if (innerEnumerator != null)
+            result = innerEnumerator.Current;
+        return result;
     }
 
-    private readonly HashSet<Body> alreadyHit = new HashSet<Body>();
     private void ReceiveOnTriggerEnter(object sender, TriggerEventArgs tArgs)
     {
-        if(tArgs.collider.gameObject.layer == LayerMask.NameToLayer("HurtBox"))
+        if (tArgs.collider.gameObject.layer == LayerMask.NameToLayer("HurtBox"))
         {
             var hitBody = tArgs.collider.GetComponentInParent<Body>();
-            if (hitBody != null && !alreadyHit.Contains(hitBody) && hitBody != body )
+            if (hitBody != null && !alreadyHit.Contains(hitBody) && hitBody != body)
             {
                 alreadyHit.Add(hitBody);
                 hitBody.TurnToFace(body.transform.position);
-                hitBody.ApplyAbilityEffects(body.Mind, -27, recoilAnimation);
+                hitBody.ApplyAbilityEffects(body.Mind, -27, RecoilAnimation);
             }
         }
     }

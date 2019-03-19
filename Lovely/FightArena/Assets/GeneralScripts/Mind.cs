@@ -20,16 +20,6 @@ public abstract class Mind : IDecisionMaker
 
 
     //getters/setters
-    public abstract List<Ability> MindAbilities { get; }
-    public List<Ability> AllAbilities
-    {
-        get
-        {
-            var result = new List<Ability>(MindAbilities);
-            result.AddRange(body.BodyAbilities);
-            return result;
-        }
-    }
     public Body Body { get { return body; } }
     protected abstract float SightRange { get; }
     protected float SightRadius { get { return SightRange * 0.75f; } }
