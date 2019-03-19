@@ -1,4 +1,32 @@
-﻿using System;
+﻿using UnityEngine;
+using System.Collections.Generic;
+
+
+public class Intel<T> : RelativePositionInfo<T>, System.IComparable<Intel<T>> where T : MonoBehaviour
+{
+    readonly Body _requester;
+    readonly bool _isVisible;
+
+    public Body Requester { get { return _requester; } }
+    public bool IsVisible { get { return _isVisible; } }
+
+    //needs to go from the beings cameraBone
+    public Intel(Body requester, T subject) : base(requester.transform.position, requester.transform.rotation, subject)
+    {
+        _requester = requester;
+        _isVisible = requester.Mind.IsVisible(this);
+    }
+    
+
+    public int CompareTo(Intel<T> other)
+    {
+        return base.CompareTo(other);
+    }
+}
+
+
+/*
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -40,3 +68,4 @@ public struct Intel  : IComparable<Intel>, IEquatable<Intel>
         return result;
     }
 }
+*/

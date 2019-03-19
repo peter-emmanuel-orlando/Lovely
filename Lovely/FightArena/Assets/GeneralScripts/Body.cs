@@ -21,6 +21,7 @@ public abstract class Body : UnifiedController, ISpawnable
 {
     public GameObject GameObject { get { return (this == null) ? null : gameObject; } }
     public Transform Transform { get { return (this == null) ? null : transform; } }
+    public Bounds Bounds { get { return bodyMesh.bounds; } }
 
     [ShowOnly]
     [SerializeField]
@@ -37,6 +38,7 @@ public abstract class Body : UnifiedController, ISpawnable
     private float depowerAfter = 0;//time to reset empowerment
     public event EmpowerChangeEventHandler EmpowermentChangeEvent;
     private PowerUpEffect powerUpEffects;
+    private ItemPack backpack = new ItemPack();
 
     public int EmpowermentLevel { get { return empowermentLevel; } }
     public abstract Mind Mind { get; }
@@ -45,6 +47,9 @@ public abstract class Body : UnifiedController, ISpawnable
     public abstract Gender Gender { get; }
     public abstract string PrefabName { get; }
     public abstract CharacterAbilities CharacterAbilities { get; }
+    public ItemPack Backpack { get { return backpack; } protected set { backpack = value; } }
+
+
     SkinnedMeshRenderer bodyMesh;
 
     public event CharDeathEventHandler CharDeathEvent;

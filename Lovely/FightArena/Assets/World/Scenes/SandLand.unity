@@ -193,8 +193,8 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 217924277}
-  m_LocalRotation: {x: 0.16336428, y: 0.0023673996, z: 0.00039088624, w: -0.98656297}
-  m_LocalPosition: {x: 4.752875, y: -0, z: -72.237335}
+  m_LocalRotation: {x: 0.16401857, y: 0.8249768, z: 0.30123502, w: -0.44918665}
+  m_LocalPosition: {x: -1.5054317, y: -0, z: -0.17285836}
   m_LocalScale: {x: 0.021987686, y: 0, z: 0.021987686}
   m_Children: []
   m_Father: {fileID: 1500831761}
@@ -1273,13 +1273,13 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 645762345}
-  m_LocalRotation: {x: -0.5118713, y: 0.15146743, z: 0.09223853, w: 0.8405579}
-  m_LocalPosition: {x: 0, y: 78, z: -10}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 78, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 3
-  m_LocalEulerAnglesHint: {x: -62.68, y: 20.43, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &645762349
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2680,8 +2680,8 @@ Transform:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 1530305590}
-  m_LocalRotation: {x: 0.2359479, y: 0.66306096, z: 0.23313199, w: -0.671065}
-  m_LocalPosition: {x: 23.934788, y: -0, z: 6.8897047}
+  m_LocalRotation: {x: 0.015631076, y: -0.9167285, z: 0.03604423, w: 0.39757428}
+  m_LocalPosition: {x: -1.5725336, y: -0, z: -0.15232626}
   m_LocalScale: {x: 0.021987686, y: 0, z: 0.021987686}
   m_Children: []
   m_Father: {fileID: 1500831761}
@@ -2745,7 +2745,7 @@ GameObject:
   - component: {fileID: 1643248870}
   - component: {fileID: 1643248869}
   m_Layer: 0
-  m_Name: GameObject
+  m_Name: ReflectionProbe
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -3475,7 +3475,7 @@ Transform:
   m_PrefabInternal: {fileID: 0}
   m_GameObject: {fileID: 2119283029}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0, y: 70.40835, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1193366197}
@@ -3493,7 +3493,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_resources: {fileID: 11400000, guid: c98e02f9daf2eb944b96f40d0aaed8d4, type: 2}
-  m_resourcesPath: 
+  m_resourcesPath: Assets/GeneralScripts/Gaia/Data/GR NatureManufacture.asset
   m_spawnerID: d29820f4-36e4-4f02-9d4d-6a5de65370e5
   m_mode: 0
   m_seed: 687
@@ -3573,34 +3573,7 @@ MonoBehaviour:
     m_isActive: 1
     m_isFoldedOut: 0
     m_currInstanceCnt: 0
-    m_activeInstanceCnt: 0
-    m_inactiveInstanceCnt: 0
-  - m_name: T_ground_grass_01_A_SM
-    m_useExtendedSpawn: 0
-    m_minViableFitness: 0
-    m_failureRate: 0
-    m_maxInstances: 4194304
-    m_ignoreMaxInstances: 1
-    m_minDirection: 0
-    m_maxDirection: 359.9
-    m_resourceType: 0
-    m_resourceIdx: 1
-    m_resourceIdxPhysical: 0
-    m_spawnParent: {fileID: 0}
-    m_colliderName: _GaiaCollider_Grass
-    m_noiseMask: 0
-    m_noiseMaskSeed: 0
-    m_noiseMaskOctaves: 8
-    m_noiseMaskPersistence: 0.25
-    m_noiseMaskFrequency: 1
-    m_noiseMaskLacunarity: 1.5
-    m_noiseZoom: 50
-    m_noiseStrength: 1
-    m_noiseInvert: 0
-    m_isActive: 1
-    m_isFoldedOut: 0
-    m_currInstanceCnt: 0
-    m_activeInstanceCnt: 0
+    m_activeInstanceCnt: 1045552
     m_inactiveInstanceCnt: 0
   - m_name: T_ground_rock_02_A_SM
     m_useExtendedSpawn: 0
@@ -3612,49 +3585,22 @@ MonoBehaviour:
     m_maxDirection: 359.9
     m_resourceType: 0
     m_resourceIdx: 2
-    m_resourceIdxPhysical: 0
+    m_resourceIdxPhysical: 2
     m_spawnParent: {fileID: 0}
     m_colliderName: _GaiaCollider_Grass
     m_noiseMask: 1
-    m_noiseMaskSeed: 743
-    m_noiseMaskOctaves: 8
-    m_noiseMaskPersistence: 0.25
+    m_noiseMaskSeed: 17916
+    m_noiseMaskOctaves: 3
+    m_noiseMaskPersistence: 0.69
     m_noiseMaskFrequency: 1
-    m_noiseMaskLacunarity: 1.5
+    m_noiseMaskLacunarity: 2.116
     m_noiseZoom: 150
     m_noiseStrength: 1
     m_noiseInvert: 0
     m_isActive: 1
-    m_isFoldedOut: 0
+    m_isFoldedOut: 1
     m_currInstanceCnt: 0
-    m_activeInstanceCnt: 0
-    m_inactiveInstanceCnt: 0
-  - m_name: T_ground_rock_01_A_SM
-    m_useExtendedSpawn: 0
-    m_minViableFitness: 0
-    m_failureRate: 0
-    m_maxInstances: 4194304
-    m_ignoreMaxInstances: 1
-    m_minDirection: 0
-    m_maxDirection: 359.9
-    m_resourceType: 0
-    m_resourceIdx: 3
-    m_resourceIdxPhysical: 0
-    m_spawnParent: {fileID: 0}
-    m_colliderName: _GaiaCollider_Grass
-    m_noiseMask: 0
-    m_noiseMaskSeed: 0
-    m_noiseMaskOctaves: 8
-    m_noiseMaskPersistence: 0.25
-    m_noiseMaskFrequency: 1
-    m_noiseMaskLacunarity: 1.5
-    m_noiseZoom: 50
-    m_noiseStrength: 1
-    m_noiseInvert: 0
-    m_isActive: 1
-    m_isFoldedOut: 0
-    m_currInstanceCnt: 0
-    m_activeInstanceCnt: 0
+    m_activeInstanceCnt: 331693
     m_inactiveInstanceCnt: 0
   m_spawnCollisionLayers:
     serializedVersion: 2
@@ -3667,19 +3613,19 @@ MonoBehaviour:
   m_areaBoundsColliderCache: {fileID: 0}
   m_goColliderCache: {fileID: 0}
   m_goParentGameObject: {fileID: 0}
-  m_totalRuleCnt: 4
-  m_activeRuleCnt: 4
+  m_totalRuleCnt: 2
+  m_activeRuleCnt: 2
   m_inactiveRuleCnt: 0
-  m_maxInstanceCnt: 16777216
-  m_activeInstanceCnt: 0
+  m_maxInstanceCnt: 8388608
+  m_activeInstanceCnt: 1377245
   m_inactiveInstanceCnt: 0
-  m_totalInstanceCnt: 0
+  m_totalInstanceCnt: 1377245
   m_updateTimeAllowed: 0.033333335
   m_spawnProgress: 0
   m_spawnComplete: 1
   m_spawnerBounds:
     m_Center: {x: 0, y: 0, z: 0}
-    m_Extent: {x: 0, y: 0, z: 0}
+    m_Extent: {x: 1024, y: 1024, z: 1024}
 --- !u!1 &2122289374
 GameObject:
   m_ObjectHideFlags: 0

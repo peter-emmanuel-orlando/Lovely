@@ -3,8 +3,29 @@ using System.Collections.Generic;
 using UnityEngine;
 
 //fight performable should be called MartialDecicionMaker which is an IDecisionMaker that returns either attack, or flee or recoup or whatever[each of which should be a performable]
-public class FightPerformable : IPerformable
+public class FightPerformable : Performable
 {
+
+    //change to each mindStat in in-game days. negative takes away, positive adds
+    public override float DeltaWakefulness { get { return _deltaWakefulness; } }//decreases when awake, depletes quicker when performing taxing tasks, increases 1.5x speed when sleeping
+    public override float DeltaExcitement { get { return _deltaExcitement; } }//depletes awake or asleep. Tedious work takes chunks from this. relaxation activities increase this
+    public override float DeltaSpirituality { get { return _deltaSpirituality; } }//depletes awake or asleep. relaxation activities increase this. Tedious Work or seedy activities takes chunks from this
+    public override float DeltaSocialization { get { return _deltaSocialization; } }//depletes when awake. increases when working or playing together
+    public override float DeltaCalories { get { return _deltaCalories; } }//num days calories will last.
+    public override float DeltaBlood { get { return _deltaBlood; } }//reaching 0 blood and being passes out
+    public override bool IsSleepActivity { get { return _isSleepActivity; } }//is this activity sleeping?
+
+    float _deltaWakefulness = 0;
+    float _deltaExcitement = 0;
+    float _deltaSpirituality = 0;
+    float _deltaSocialization = 0;
+    float _deltaCalories = 0;
+    float _deltaBlood = 0;
+    bool _isSleepActivity = false;
+    //*//////////////////////////////////////////////////////////////////////////////////////////////////
+
+    public override ActivityState ActivityType { get { return ActivityState.Nothing; } }
+
     private Mind performer;
     private readonly float reassessmentInterval = 2f;
     private float nextReassessment = 0;
@@ -13,10 +34,9 @@ public class FightPerformable : IPerformable
     {
         this.performer = performer;
     }
+    
 
-    public Mind Performer { get { return performer; } }
-
-    public IEnumerator Perform()
+    public override IEnumerator Perform()
     {
         var currentStrategy = GetStrategy();
         IEnumerator currentEnumerator = null;
@@ -51,7 +71,7 @@ public class FightPerformable : IPerformable
     private IEnumerator Attack()
     {
         var enemy = GetBestAttackTarget();
-        if(enemy.isInitialized)
+        if(enemy != null)
         {
             IEnumerator activeEnumerator = null;
             
@@ -112,9 +132,9 @@ public class FightPerformable : IPerformable
         return result;
     }
 
-    private Intel GetBestAttackTarget()
+    private BodyIntel GetBestAttackTarget()
     {
-        var result = new Intel();
+        BodyIntel result = null;
         if (performer.VisibleEnemies.Count > 0)
             result = performer.VisibleEnemies[0];
         return result;

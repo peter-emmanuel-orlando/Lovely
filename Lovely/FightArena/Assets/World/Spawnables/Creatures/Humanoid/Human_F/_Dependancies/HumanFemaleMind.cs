@@ -10,11 +10,11 @@ public class HumanFemaleMind : HumanMind
 
     }
 
-    protected override float SightRange { get { return 60f; } }
+    public override float SightRadius { get { return 60f; } }
 
     public override IPerformable GetDecisions()
     {
         //Debug.LogWarning("HumanFemaleMind does not yet have any behaviors!");
-        return EmptyPerformable.empty;
+        return new EmptyPerformable();
     }
 }

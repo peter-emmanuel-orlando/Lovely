@@ -116,6 +116,39 @@ static class MyExtensions
     }
 
 
+    /// <summary>
+    /// seperates a flags enum into component flags
+    /// </summary>
+    /// <param name="input"></param>
+    /// <returns></returns>
+    public static IEnumerable<ItemType> Enumerate(this ItemType input)
+    {
+        foreach (ItemType value in Enum.GetValues(typeof(ItemType)))
+            if ((input & value) != 0)//input.HasFlag(value))
+                yield return value;
+    }
+
+    public static bool ContanisAll(this ItemType input, params ItemType[] query)
+    {
+        var result = true;
+        foreach (var item in query)
+        {
+            result &= (input & item) != 0;
+
+        }
+        return result;
+    }
+
+    public static bool ContanisAny(this ItemType input, params ItemType[] query)
+    {
+        var result = true;
+        foreach (var item in query)
+        {
+            result |= (input & item) != 0;
+
+        }
+        return result;
+    }
 
 
 

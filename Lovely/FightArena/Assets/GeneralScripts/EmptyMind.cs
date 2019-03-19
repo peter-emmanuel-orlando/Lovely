@@ -10,10 +10,10 @@ public class EmptyMind : Mind
 
     }
     
-    protected override float SightRange { get { return 10f;} }
+    public override float SightRadius { get { return 10f;} }
 
     public override IPerformable GetDecisions()
     {
-        return EmptyPerformable.empty;
+        return new EmptyPerformable();
     }
 }

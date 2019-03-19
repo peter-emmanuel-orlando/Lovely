@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 
 //[ExecuteInEditMode]
-public class PowerUpEffect : MonoBehaviour, ISpawnable
+public class PowerUpEffect : Spawnable
 {
     /* for testing
     [SerializeField]
@@ -19,10 +19,8 @@ public class PowerUpEffect : MonoBehaviour, ISpawnable
         }
     }
     */
-
-    public GameObject GameObject { get { return (this == null) ? null : base.gameObject; } }
-    public Transform Transform { get { return (this == null) ? null : transform; } }
-    public string PrefabName { get { return "PowerUpEffect"; } }
+    
+    public override string PrefabName { get { return "PowerUpEffect"; } }
     private const int maxLevel = Body.maxEmpowermentLevel;
     private ParticleSystem[] pSystems = new ParticleSystem[maxLevel + 1];//0 represents no powerup, but it plays a clearing splash
 

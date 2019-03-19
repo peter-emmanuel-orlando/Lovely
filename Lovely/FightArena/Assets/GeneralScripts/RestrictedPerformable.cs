@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class RestrictedPerformable<T> : IPerformable where T : IBodyFeature
+public abstract class RestrictedPerformable<T> : Performable where T : IBodyFeature
 {
     public readonly  T extraFeature;
     public readonly Body body;
@@ -12,8 +12,4 @@ public abstract class RestrictedPerformable<T> : IPerformable where T : IBodyFea
         this.body = body;
         this.extraFeature = extraFeature;
     }
-
-    public Mind Performer { get { return body.Mind; } }
-
-    public abstract IEnumerator Perform();
 }

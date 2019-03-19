@@ -9,8 +9,20 @@ todo:
 	-make kunai apply effects when colliding with a hitbox as well as a physical object
 
 ------------------------------------------------------------------------------------------------
-welcome back me! this is why its so important to have a job you love. This current job is taxing on your soul, I havent seen you in a while, bud.
+edited BUT DID NOT TEST scripts imported from fightfightfight.
 
-Downloaded and tested a few environments with gaia, bloating the size of each zip, but massively improving look of terrain
+Added in a sun/moon/sky changing system for night day cycle with multiple directional lights and ambient lighting contribution
+(probably added in prev version)
 
-dumped AI scripts from fightfightfight in, but did not yet combine with current scripts
+changed Being class from fightfightfight to Body or Mind classes where appropriate.
+
+added in TrackedObject instead of TrackedGamObject so gameobjects can be tracked without having to inherit from class.
+	TODO! make only monobehaviors implementing the interfaces "derived" from ISpawnable (i.e. ISpawnableFood, ISpawnableBody, etc)
+	trackable, to prevent a tracked thing not being found because its tracked as something else.
+
+Changed intel class to be more in line with more extendible implementation from FightFightFight
+
+Changed Mind into two classes,
+	MindBase is responsible for ticking through performables, and managing the source of performables ONLY
+	Mind is responsible for perception of the outside world, and categorizing those things into friend/foe/food etc
+

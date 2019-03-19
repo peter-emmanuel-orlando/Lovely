@@ -28,8 +28,8 @@ Material:
     - _SunBeta: 1
     - _SunIntensity: 21.98
     m_Colors:
-    - _SkyColor1: {r: 0.001185745, g: 3.5555515, b: 4.0023713, a: 3}
-    - _SkyColor2: {r: 4.0290647, g: 4.0064588, b: 4.0118413, a: 3}
+    - _SkyColor1: {r: 0.0039839777, g: 3.5572305, b: 4.007968, a: 3}
+    - _SkyColor2: {r: 4.097655, g: 4.021701, b: 4.0397854, a: 3}
     - _SkyColor3: {r: 0, g: 0, b: 0, a: 3}
     - _SunColor: {r: 1, g: 0.98999995, b: 0.87, a: 1}
     - _SunVector: {r: -0.08, g: 0.79, b: 0.71, a: 183.24}

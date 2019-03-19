@@ -6,7 +6,7 @@ public class FairieFireMind : Mind
 {
     private readonly WanderPerformable wander;
 
-    protected override float SightRange { get { return 10f; } }
+    public override float SightRadius { get { return 10f; } }
 
     public FairieFireMind(FairieFireBody body) : base(body)
     {

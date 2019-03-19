@@ -1,15 +1,13 @@
 ﻿using UnityEngine;
 
-public abstract class Projectile : MonoBehaviour, ISpawnable
+public abstract class Projectile : Spawnable
 {
-    public GameObject GameObject { get { return (this == null) ? null : base.gameObject; } }
-    public Transform Transform { get { return (this == null) ? null : transform; } }
 
     [ShowOnly]
     public GameObject initiator;
 
     public abstract ProjectileStats ProjectileStats { get; }
-    public string PrefabName { get { return ProjectileStats.prefabName; } }
+    public override string PrefabName { get { return ProjectileStats.prefabName; } }
     public event ColliderEventHandler HitEvent;
 
     protected abstract event ColliderEventHandler OnHitEvent;
