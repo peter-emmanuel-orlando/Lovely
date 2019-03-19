@@ -161,6 +161,7 @@ public abstract class UnifiedController : MonoBehaviour
 
         navAgent = transform.GetComponent<NavMeshAgent>();
         if (navAgent == null) navAgent = gameObject.AddComponent<NavMeshAgent>();
+        navAgent.hideFlags = HideFlags.NotEditable;
         //navAgent.hideFlags = HideFlags.HideInInspector;
         navAgent.updatePosition = false;
         //navAgent.updateRotation = false;
@@ -168,6 +169,7 @@ public abstract class UnifiedController : MonoBehaviour
 
         anim = transform.GetComponent<Animator>();
         if (anim == null) anim = gameObject.AddComponent<Animator>();
+        anim.hideFlags = HideFlags.NotEditable;
         //anim.hideFlags = HideFlags.HideInInspector;
         anim.avatar = avatar;
         var overrideInstance = new AnimatorOverrideController(BaseController);
@@ -180,6 +182,7 @@ public abstract class UnifiedController : MonoBehaviour
 
         rb = transform.GetComponent<Rigidbody>();
         if (rb == null) rb = gameObject.AddComponent<Rigidbody>();
+        rb.hideFlags = HideFlags.NotEditable;
         //rb.hideFlags = HideFlags.HideInInspector;
         rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
         rb.isKinematic = true;

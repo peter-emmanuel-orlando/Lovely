@@ -22,11 +22,14 @@ public class ClickToMove : MonoBehaviour
         if (Input.GetMouseButtonDown(0) && !Input.GetKey(KeyCode.LeftShift))
         {
             var ray = Camera.main.ScreenPointToRay(Input.mousePosition);
-            if (Physics.Raycast(ray.origin, ray.direction, out m_HitInfo))
+            if (Physics.Raycast(ray.origin, ray.direction, out m_HitInfo, Mathf.Infinity, -1, QueryTriggerInteraction.Ignore) )
             {
-                var dir = transform.InverseTransformDirection(m_HitInfo.point - transform.position).normalized;
+                //var dir = transform.InverseTransformDirection(m_HitInfo.point - transform.position).normalized;
                 if(asTheCrowFlies)
-                    cont.Move(dir.x, dir.z);
+                {
+                    cont.TurnToFace(m_HitInfo.point);
+                    cont.Move(0, 1);
+                }
                 else
                     cont.MoveToDestination(m_HitInfo.point);
 

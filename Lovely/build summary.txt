@@ -8,6 +8,10 @@ todo:
 	-make kunai apply effects when colliding with a hitbox as whel as a physical object
 
 ------------------------------------------------------------------------------------------------
+very minor bugfixes
 
-changed navmeshsurface other to work based on triggers
-added in nested and overlaping surfaces
+TODO!!!!! COMPLETELY CHANGE THE WAY NAVMESHSURFACEOTHER GATHERS SOURCES
+
+instead of gathering children or volume or whatever, itll gather a new class [public class OtherSurfaceVolume] that [requirecomponent(typeof(NavMEshSurfaceOther))]
+this class defines both the triggers and the walkable volume of the surface
+navmeshsurfaceother should only gather this new class instead of the normal gathering method
