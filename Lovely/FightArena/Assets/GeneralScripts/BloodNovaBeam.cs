@@ -18,15 +18,15 @@ public class BloodNovaBeam : Projectile
 
     public override ProjectileStats ProjectileStats { get { return projectileStats; } }
 
-    protected override void OnEnable()
-    {
-
-    }
-
     protected override void Awake()
     {
         base.Awake();
         recoilAnimation = _AnimationPool.GetAnimation("KnockBack_Heavy");
+    }
+
+    protected override void OnEnable()
+    {
+
     }
 
     private void Update()

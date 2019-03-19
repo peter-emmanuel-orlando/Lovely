@@ -39,6 +39,7 @@ ModelImporter:
     100066: terrarium1
     100068: terrarium2
     100070: walls
+    100072: mainBarUnderglow
     400000: cabanas
     400002: //RootNode
     400004: djBoothGlass
@@ -75,6 +76,7 @@ ModelImporter:
     400066: terrarium1
     400068: terrarium2
     400070: walls
+    400072: mainBarUnderglow
     2100000: No Name
     2300000: cabanas
     2300002: djBoothGlass
@@ -100,6 +102,7 @@ ModelImporter:
     2300042: terrarium1
     2300044: terrarium2
     2300046: walls
+    2300048: mainBarUnderglow
     3300000: cabanas
     3300002: djBoothGlass
     3300004: djPodium
@@ -124,6 +127,7 @@ ModelImporter:
     3300042: terrarium1
     3300044: terrarium2
     3300046: walls
+    3300048: mainBarUnderglow
     4300000: mainStage
     4300002: floor
     4300004: roof
@@ -148,6 +152,7 @@ ModelImporter:
     4300042: djPodium
     4300044: lowerBarGlow
     4300046: step
+    4300048: mainBarUnderglow
     6400000: cabanas
     6400002: djBoothGlass
     6400004: djPodium
@@ -172,6 +177,7 @@ ModelImporter:
     6400042: terrarium1
     6400044: terrarium2
     6400046: walls
+    6400048: mainBarUnderglow
   externalObjects: {}
   materials:
     importMaterials: 1

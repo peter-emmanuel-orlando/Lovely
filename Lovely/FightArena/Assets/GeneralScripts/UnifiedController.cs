@@ -196,7 +196,7 @@ public abstract class UnifiedController : MonoBehaviour
         SyncAnimation();
         SyncNavigation();
         SyncPhysics();
-        //gameObject.DisplayTextComponent(this);
+        gameObject.DisplayTextComponent(this);
     }
 
     private void SyncAnimation()
@@ -351,8 +351,9 @@ public abstract class UnifiedController : MonoBehaviour
         if (movementSource == ControlMode.Navigation)
         {
             rb.isKinematic = true;
-            if (!navAgent.pathPending)//haspath?
+            if (!navAgent.pathPending || navAgent.pathStatus == NavMeshPathStatus.PathPartial)//haspath?
             {
+                //needs smoothing or something. if path is pending, it jitters while trying to get to nextpos
                 rb.MovePosition(navAgent.nextPosition);
                 //rb.MoveRotation(Quaternion.LookRotation(navAgent.desiredVelocity, transform.up));
             }
@@ -762,6 +763,8 @@ public abstract class UnifiedController : MonoBehaviour
     {
         return base.ToString() + "\n" +
             "movementSource: " + movementSource + "\n" +
+            "transform.position: " + transform.position + "\n" +
+            "navAgent.nextPosition: " + navAgent.nextPosition + "\n" +
             "navAgent.pathPending: " + navAgent.pathPending + "\n" +
             "navAgent.pathStatus: " + navAgent.pathStatus + "\n" +
             "navAgent.desiredVelocity: " + navAgent.desiredVelocity + "\n" +

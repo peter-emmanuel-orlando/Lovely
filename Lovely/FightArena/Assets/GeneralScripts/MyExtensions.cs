@@ -8,6 +8,29 @@ using UnityEngine;
 
 static class MyExtensions
 {
+    public static Vector3[] GetCornerVerticies(this Bounds bounds)
+    {
+
+        var center = bounds.center;
+        var extents = bounds.extents;
+        var cornerPositions = new Vector3[]
+        {
+            new Vector3(center.x + extents.x, center.y + extents.y, center.z + extents.z),
+            new Vector3(center.x - extents.x, center.y - extents.y, center.z - extents.z),
+
+            new Vector3(center.x + extents.x, center.y - extents.y, center.z - extents.z),
+            new Vector3(center.x - extents.x, center.y + extents.y, center.z + extents.z),
+
+            new Vector3(center.x - extents.x, center.y - extents.y, center.z + extents.z),
+            new Vector3(center.x + extents.x, center.y + extents.y, center.z - extents.z),
+
+            new Vector3(center.x - extents.x, center.y + extents.y, center.z - extents.z),
+            new Vector3(center.x + extents.x, center.y - extents.y, center.z + extents.z),
+        };
+
+        return cornerPositions;
+    }
+
     public static void Shuffle<T>(this IList<T> list)
     {
         int n = list.Count;

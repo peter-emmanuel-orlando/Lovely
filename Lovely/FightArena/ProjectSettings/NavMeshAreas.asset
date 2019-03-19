@@ -11,7 +11,9 @@ NavMeshProjectSettings:
     cost: 1
   - name: Jump
     cost: 2
-  - name: 
+  - name: WalkableMain
+    cost: 1
+  - name: WalkableOther
     cost: 1
   - name: 
     cost: 1
@@ -37,9 +39,7 @@ NavMeshProjectSettings:
     cost: 1
   - name: 
     cost: 1
-  - name: 
-    cost: 1
-  - name: 
+  - name: test
     cost: 1
   - name: 
     cost: 1

@@ -9,7 +9,10 @@ todo:
 
 ------------------------------------------------------------------------------------------------
 
-fixed bug where avatar definition affected jumping ability
-changed jump velocity calculation so it now scales along with transform
-changed unified controller so rigidbody is synched in the FixedUpdate physics loop rather than the framerate depandant Update loop.
-Added in club and added many materials and visual upgrades. This was actually done in the previous version but was undocumented. Final styling of the main room was done in this update
+fixed bug in UnifiedController where a pathpending status would desynchronise the rb position and the navagent position
+
+added in the concept of a trackedGameObject which is a gameobject whos location and bounds may need to be queried often
+
+added in the concept of NavMeshSurfaceOther which is a navmesh surface that can easily be loaded and unloaded from the game. It is based on the fact that baking navmeshsurfaces can overlap. the external world is a layer and the interior navmesh is its own layer. The key is the interior navmesh bakes a little outside its bounds while the external world navmesh builds right up to the structure. This little bit of overlap is the key. When an agent crosses a trigger threshold, they can be switched from the external world mesh to the internal one by changing the agents walkable layer. this allows the seamless intergration of navmeshsurfaces without the need for navmeshlinks. Known downnsides, no two may overlap, else the trigger calls are ambiguous.
+created a custom navmeshsurface implementation heavily based on the origional to implement this
+

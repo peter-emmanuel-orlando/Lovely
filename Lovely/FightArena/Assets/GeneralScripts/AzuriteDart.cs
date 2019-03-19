@@ -14,18 +14,17 @@ public class AzuriteDart : Projectile
 
     public override ProjectileStats ProjectileStats { get { return projectileStats; } }
 
-    protected override void OnEnable()
-    {
-
-    }
-
-
     protected override void Awake()
     {
         base.Awake();
         recoilAnimation = _AnimationPool.GetAnimation("KnockBack_Light");
         rb = GetComponentInChildren<Rigidbody>();
         if (rb == null) throw new UnityException("an AzuriteDart needs a rigidbody for colission ");
+    }
+
+    protected override void OnEnable()
+    {
+
     }
 
     private void Start()
