@@ -330,7 +330,7 @@ public partial class UnifiedController : MonoBehaviour
         {
             //navAgent.nextPosition = transform.position;
             if (remainOnNavMesh)
-                navAgent.Move(transform.position - navAgent.nextPosition);
+                navAgent.Move(anim.deltaPosition);
             else
                 navAgent.Warp(transform.position);
         }
@@ -618,12 +618,12 @@ public partial class UnifiedController : MonoBehaviour
         //clear playAnimation(recoil)
         recoil = RecoilCode.None;
 
-        movementSource = ControlMode.AnimatedRoot;
+        this.movementSource = ControlMode.AnimatedRoot;
 
         this.remainOnNavMesh = remainOnNavMesh;
         var stateInfo = anim.GetCurrentAnimatorStateInfo(0);
         var nextInfo = anim.GetNextAnimatorStateInfo(0);
-        playAnimationSlot = "ActionA";
+        this.playAnimationSlot = "ActionA";
         if (anim.GetCurrentAnimatorStateInfo(0).IsName("ActionA"))
             playAnimationSlot = "ActionB";
         this.playMirrored = playMirrored;
