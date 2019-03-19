@@ -93,7 +93,7 @@ public class Dodge : Ability
             debug += "r:" + current + ", ";
 
             debug += "max:" + currentMax;
-            Debug.Log(debug);
+            //Debug.Log(debug);
         }
 
         SetDodgeDirection(newDirection);

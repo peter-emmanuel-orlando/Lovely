@@ -54,6 +54,8 @@ public abstract class UnifiedController : MonoBehaviour
     private Collider physicsCollider;
     private Action additionalPhysics;
     private float requirePhysicsTimeLength = 0;
+    Vector3 deltaPosForPhys = Vector3.zero;
+    Quaternion deltaRotForPhys = Quaternion.identity;
 
     private enum ControlMode
     { AnimNav = 0, Navigation, AnimatedRoot, Physics }
@@ -335,6 +337,12 @@ public abstract class UnifiedController : MonoBehaviour
 
     private void SyncPhysics()
     {
+        deltaPosForPhys = anim.deltaPosition;
+        deltaRotForPhys = anim.deltaRotation;
+    }
+
+    private void FixedUpdate()
+    {
         //certain actions(ie jump, fly, and other vertical movements) 
         //are too complex to be scripted with physics. Therefore follow root motion animation
         //physics (ie falling, ragdolling getting hit by certain things) is to complex to do everything via animation so turn off everything and just physics
@@ -361,12 +369,12 @@ public abstract class UnifiedController : MonoBehaviour
             {
                 rb.isKinematic = true;
                 rb.MovePosition(navAgent.nextPosition);
-                rb.MoveRotation(rb.rotation * anim.deltaRotation);
+                rb.MoveRotation(rb.rotation * deltaRotForPhys);
             }
             else
             {
                 rb.isKinematic = false;
-                rb.velocity = (anim.deltaPosition) / Time.deltaTime;
+                rb.velocity = (deltaPosForPhys) / Time.fixedDeltaTime;
                 rb.angularDrag = 8f;
                 // not yet working rb.angularVelocity = (anim.deltaRotation.eulerAngles) / Time.deltaTime;
                 //rb.MoveRotation(rb.rotation * anim.deltaRotation);
@@ -380,16 +388,16 @@ public abstract class UnifiedController : MonoBehaviour
             var centerPos = anim.bodyPosition;
             Debug.unityLogger.logEnabled = true;
             var headPos = centerPos + (centerPos - rootPos);
-            //Debug.DrawLine(centerPos, rootPos, Color.red);
-            //Debug.DrawLine(centerPos, headPos, Color.magenta);
+            Debug.DrawLine(centerPos, rootPos, Color.red);
+            Debug.DrawLine(centerPos, headPos, Color.magenta);
             var lowerCenter = (rootPos + centerPos) / 2f;
             var upperCenter = (headPos + centerPos) / 2f;
-            //Debug.DrawLine(centerPos, lowerCenter, Color.blue);
-            //Debug.DrawLine(centerPos, upperCenter, Color.cyan);
+            Debug.DrawLine(centerPos, lowerCenter, Color.blue);
+            Debug.DrawLine(centerPos, upperCenter, Color.cyan);
             var samplePositionRadius = Vector3.Distance(centerPos, lowerCenter);
             samplePositionRadius *= 2f;
-            //DebugShape.DrawSphere(lowerCenter, samplePositionRadius, Color.yellow, 0.3f);
-            //DebugShape.DrawSphere(headPos, samplePositionRadius, Color.green, 0.3f);
+            DebugShape.DrawSphere(lowerCenter, samplePositionRadius, Color.yellow, 0.3f);
+            DebugShape.DrawSphere(headPos, samplePositionRadius, Color.green, 0.3f);
 
             rb.isKinematic = false;
 
@@ -401,7 +409,7 @@ public abstract class UnifiedController : MonoBehaviour
 
             if(requirePhysicsTimeLength > 0)
             {
-                requirePhysicsTimeLength -= Time.deltaTime;
+                requirePhysicsTimeLength -= Time.fixedDeltaTime;
             }
             else
             {
@@ -428,6 +436,9 @@ public abstract class UnifiedController : MonoBehaviour
                 }
             }
         }
+
+        deltaPosForPhys = Vector3.zero;
+        deltaRotForPhys = Quaternion.identity;
 
     }
 
@@ -505,6 +516,7 @@ public abstract class UnifiedController : MonoBehaviour
         yield break;
     }
 
+    //move this away from IEnumerator
     public IEnumerator<ProgressStatus> MoveToDestination(Vector3 destination, float stoppingDistance = 1)
     {
         var result = _MoveToDestination(destination, stoppingDistance);
@@ -542,7 +554,7 @@ public abstract class UnifiedController : MonoBehaviour
             else
                 yield return ProgressStatus.InProgress;//ProgressStatus.Pending;
         }
-        while (navAgent.remainingDistance > 0)
+        while ( navAgent.isOnOffMeshLink || ( navAgent.isOnNavMesh && navAgent.remainingDistance > 0))
         {
             if ((navDestination != destination) || (!navAgent.isOnNavMesh && !navAgent.isOnOffMeshLink))
             {
@@ -559,6 +571,8 @@ public abstract class UnifiedController : MonoBehaviour
 
     public void Jump(Vector3 normalizedJump)
     {
+        //todo: nothing here prevents double jumping except animation time length, thats bad design.
+        //either this should be an interrupt animation, or it should only jump  if attached to navmesh
         if (isLocked || !IsInitialized) return;
 
         //clear manual movement
@@ -579,7 +593,8 @@ public abstract class UnifiedController : MonoBehaviour
 
         normalizedJump = new Vector3(normalizedJump.x * jumpVelocity.x, normalizedJump.y * jumpVelocity.y, normalizedJump.z * jumpVelocity.z);
 
-        var modifiedVelocity = transform.rotation * normalizedJump;
+        //do i want this to scale with creature? thats what transform vector does
+        var modifiedVelocity = transform.TransformVector( normalizedJump);
         AddForce(modifiedVelocity, ForceMode.VelocityChange, 0.3f);
     }
 
@@ -731,8 +746,11 @@ public abstract class UnifiedController : MonoBehaviour
     }
     public void AddForce(Vector3 force, ForceMode forceMode, float requirePhysicsTimeLength)
     {
-        this.requirePhysicsTimeLength = requirePhysicsTimeLength;
-        additionalPhysics += delegate () { rb.AddForce(force, forceMode); };
+        additionalPhysics += delegate ()
+        {
+            this.requirePhysicsTimeLength = requirePhysicsTimeLength;
+            rb.AddForce(force, forceMode);
+        };
     }
     /*
     public void AddForce(Vector3 force, ForceMode forceMode, bool requirePhysicsUntilRest)

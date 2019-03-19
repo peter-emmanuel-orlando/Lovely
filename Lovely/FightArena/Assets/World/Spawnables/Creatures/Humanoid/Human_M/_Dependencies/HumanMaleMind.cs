@@ -13,7 +13,7 @@ public class HumanMaleMind : HumanMind
 
     public override IPerformable GetDecisions()
     {
-        Debug.LogWarning("HumanMaleMind does not yet have any behaviors!");
+        //Debug.LogWarning("HumanMaleMind does not yet have any behaviors!");
         return EmptyPerformable.empty;
     }
 }

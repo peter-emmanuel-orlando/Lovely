@@ -7,6 +7,7 @@ using UnityEditor.Utils;
 using UnityEditorInternal;
 
 #if UNITY_EDITOR
+
 namespace MK.Glass
 {
     public class MKGlassFreeEditor : ShaderGUI

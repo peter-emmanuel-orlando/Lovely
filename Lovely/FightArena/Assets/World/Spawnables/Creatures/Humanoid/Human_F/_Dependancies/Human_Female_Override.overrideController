@@ -3,8 +3,12 @@
 --- !u!221 &22100000
 AnimatorOverrideController:
   m_ObjectHideFlags: 0
-  m_PrefabParentObject: {fileID: 0}
+  m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInternal: {fileID: 0}
   m_Name: Human_Female_Override
   m_Controller: {fileID: 9100000, guid: 2ae70ab33f0352d41a11d029461598ff, type: 2}
-  m_Clips: []
+  m_Clips:
+  - m_OriginalClip: {fileID: 7400000, guid: 7ffb235166eef9e44890535357f24e23, type: 2}
+    m_OverrideClip: {fileID: 7400002, guid: 9e8dcdb60e02d324f84a1b72ff341189, type: 3}
+  - m_OriginalClip: {fileID: 7400000, guid: 7f80dec3e240c2e4281f71bb36fe726a, type: 2}
+    m_OverrideClip: {fileID: 7400002, guid: 9e8dcdb60e02d324f84a1b72ff341189, type: 3}

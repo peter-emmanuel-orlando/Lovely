@@ -9,7 +9,7 @@ todo:
 
 ------------------------------------------------------------------------------------------------
 
-many bugfixes
-Added in a spotlight that follows transform,
-added in dodge ability that is called by moving while blocking,
-added in particles to kunai that trigger on collide
+fixed bug where avatar definition affected jumping ability
+changed jump velocity calculation so it now scales along with transform
+changed unified controller so rigidbody is synched in the FixedUpdate physics loop rather than the framerate depandant Update loop.
+Added in club and added many materials and visual upgrades. This was actually done in the previous version but was undocumented. Final styling of the main room was done in this update

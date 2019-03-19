@@ -68,7 +68,7 @@ Material:
     - _MKEditorShowRenderBehavior: 1
     - _MKEditorShowRimBehavior: 1
     - _MKEditorShowSpecularBehavior: 1
-    - _MainTint: 1.602
+    - _MainTint: 0.851
     - _Metallic: 1
     - _Mode: 0
     - _OcclusionStrength: 1

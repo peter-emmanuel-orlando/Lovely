@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+//[ExecuteInEditMode]
 public class MusicPlayer : MonoBehaviour
 {
     //fortesting
@@ -14,6 +15,8 @@ public class MusicPlayer : MonoBehaviour
     [ShowOnly]
     [SerializeField]
     private int playTime = 0;
+    [SerializeField]
+    private Vector3 influenceOffset = Vector3.zero;
     [SerializeField]
     private Vector3 influenceRadius = Vector3.one;
     [ShowOnly]
@@ -56,7 +59,7 @@ public class MusicPlayer : MonoBehaviour
 
     public void ChangeExtents(Vector3 newExtents)
     {
-        influenceBounds.center = transform.position;
+        influenceBounds.center = transform.position + influenceOffset;
         influenceBounds.extents = influenceRadius;
         foreach (var speaker in currentSpeakers)
         {
@@ -83,6 +86,7 @@ public class MusicPlayer : MonoBehaviour
 
     private void OnDrawGizmosSelected()
     {
+        ChangeExtents(influenceRadius);
         Gizmos.DrawWireCube(influenceBounds.center, influenceBounds.extents);
     }
 }
