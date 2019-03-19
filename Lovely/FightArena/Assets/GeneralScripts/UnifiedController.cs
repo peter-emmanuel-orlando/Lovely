@@ -202,12 +202,10 @@ public abstract class UnifiedController : MonoBehaviour
         if (playAnimationEnumerator != null && !playAnimationEnumerator.MoveNext())
             playAnimationEnumerator = null;
 
-        if (movementSource == ControlMode.AnimNav)
+
+        if (movementSource != ControlMode.Navigation)
         {
-            //if state isnt movement, go to movement
-            //set animator parameters here for physics or navigation
-            anim.SetFloat("SpeedHorizontal", animMovement.x);
-            anim.SetFloat("SpeedForward", animMovement.z);
+            //handles look
             //rotating the camera and rotation of the body is handled manually outside of the animation system
             //looking up/down or left/right is the domain of the animation system
             transform.localRotation = transform.localRotation * Quaternion.Euler(0, deltaDegreesH, 0);
@@ -217,6 +215,15 @@ public abstract class UnifiedController : MonoBehaviour
                 cameraBone.localRotation = temp;
             var lookVerticalDegrees = -Vector3.SignedAngle(transform.forward, cameraBone.forward, transform.right);
             anim.SetFloat("LookVertical", lookVerticalDegrees / 90f);
+        }
+
+
+        if (movementSource == ControlMode.AnimNav)
+        {
+            //if state isnt movement, go to movement
+            //set animator parameters here for physics or navigation
+            anim.SetFloat("SpeedHorizontal", animMovement.x);
+            anim.SetFloat("SpeedForward", animMovement.z);
         }
         else if (movementSource == ControlMode.Navigation)
         {
@@ -565,6 +572,8 @@ public abstract class UnifiedController : MonoBehaviour
         recoil = RecoilCode.None;
 
         movementSource = ControlMode.AnimatedRoot;
+        anim.ResetTrigger("Abort");
+        anim.SetBool("ExitWhenComplete", true);
         remainOnNavMesh = false;
         jump = true;
 
@@ -576,6 +585,8 @@ public abstract class UnifiedController : MonoBehaviour
 
     //needs to lock when appropriate
     //unless stayOnNavMesh == true, use physics colliders while animating  
+
+        
     /// <summary>
     /// return value is normalized time. -1 indicates animation is neither playing nor queued
     /// </summary>
@@ -623,21 +634,48 @@ public abstract class UnifiedController : MonoBehaviour
             }
             return result;
         }
-    }
 
-    public PlayToken PlayAnimation(AnimationClip clip, bool remainOnNavMesh = true, bool playMirrored = false)
+        public void ExitWhenComplete()
+        {
+            controller.anim.SetBool("ExitWhenComplete", true);
+        }
+
+        public void Abort()
+        {
+            if( GetProgress() != -1)
+            {
+                controller.anim.SetTrigger("Abort");
+            }
+        }
+        
+        public bool FrameByFrameRemainInState()
+        {
+            var isInProgress = GetProgress() != -1;
+            controller.anim.ResetTrigger("Abort");
+            controller.StartCoroutine(ResetRemainInState());
+            return isInProgress;
+        }
+
+        private IEnumerator ResetRemainInState()
+        {
+            yield return new WaitForEndOfFrame();
+            controller.anim.SetTrigger("Abort");
+        }
+    }
+    
+    public PlayToken PlayAnimation(AnimationClip clip, bool remainOnNavMesh = true, bool playMirrored = false, bool exitWhenComplete = true)
     {
         if (isLocked || !IsInitialized || clip == null)
         {
             return null;
         }
 
-        var result = PlayInterruptAnimation(clip, remainOnNavMesh, playMirrored);
+        var result = PlayInterruptAnimation(clip, remainOnNavMesh, playMirrored, exitWhenComplete);
         currentToken = result;
         return result;
     }
 
-    public PlayToken PlayInterruptAnimation(AnimationClip clip, bool remainOnNavMesh = true, bool playMirrored = false)
+    public PlayToken PlayInterruptAnimation(AnimationClip clip, bool remainOnNavMesh = true, bool playMirrored = false, bool exitWhenComplete = true)
     {
         //clear manual movement
         animMovement = Vector3.zero;
@@ -651,6 +689,8 @@ public abstract class UnifiedController : MonoBehaviour
 
         this.movementSource = ControlMode.AnimatedRoot;
 
+        anim.ResetTrigger("Abort");
+        anim.SetBool("ExitWhenComplete", exitWhenComplete);
         this.remainOnNavMesh = remainOnNavMesh;
         var stateInfo = anim.GetCurrentAnimatorStateInfo(0);
         var nextInfo = anim.GetNextAnimatorStateInfo(0);
@@ -666,6 +706,24 @@ public abstract class UnifiedController : MonoBehaviour
         currentToken = result;
         return result;
     }
+    /*
+    public class DirectionalAnimationClips
+    {
+        public readonly AnimationClip up;
+        public readonly AnimationClip down;
+        public readonly AnimationClip neutral;
+        public readonly AnimationClip left;
+        public readonly AnimationClip right;
+
+        public DirectionalAnimationClips(AnimationClip up, AnimationClip down, AnimationClip neutral, AnimationClip left, AnimationClip right)
+        {
+            this.up = up;
+            this.down = down;
+            this.neutral = neutral;
+            this.left = left;
+            this.right = right;
+        }
+    }*/
 
     public void AddForce(Vector3 force, ForceMode forceMode)
     {

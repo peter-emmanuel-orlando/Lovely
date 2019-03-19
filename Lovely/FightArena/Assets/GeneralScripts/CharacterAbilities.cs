@@ -33,6 +33,7 @@ public enum CharacterAbilitySlot
     ThrowItem,
     RangedPower,
     Block,
+    Dodge,
     Meditate,
     SpecialAttack,
     UltimateAttack

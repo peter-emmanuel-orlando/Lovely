@@ -6,9 +6,12 @@ public class BloodNovaBeam : Projectile
 { 
     private ProjectileStats projectileStats = new ProjectileStats("BloodNovaBeam");
     protected AnimationClip recoilAnimation;
-    private GradientValue beamSize = new GradientValue(0, 30);
+    private GradientValue beamLength = new GradientValue(0, 30);
+    private GradientValue beamRadius = new GradientValue(1, 0);
     private float currentTime = 0;
     private const float timeForFullLength = 0.5f;
+    private const float timeForFade = 0.2f;
+    private const float totalTime = timeForFullLength + timeForFade;
     private float damage = 30f;
 
     protected override event ColliderEventHandler OnHitEvent;
@@ -28,10 +31,21 @@ public class BloodNovaBeam : Projectile
 
     private void Update()
     {
-        transform.localScale =  Vector3.one + Vector3.forward * beamSize.Lerp(currentTime / timeForFullLength);
-        currentTime += Time.deltaTime;
-        if (currentTime >= timeForFullLength)
+        if (currentTime <= timeForFullLength)
+        {
+            transform.localScale = (Vector3.one - Vector3.forward) * beamRadius.value1 + Vector3.forward * beamLength.Lerp(currentTime / timeForFullLength);
+        }
+        else
+        {
+            var lerpFactor = (currentTime - timeForFullLength) / timeForFade;
+            transform.localScale = (Vector3.one - Vector3.forward) * beamRadius.Lerp(lerpFactor) + Vector3.forward * beamLength.value2;
+        }
+
+        if (currentTime >= totalTime )
+        {
             Destroy(this.gameObject);
+        }
+        currentTime += Time.deltaTime;
     }
 
     private void OnTriggerEnter(Collider other)

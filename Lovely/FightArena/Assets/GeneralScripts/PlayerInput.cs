@@ -7,6 +7,10 @@ using UnityEngine;
 
 public static class PlayerInput
 {
+    private const float axisDownThreshold = 0.85f;
+    //private const float valueChangeToBeConsideredActualChange = 0.1f;
+
+
     public static float GetAsAxis(AxisCode code, int controllerNumber)
     {
         var axisName = GetControllerSpecificName(typeof(AxisCode), code, controllerNumber);
@@ -39,8 +43,11 @@ public static class PlayerInput
     public static bool GetAsButton(AxisCode code, int controllerNumber)
     {
         var axisName = GetControllerSpecificName(typeof(AxisCode), code, controllerNumber);
-        return Input.GetButton(axisName);
+        var actualValue = Input.GetAxis(axisName);
+        //Debug.Log(actualValue);
+        return actualValue >= axisDownThreshold;
     }
+    /*
     public static bool GetAsButtonDown(AxisCode code, int controllerNumber)
     {
         var axisName = GetControllerSpecificName(typeof(AxisCode), code, controllerNumber);
@@ -51,7 +58,86 @@ public static class PlayerInput
         var axisName = GetControllerSpecificName(typeof(AxisCode), code, controllerNumber);
         return Input.GetButtonUp(axisName);
     }
+    //**************************************************************************
+    private enum ButtonEvent
+    {
+        ButtonDown = 0,
+        ButtonPressed,
+        ButtonUp,
+        ButtonNotPressed
+    }
+    private struct AxisAsButtonEvent
+    {
+        public readonly int frameNumber;
+        public readonly ButtonEvent buttonEvent;
+        public readonly float actualValue;
+
+        public AxisAsButtonEvent(int frameNumber, ButtonEvent buttonEvent, float actualValue)
+        {
+            this.frameNumber = frameNumber;
+            this.buttonEvent = buttonEvent;
+            this.actualValue = actualValue;
+        }
+    }
+    
+    private static readonly Dictionary<string, AxisAsButtonEvent> axisEvents = new Dictionary<string, AxisAsButtonEvent>();
+    private static void TrackPlayerInput(UpdateEventHandler updateEventHandler, int controllerNumber)
+    {
+#if UNITY_EDITOR
+        if (controllerNumber > 5 || controllerNumber < 0)
+            throw new InvalidControllerException("controller numbers range 0-5, with 0 indicating to get first availible input");
+#else
+        if (controllerNumber > 4 || controllerNumber < 0)
+            throw new InvalidControllerException("controller numbers range 0-4, with 0 indicating to get first availible input");
+#endif
+
+    }
+
     //***************************************************************************
+    private static void UpdateAxisAsButtonDict(string buttonName, float actualValue)
+    {
+        var isButtonPressed = actualValue > axisDownThreshold;
+
+        if(!axisEvents.ContainsKey(buttonName))
+        {
+            var pressEventCode = (isButtonPressed) ? ButtonEvent.ButtonDown : ButtonEvent.ButtonUp;
+            var pressEvent = new AxisAsButtonEvent(Time.frameCount, pressEventCode, actualValue);
+            axisEvents.Add(buttonName, pressEvent);
+        }
+        else
+        {
+            var prevEventFrame = axisEvents[buttonName].frameNumber;
+            var currentFrame = Time.frameCount;
+            var prevEventCode = axisEvents[buttonName].buttonEvent;
+
+            if (prevEventFrame == currentFrame)
+            {
+                return;
+            }
+            else
+            {
+                if (isButtonPressed)
+                {
+                    if (prevEventCode == ButtonEvent.ButtonDown || prevEventCode == ButtonEvent.ButtonPressed)
+                        axisEvents[buttonName] = new AxisAsButtonEvent(currentFrame, ButtonEvent.ButtonPressed, actualValue);
+
+                    else if (prevEventCode == ButtonEvent.ButtonUp || prevEventCode == ButtonEvent.ButtonNotPressed)
+                        axisEvents[buttonName] = new AxisAsButtonEvent(currentFrame, ButtonEvent.ButtonDown, actualValue);
+                }
+                else
+                {
+                    if (prevEventCode == ButtonEvent.ButtonUp || prevEventCode == ButtonEvent.ButtonNotPressed)
+                        axisEvents[buttonName] = new AxisAsButtonEvent(currentFrame, ButtonEvent.ButtonNotPressed, actualValue);
+
+                    else if (prevEventCode == ButtonEvent.ButtonDown || prevEventCode == ButtonEvent.ButtonPressed)
+                        axisEvents[buttonName] = new AxisAsButtonEvent(currentFrame, ButtonEvent.ButtonUp, actualValue);
+                }
+            }
+
+        }
+    }
+    //***************************************************************************    
+    */
 
     static string GetControllerSpecificName(Type enumType, object value, int controllerNumber)
     {

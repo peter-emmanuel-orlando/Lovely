@@ -191,9 +191,10 @@ public class PlayerControl : IDecisionMaker, IPerformable
     {
         while (true)
         {
-            if(performerBody != null)
+            if (performerBody != null)
             {
                 cam.transform.position = head.position + performerBody.transform.TransformVector(cameraOffset);
+                var empower = PlayerInput.GetAsButtonDown(ButtonCode.Y, playerNumber);
                 var moveSpeedX = PlayerInput.GetAsAxis(AxisCode.L_XAxis, playerNumber);
                 var moveSpeedZ = PlayerInput.GetAsAxis(AxisCode.L_YAxis, playerNumber);
                 var lookSpeedV = PlayerInput.GetAsAxis(AxisCode.R_YAxis, playerNumber);
@@ -201,7 +202,7 @@ public class PlayerControl : IDecisionMaker, IPerformable
                 var activatePunch = PlayerInput.GetAsButtonDown(ButtonCode.B, playerNumber);
                 var activateRanged = PlayerInput.GetAsButtonDown(ButtonCode.X, playerNumber);
                 var activateJump = PlayerInput.GetAsButtonDown(ButtonCode.A, playerNumber);
-                var empower = PlayerInput.GetAsButtonDown(ButtonCode.Y, playerNumber);
+                var block = PlayerInput.GetAsButton(AxisCode.TriggersL, playerNumber) | PlayerInput.GetAsButton(AxisCode.TriggersR, playerNumber); 
 
                 performerBody.Move(moveSpeedX, moveSpeedZ);
                 performerBody.Look(lookSpeedH, lookSpeedV);
@@ -219,8 +220,15 @@ public class PlayerControl : IDecisionMaker, IPerformable
                     else
                         abilities[CharacterAbilitySlot.ThrowItem].CastAbility();
                 }
+                if (block)
+                {
+                    abilities[CharacterAbilitySlot.Block].CastAbility();
+                    //abilities[CharacterAbilitySlot.Dodge ].CastAbility();
+
+                }
                 if (activateJump)
                     performerBody.Jump(new Vector3(moveSpeedX, 1, moveSpeedZ));
+
                 if (empower)
                     performerBody.Empower();
             }

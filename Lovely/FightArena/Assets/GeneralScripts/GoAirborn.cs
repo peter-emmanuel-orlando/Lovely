@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SuperJumpOrFly : Ability
+public class GoAirborn : Ability
 {
     private Vector3 jumpDirection = Vector3.up;
 
-    public SuperJumpOrFly(Body body) : base(body)
+    public GoAirborn(Body body) : base(body)
     {
     }
 

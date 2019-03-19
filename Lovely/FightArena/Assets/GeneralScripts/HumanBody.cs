@@ -15,5 +15,6 @@ public abstract class HumanBody : Body
         characterAbilities[CharacterAbilitySlot.DashPunch] = new DashPunch(this);
         characterAbilities[CharacterAbilitySlot.ThrowItem] = new AzuriteDartAttack(this);
         characterAbilities[CharacterAbilitySlot.RangedPower] = new BloodNovaBeamAttack(this);
+        characterAbilities[CharacterAbilitySlot.Block] = new Block(this);
     }
 }

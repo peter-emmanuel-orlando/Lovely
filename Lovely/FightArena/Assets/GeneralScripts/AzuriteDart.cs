@@ -36,6 +36,12 @@ public class AzuriteDart : Projectile
 
     private void OnCollisionEnter(Collision collision)
     {
+        rb.useGravity = true;
+        var ps = GetComponentInChildren<ParticleSystem>();
+        ps.Play();
+        var al = GetComponentInChildren<AnimatedLight>();
+        al.Reset();
+        al.playMode = AnimatedLight.PlayMode.Loop;
         Destroy(this);
     }
 
