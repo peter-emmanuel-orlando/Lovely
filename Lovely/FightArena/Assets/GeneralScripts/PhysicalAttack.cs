@@ -16,7 +16,6 @@ public abstract class PhysicalAttack : AnimatedAbility
 
     public PhysicalAttack(Body body, float activeFrameStartNormalized, float activeFrameEndNormalized) : base(body)
     {
-        body.OnTriggerEnterEvent += OnHit;
         collisionTracker = new CollisionTracker(body);
         startAndStop = new ScheduledAction[]
         {
@@ -28,9 +27,13 @@ public abstract class PhysicalAttack : AnimatedAbility
     private void SetEnableCollisions(bool enableCollisions)
     {
         if (enableCollisions)
+        {
+            performer.OnTriggerEnterEvent += OnHit;
             performer.SetHitBoxActiveState(HitBoxType.HandR, true);
+        }
         else
         {
+            performer.OnTriggerEnterEvent -= OnHit;
             performer.SetHitBoxActiveState(HitBoxType.HandR, false);
             collisionTracker.Reset();
         }

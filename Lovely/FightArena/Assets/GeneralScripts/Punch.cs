@@ -15,4 +15,10 @@ public class Punch : PhysicalAttack
 
     public Punch(Body body) : base(body, 0.2f, 0.8f)
     {    }
+
+    protected override void ApplyEffects(Body hitBody)
+    {
+        performer.TurnToFace(hitBody.transform.position);
+        base.ApplyEffects(hitBody);
+    }
 }

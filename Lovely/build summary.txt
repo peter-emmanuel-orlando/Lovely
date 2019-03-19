@@ -3,13 +3,12 @@ todo:
 	-transition abilities away from ienumerators
 	-make PrefabPool return an instance rather than the actual prefab
 	-make PrefabPool hold copies of instantiated prefabs so theres no need to go creating and destroying them all the time
-generalize range attacks to thrownprojectiles and beam projectiles
+	-generalize range attacks to thrownprojectiles and beam projectiles
+	-make jumping and climbing not just teleport directly to the apropriate spot
 
 ------------------------------------------------------------------------------------------------
 
-fixed many embarassing errors in prefabPool
-fixed bug where thrown projectiles wouldnt hit
-fixed bug where anified controller starting off at a rotation other than (0, 0, 0) would cause the camera to go crazy
-added in thrown projectiles as opposed to beam projectiles
-added in the MusicPlayer class, which plays sounds recieved by the new AudioSpeaker class.
-the musicPlayer synchronises sound for all its speakers
+many bugfixes
+Jumping is now based on physics and NavMesh.SamplePosition. this makes jumping onto surfaces much smoother
+
+jumping and climbing onto a ledge is also partially implemented via the same method

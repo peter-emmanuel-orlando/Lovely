@@ -1,7 +1,7 @@
 fileFormatVersion: 2
 guid: 9e8dcdb60e02d324f84a1b72ff341189
 ModelImporter:
-  serializedVersion: 22
+  serializedVersion: 23
   fileIDToRecycleName:
     100000: //RootNode
     100002: chest
@@ -61,6 +61,20 @@ ModelImporter:
     100110: upper_arm.L
     100112: upper_arm.R
     100114: upperChest
+    100116: Eye.L_end
+    100118: Eye.R_end
+    100120: f_index.02.L_end
+    100122: f_index.02.R_end
+    100124: f_middle.02.L_end
+    100126: f_middle.02.R_end
+    100128: f_pinky.02.L_end
+    100130: f_pinky.02.R_end
+    100132: f_ring.02.L_end
+    100134: f_ring.02.R_end
+    100136: thumb.03.L_end
+    100138: thumb.03.R_end
+    100140: toe.L_end
+    100142: toe.R_end
     400000: //RootNode
     400002: chest
     400004: DefaultMale
@@ -119,9 +133,24 @@ ModelImporter:
     400110: upper_arm.L
     400112: upper_arm.R
     400114: upperChest
+    400116: Eye.L_end
+    400118: Eye.R_end
+    400120: f_index.02.L_end
+    400122: f_index.02.R_end
+    400124: f_middle.02.L_end
+    400126: f_middle.02.R_end
+    400128: f_pinky.02.L_end
+    400130: f_pinky.02.R_end
+    400132: f_ring.02.L_end
+    400134: f_ring.02.R_end
+    400136: thumb.03.L_end
+    400138: thumb.03.R_end
+    400140: toe.L_end
+    400142: toe.R_end
     2100000: No Name
     4300000: LowPolyMaleMesh
     7400000: DefaultMale|Jump_Short_M
+    7400002: DefaultMale|Jump_Short
     9500000: //RootNode
     13700000: LowPolyMaleMesh
     2186277476908879412: ImportLogs
@@ -140,7 +169,7 @@ ModelImporter:
     rigImportErrors: 
     rigImportWarnings: 
     animationImportErrors: 
-    animationImportWarnings: "\nClip 'DefaultMale|Jump_Short_M' has import animation
+    animationImportWarnings: "\nClip 'DefaultMale|Jump_Short' has import animation
       warnings that might lower retargeting quality:\nNote: Activate translation DOF
       on avatar to improve retargeting quality.\n\t'hips' is inbetween humanoid transforms
       and has rotation animation that will be discarded.\n\t'chest' is inbetween humanoid
@@ -156,7 +185,35 @@ ModelImporter:
     animationWrapMode: 0
     extraExposedTransformPaths: []
     extraUserProperties: []
-    clipAnimations: []
+    clipAnimations:
+    - serializedVersion: 16
+      name: DefaultMale|Jump_Short
+      takeName: DefaultMale|Jump_Short
+      firstFrame: 0
+      lastFrame: 30
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      hasAdditiveReferencePose: 0
+      loopTime: 0
+      loopBlend: 0
+      loopBlendOrientation: 1
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 1
+      keepOriginalOrientation: 1
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 1
+      heightFromFeet: 0
+      mirror: 0
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      events: []
+      transformMask: []
+      maskType: 3
+      maskSource: {instanceID: 0}
+      additiveReferencePoseFrame: 0
     isReadable: 1
   meshes:
     lODScreenPercentages: []
@@ -180,6 +237,8 @@ ModelImporter:
     secondaryUVHardAngle: 88
     secondaryUVPackMargin: 4
     useFileScale: 1
+    previousCalculatedGlobalScale: 0.01
+    hasPreviousCalculatedGlobalScale: 1
   tangentSpace:
     normalSmoothAngle: 60
     normalImportMode: 0

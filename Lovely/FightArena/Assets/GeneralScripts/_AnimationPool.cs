@@ -10,7 +10,7 @@ using System.IO;
 public class _AnimationPool : _MasterComponent<_AnimationPool>
 {
     //the serialized list of animations is neccessary so they can be accessed without any editor scripts
-    [ShowOnly]
+    //[ShowOnly]
     [SerializeField]
     List<AnimationClip> animations = new List<AnimationClip>();
 
@@ -49,8 +49,17 @@ public class _AnimationPool : _MasterComponent<_AnimationPool>
             var current = animations[i];
             //default animation names follow the form: ArmatureName|AnimationName
             //split off the name of the armature to leave just the animation name
-            var animName = current.name.Split('|')[1];
-            if (current != null && !animationsDict.ContainsKey(animName)) animationsDict.Add(animName, current);
+            var splitName = current.name.Split('|');
+            var animName = splitName[0];
+            if (splitName.Length > 1)
+                animName = splitName[1];
+            if (current != null)
+            {
+                if (animationsDict.ContainsKey(animName))
+                    Debug.LogWarning("AnimationPool contains multiple animations named '" + animName + "' only the first copy will be accessible!");
+                else
+                    animationsDict.Add(animName, current);
+            }
         }
     }
 

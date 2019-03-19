@@ -65,6 +65,13 @@ static class MyExtensions
         return float.IsNaN(v.x) || float.IsNaN(v.y);
     }
 
+    
+
+
+
+
+
+
 
 
 

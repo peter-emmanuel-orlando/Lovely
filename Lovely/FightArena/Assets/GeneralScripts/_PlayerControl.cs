@@ -164,17 +164,16 @@ public class PlayerControl : IDecisionMaker, IPerformable
         //punch = new PunchCombo(Performer.Body.SubscribeForUpdates, Performer.Body.SubscribeForAnimationEvents, Performer.Body.SubscribeForTriggerEvents, Performer.Body);
         head = Performer.Body.transform.FindDeepChild("head");
         cam = body.GetComponentInChildren<Camera>();
-        if(cam == null)
-            cam = new GameObject("Camera").AddComponent<Camera>();
+        if (cam == null)
+            cam = GameObject.Instantiate<GameObject>( _PrefabPool.GetPrefab("PlayerCamera").gameObject).GetComponent<Camera>();
         if (cam.GetComponent<AudioListener>() == null)
             SingleAudioListner.AttachAudioListner(cam.gameObject);
         cam.allowHDR = true;
-
-        
-
+        cam.fieldOfView = 60;
         cam.transform.SetParent(Performer.Body.transform.FindDeepChild("cameraBone"));
         cam.transform.localPosition = Vector3.zero;
         cam.transform.localRotation = Quaternion.identity;
+        cam.nearClipPlane = 0.25f;
         SetUpSplitScreen();
     }
 
@@ -221,7 +220,7 @@ public class PlayerControl : IDecisionMaker, IPerformable
                         abilities[CharacterAbilitySlot.ThrowItem].CastAbility();
                 }
                 if (activateJump)
-                    performerBody.Jump();
+                    performerBody.Jump(new Vector3(moveSpeedX, 1, moveSpeedZ));
                 if (empower)
                     performerBody.Empower();
             }

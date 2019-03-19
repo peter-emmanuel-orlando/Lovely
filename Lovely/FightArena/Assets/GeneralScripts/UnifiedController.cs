@@ -9,13 +9,14 @@ using UnityEngine;
 /// animator goes into navAgent. navAgent goes into rigidbody. If gameobject
 /// is under the influence of physics, then bypass navAgent
 /// </summary>
-public partial class UnifiedController : MonoBehaviour
+public abstract class UnifiedController : MonoBehaviour
 {
     [SerializeField]
     public Avatar avatar;
 
     [SerializeField]
     public AnimatorOverrideController overrideController;
+
 
     protected NavMeshAgent navAgent;
     protected Animator anim;
@@ -34,6 +35,8 @@ public partial class UnifiedController : MonoBehaviour
     private float WalkBackSpeed { get { return -overrideController["DefaultMale|WalkForward"].averageSpeed.z; } }
 
     private float WalkSideSpeed { get { return 5f; } }//overrideController["Race:Gender|AnimationName"].averageSpeed.z; } }
+    //needs to come from the animations too
+    protected Vector3 jumpVelocity = new Vector3(5, 5, 5);
 
     private Vector3 animMovement;
     private Vector3 navDestination;
@@ -49,11 +52,14 @@ public partial class UnifiedController : MonoBehaviour
     PlayToken currentToken;
     private bool isLocked = false;
     private Collider physicsCollider;
+    private Action additionalPhysics;
+    private float requirePhysicsTimeLength = 0;
 
     private enum ControlMode
     { AnimNav = 0, Navigation, AnimatedRoot, Physics }
 
     private ControlMode movementSource = ControlMode.AnimNav;
+
 
     private RuntimeAnimatorController BaseController { get { return overrideController.runtimeAnimatorController; } }
 
@@ -173,8 +179,13 @@ public partial class UnifiedController : MonoBehaviour
         rb = transform.GetComponent<Rigidbody>();
         if (rb == null) rb = gameObject.AddComponent<Rigidbody>();
         //rb.hideFlags = HideFlags.HideInInspector;
+        rb.collisionDetectionMode = CollisionDetectionMode.ContinuousDynamic;
         rb.isKinematic = true;
         rb.useGravity = true;
+        rb.mass = 77.7f;
+        rb.angularDrag = 50f;
+        rb.drag = 1f;
+        //rb.interpolation = RigidbodyInterpolation.Interpolate;
     }
 
     private void InnerUpdate()
@@ -223,12 +234,13 @@ public partial class UnifiedController : MonoBehaviour
                 isLocked = true;
                 anim.CrossFade(Enum.GetName(typeof(RecoilCode), recoil), 0.01f, 0);
             }
-            if (jump)
+            else if (jump)
             {
+                jump = false;
                 isLocked = true;
                 var isStateJump = anim.GetCurrentAnimatorStateInfo(0).IsName("Jump");
                 if (!isStateJump) anim.CrossFade("Jump", 0.01f, 0);
-                jump = false;
+                movementSource = ControlMode.Physics;
             }
             else if (playAnimationNext != null)
             {
@@ -308,6 +320,10 @@ public partial class UnifiedController : MonoBehaviour
             else
                 navAgent.Warp(transform.position);
         }
+        else if (movementSource == ControlMode.Physics)
+        {
+            navAgent.Warp(transform.position);
+        }
     }
 
     private void SyncPhysics()
@@ -316,7 +332,7 @@ public partial class UnifiedController : MonoBehaviour
         //are too complex to be scripted with physics. Therefore follow root motion animation
         //physics (ie falling, ragdolling getting hit by certain things) is to complex to do everything via animation so turn off everything and just physics
         //navigation is a downer to script, its better to use the built in, no matter how troublesome
-
+        
         if (movementSource == ControlMode.Navigation)
         {
             rb.isKinematic = true;
@@ -352,18 +368,60 @@ public partial class UnifiedController : MonoBehaviour
         }
         else if (movementSource == ControlMode.Physics)
         {
-            var tmp = new NavMeshHit();
-            if (NavMesh.SamplePosition(transform.position, out tmp, 2f, NavMesh.AllAreas))
+            var rootPos = anim.rootPosition;
+            Debug.unityLogger.logEnabled = false;
+            var centerPos = anim.bodyPosition;
+            Debug.unityLogger.logEnabled = true;
+            var headPos = centerPos + (centerPos - rootPos);
+            //Debug.DrawLine(centerPos, rootPos, Color.red);
+            //Debug.DrawLine(centerPos, headPos, Color.magenta);
+            var lowerCenter = (rootPos + centerPos) / 2f;
+            var upperCenter = (headPos + centerPos) / 2f;
+            //Debug.DrawLine(centerPos, lowerCenter, Color.blue);
+            //Debug.DrawLine(centerPos, upperCenter, Color.cyan);
+            var samplePositionRadius = Vector3.Distance(centerPos, lowerCenter);
+            samplePositionRadius *= 2f;
+            //DebugShape.DrawSphere(lowerCenter, samplePositionRadius, Color.yellow, 0.3f);
+            //DebugShape.DrawSphere(headPos, samplePositionRadius, Color.green, 0.3f);
+
+            rb.isKinematic = false;
+
+            if (additionalPhysics != null)
             {
-                movementSource = ControlMode.Navigation;
-                navAgent.Warp(tmp.position);
-                rb.isKinematic = true;
-                //rb.freezeRotation = true;
-                isLocked = false;
+                additionalPhysics();
+            }
+            additionalPhysics = null;
+
+            if(requirePhysicsTimeLength > 0)
+            {
+                requirePhysicsTimeLength -= Time.deltaTime;
             }
             else
-                rb.isKinematic = false;
+            {
+                var tmp = new NavMeshHit();
+                if (NavMesh.SamplePosition(lowerCenter, out tmp, samplePositionRadius, NavMesh.AllAreas))
+                {
+                    movementSource = ControlMode.Navigation;
+                    navAgent.Warp(tmp.position);
+                    rb.isKinematic = true;
+                    //rb.freezeRotation = true;
+                    isLocked = false;
+                }
+                else if ( NavMesh.SamplePosition(headPos, out tmp, samplePositionRadius, NavMesh.AllAreas))
+                {
+                    var grabPoint = tmp.position;
+                    if(NavMesh.FindClosestEdge(grabPoint, out tmp, NavMesh.AllAreas) && Vector3.SqrMagnitude(tmp.position - grabPoint) < samplePositionRadius * samplePositionRadius)
+                    {
+                        movementSource = ControlMode.Navigation;
+                        navAgent.Warp(tmp.position);
+                        rb.isKinematic = true;
+                        //rb.freezeRotation = true;
+                        isLocked = false;
+                    }
+                }
+            }
         }
+
     }
 
     //helper methods
@@ -492,7 +550,7 @@ public partial class UnifiedController : MonoBehaviour
         yield break;
     }
 
-    public void Jump()
+    public void Jump(Vector3 normalizedJump)
     {
         if (isLocked || !IsInitialized) return;
 
@@ -509,16 +567,15 @@ public partial class UnifiedController : MonoBehaviour
         movementSource = ControlMode.AnimatedRoot;
         remainOnNavMesh = false;
         jump = true;
+
+        normalizedJump = new Vector3(normalizedJump.x * jumpVelocity.x, normalizedJump.y * jumpVelocity.y, normalizedJump.z * jumpVelocity.z);
+
+        var modifiedVelocity = transform.rotation * normalizedJump;
+        AddForce(modifiedVelocity, ForceMode.VelocityChange, 0.3f);
     }
 
     //needs to lock when appropriate
     //unless stayOnNavMesh == true, use physics colliders while animating  
-    public AnimatorClipInfo[] GetCurrentAnimations()
-    {
-        var clips = anim.GetCurrentAnimatorClipInfo(0);
-        return clips;
-    }
-
     /// <summary>
     /// return value is normalized time. -1 indicates animation is neither playing nor queued
     /// </summary>
@@ -568,7 +625,6 @@ public partial class UnifiedController : MonoBehaviour
         }
     }
 
-
     public PlayToken PlayAnimation(AnimationClip clip, bool remainOnNavMesh = true, bool playMirrored = false)
     {
         if (isLocked || !IsInitialized || clip == null)
@@ -611,7 +667,21 @@ public partial class UnifiedController : MonoBehaviour
         return result;
     }
 
-
+    public void AddForce(Vector3 force, ForceMode forceMode)
+    {
+        AddForce(force, forceMode, 0);
+    }
+    public void AddForce(Vector3 force, ForceMode forceMode, float requirePhysicsTimeLength)
+    {
+        this.requirePhysicsTimeLength = requirePhysicsTimeLength;
+        additionalPhysics += delegate () { rb.AddForce(force, forceMode); };
+    }
+    /*
+    public void AddForce(Vector3 force, ForceMode forceMode, bool requirePhysicsUntilRest)
+    {
+        additionalPhysics += delegate () { rb.AddForce(force, forceMode); };
+    }
+    */
     public override string ToString()
     {
         return base.ToString() + "\n" +
@@ -646,20 +716,4 @@ public partial class UnifiedController : MonoBehaviour
  * 
 */
 
-
-
-public struct DamageBoxSchedule
-{
-    HitBoxType hitBoxType;
-    bool isHurtBox;
-    float normalizedTime;
-    bool activeState;
-
-    public DamageBoxSchedule(HitBoxType hitBoxType, float normalizedTime, bool activeState)
-    {
-        this.hitBoxType = hitBoxType;
-        this.isHurtBox = false;
-        this.normalizedTime = normalizedTime;
-        this.activeState = activeState;
-    }
-}
+    

@@ -70,12 +70,12 @@ public abstract partial class Body : UnifiedController, ISpawnable
         if(bodyMesh == null)
             bodyMesh = GetComponentInChildren<SkinnedMeshRenderer>();
 
-        if(bodyMesh != null)
+        if(bodyMesh != null && bodyMesh.material.HasProperty("_Color"))
         {
             var baseColor = bodyMesh.sharedMaterial.color;
             var modifier = Color.Lerp(Color.magenta, Color.green, health / 100f);
             var newColor = Color.Lerp(modifier, baseColor, 0.5f);
-            bodyMesh.material.color = (health <= 0f)? Color.red : newColor;
+            bodyMesh.material.color = (health <= 0f) ? Color.red : newColor;
         }
         anim.SetFloat("BreathingLabor", 1f - (stamina / 100));
 
@@ -92,8 +92,10 @@ public abstract partial class Body : UnifiedController, ISpawnable
             if (EmpowermentChangeEvent != null)
                 EmpowermentChangeEvent(this, e);
 
+            //overriding classes should modify e
             empowermentLevel = e.newPowerLevel;
-            EmpowerVisualEffect(this, e);
+            //e.finalized = true
+            UpdateEmpowerVisualEffect(this, e);
         }
     }
     //\/////////////////////////////////////////////////////////////////////////////////////////////
@@ -113,7 +115,7 @@ public abstract partial class Body : UnifiedController, ISpawnable
             OnEmpowermentChange(this, new EmpowerChangeEventArgs(empowermentLevel, 0));
     }
 
-    protected virtual void EmpowerVisualEffect(Body sender, EmpowerChangeEventArgs e)
+    protected virtual void UpdateEmpowerVisualEffect(Body sender, EmpowerChangeEventArgs e)
     {
         if (powerUpEffects == null)
         {
@@ -123,7 +125,11 @@ public abstract partial class Body : UnifiedController, ISpawnable
         }
         powerUpEffects.SetPowerLevel(e.newPowerLevel);
     }
+    
+    public void Jump()
+    {
 
+    }
     //can be attacks or augments, good or bad
     public void ApplyAbilityEffects(Mind damager, float deltaHealth, AnimationClip effectAnimation)
     {

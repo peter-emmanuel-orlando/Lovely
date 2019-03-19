@@ -10,7 +10,7 @@ using System.IO;
 public class _PrefabPool : _MasterComponent<_PrefabPool>
 {
     //the serialized list of animations is neccessary so they can be accessed without any editor scripts
-    [ShowOnly]
+    //[ShowOnly]
     [SerializeField]
     List<GameObject> prefabsGameObjects = new List<GameObject>();
 
@@ -80,7 +80,9 @@ public class _PrefabPool : _MasterComponent<_PrefabPool>
         foreach (var dirtyPath in allFiles)
         {
             string path = "Assets" + dirtyPath.Replace(Application.dataPath, "").Replace('\\', '/');
+            Debug.unityLogger.logEnabled = false;
             var go = AssetDatabase.LoadAssetAtPath<GameObject>(path);
+            Debug.unityLogger.logEnabled = true;
             var data = go.GetComponent<ISpawnable>();
             if (data != null && data.gameObject != null) result.Add(data.gameObject);
         }
