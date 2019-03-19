@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Dodge : Ability
 {
-    private static readonly AnimationClip[] dodgeDirections = new AnimationClip[]
+    private static readonly AnimationClip[] genericDodgeAnimations = new AnimationClip[]
     {
         _AnimationPool.GetAnimation("Dodge_N_M"),
         _AnimationPool.GetAnimation("Dodge_F_M"),
@@ -13,11 +13,25 @@ public class Dodge : Ability
         _AnimationPool.GetAnimation("Dodge_R_M")
     };
 
+
+    private readonly AnimationClip[] dodgeAnimations;
+
     UnifiedController.PlayToken current = null;
 
     private DodgeDirection dodgeDirection = DodgeDirection.Neutral;
     public Dodge(Body body) : base(body)
     {
+        dodgeAnimations = genericDodgeAnimations;
+    }
+    public Dodge(Body body, AnimationClip neutralDodge, AnimationClip forwardDodge, AnimationClip backwardDodge, AnimationClip leftDodge, AnimationClip rightDodge ) : base(body)
+    {
+        if (!neutralDodge) neutralDodge = genericDodgeAnimations[0];
+        if (!forwardDodge) forwardDodge = genericDodgeAnimations[1];
+        if (!backwardDodge) backwardDodge = genericDodgeAnimations[2];
+        if (!leftDodge) leftDodge = genericDodgeAnimations[3];
+        if (!rightDodge) rightDodge = genericDodgeAnimations[4];
+
+        dodgeAnimations = new AnimationClip[] { neutralDodge, forwardDodge, backwardDodge, leftDodge, rightDodge };
     }
 
     public override float Range { get { throw new System.NotImplementedException(); } }
@@ -36,12 +50,13 @@ public class Dodge : Ability
     public override void CastAbility()
     {
         var block = performer.CharacterAbilities[CharacterAbilitySlot.Block];
-        if(current == null || current.GetProgress() == -1)
+        if(current == null || current.GetProgress() == -1/* || current.GetProgress() > 0.8f*/)
         {
-            if (block != null && block.CheckStatus() == ProgressStatus.InProgress)
-                current = performer.PlayInterruptAnimation(dodgeDirections[(int)dodgeDirection], true, false, true);//Interrupt
+            //commented out section gives dodge ability to overlap itself. looses impact of animation, but is more responsive
+            if ((block != null && block.CheckStatus() == ProgressStatus.InProgress)/* || (current != null && current.GetProgress() > 0.9f) */)
+                current = performer.PlayInterruptAnimation(dodgeAnimations[(int)dodgeDirection], true, false, true);//Interrupt
             else
-                current = performer.PlayAnimation(dodgeDirections[(int)dodgeDirection], true, false, true);// dont Interrupt if not in block
+                current = performer.PlayAnimation(dodgeAnimations[(int)dodgeDirection], true, false, true);// dont Interrupt if not in block
 
             dodgeDirection = DodgeDirection.Neutral;
         }

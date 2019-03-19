@@ -1,6 +1,9 @@
-v.1
+v.2
 
 -combat is based on trying to land a hit and faking out the opponent and dashing
+LOTS of dashes and dodges. Really powerful moves that actually take out opponents have longer cooldowns, you want to dodge and counter. Moves that require an enemy to be off balance have a much shorter cooldown to power ratio.
+
+
 -basic punch:
 	short dash, quick activation, short active frames, small recovery, small whiff
 -dash punch:
