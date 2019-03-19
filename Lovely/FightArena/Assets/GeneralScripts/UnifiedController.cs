@@ -44,6 +44,7 @@ public partial class UnifiedController : MonoBehaviour
     private bool stayOnNavMesh = false;
     private bool playMirrored = false;
     private AnimationClip playAnimationNext;
+    private string playAnimationSlot = "ActionA";
     private bool isLocked = false;
     private Collider physicsCollider;
     private readonly List<CapsuleCollider> hurtBoxes = new List<CapsuleCollider>();
@@ -113,11 +114,12 @@ public partial class UnifiedController : MonoBehaviour
         if (navAgent == null) navAgent = gameObject.AddComponent<NavMeshAgent>();
         //navAgent.hideFlags = HideFlags.HideInInspector;
         navAgent.updatePosition = false;
+        //navAgent.updateRotation = false;
         navDestination = transform.position;
 
         anim = transform.GetComponent<Animator>();
         if (anim == null) anim = gameObject.AddComponent<Animator>();
-        anim.hideFlags = HideFlags.HideInInspector;
+        //anim.hideFlags = HideFlags.HideInInspector;
         anim.avatar = avatar;
         var overrideInstance = new AnimatorOverrideController(BaseController);
         var tmp = new List<KeyValuePair<AnimationClip, AnimationClip>>();
@@ -140,11 +142,7 @@ public partial class UnifiedController : MonoBehaviour
         SyncAnimation();
         SyncNavigation();
         SyncPhysics();
-        gameObject.DisplayTextComponent(
-            "movementSource: " + movementSource + "\n" +
-            "navAgent.desiredVelocity: " + navAgent.desiredVelocity + "\n" +
-            "navAgent.destination: " + navAgent.destination + "\n"
-            );
+        //gameObject.DisplayTextComponent(this);
     }
 
     private void SyncAnimation()
@@ -167,9 +165,12 @@ public partial class UnifiedController : MonoBehaviour
         }
         else if (movementSource == ControlMode.Navigation)
         {
-            var localizedNormalized = transform.InverseTransformVector(GetNormalizedSpeed( navAgent.desiredVelocity));
-            anim.SetFloat("SpeedHorizontal", localizedNormalized.x);
-            anim.SetFloat("SpeedForward", localizedNormalized.z);
+            if (!navAgent.pathPending)//haspath?
+            {
+                var localizedNormalized = transform.InverseTransformVector(GetNormalizedSpeed(navAgent.velocity));//////////////
+                anim.SetFloat("SpeedHorizontal", localizedNormalized.x);
+                anim.SetFloat("SpeedForward", localizedNormalized.z);
+            }
         }
         else if (movementSource == ControlMode.AnimatedRoot)
         {
@@ -187,20 +188,11 @@ public partial class UnifiedController : MonoBehaviour
             }            
             else if(playAnimationNext != null)
             {
-                // at animation end, needs to put in physics if not on nav mesh, or put on nav mesh
-                var placeHolder = "PlaceHolder_ActionA";
-                var stateName = "ActionA";
-                if (anim.GetCurrentAnimatorStateInfo(0).IsName("ActionA"))
-                {
-                    placeHolder = "PlaceHolder_ActionB";
-                    stateName = "ActionB";
-                }
-                overrideController[placeHolder] = playAnimationNext;
+                // at animation end, needs to put in physics if not on nav mesh, or put on nav mesh             
+                overrideController["PlaceHolder_" + playAnimationSlot] = playAnimationNext;
                 anim.SetBool("PlayMirrored", playMirrored);
-                anim.CrossFade(stateName, 0.01f, 0);
-                
+                anim.CrossFade(playAnimationSlot, 0.0f, 0);                
                 //if not on navmesh, activate body collider
-
                 playAnimationNext = null;
             }
             else 
@@ -252,8 +244,10 @@ public partial class UnifiedController : MonoBehaviour
             }
             if (navAgent.remainingDistance > 0 || navAgent.destination != navDestination)
             {
+                //warp the position and rotation to be matched up with rigidbody
                 navAgent.isStopped = false;
-                navAgent.destination = navDestination;
+                if(navAgent.destination != navDestination)
+                    navAgent.destination = navDestination;
             }
             else
             {
@@ -281,7 +275,12 @@ public partial class UnifiedController : MonoBehaviour
         if (movementSource == ControlMode.Navigation)
         {
             rb.isKinematic = true;
-            rb.MovePosition(navAgent.nextPosition);
+            if(!navAgent.pathPending)//haspath?
+            {
+                rb.MovePosition(navAgent.nextPosition);
+                //rb.MoveRotation(Quaternion.LookRotation(navAgent.desiredVelocity, transform.up));
+            }
+            //use a turntoface to update rotation to face navagent velocity
         }
         else if(movementSource == ControlMode.AnimNav)
         {
@@ -437,7 +436,7 @@ public partial class UnifiedController : MonoBehaviour
         navAgent.stoppingDistance = stoppingDistance;//dont like setting this here
         navDestination = destination;
 
-        while(navAgent.pathPending && !(navAgent.pathStatus == NavMeshPathStatus.PathComplete))
+        while(navAgent.pathPending && !(navAgent.pathStatus == NavMeshPathStatus.PathComplete || navAgent.pathStatus == NavMeshPathStatus.PathPartial))
         {
             if(navDestination != destination)
             {
@@ -449,7 +448,7 @@ public partial class UnifiedController : MonoBehaviour
         }
         while(navAgent.remainingDistance > 0)
         {
-            if (navDestination != destination)
+            if ((navDestination != destination) || (!navAgent.isOnNavMesh && !navAgent.isOnOffMeshLink))
             {
                 yield return ProgressStatus.Aborted;
                 yield break;
@@ -481,17 +480,19 @@ public partial class UnifiedController : MonoBehaviour
     }
 
     //unless stayOnNavMesh == true, use physics colliders while animating
-    public IEnumerator<ProgressStatus> PlayAnimation(AnimationClip clip, bool remainOnNavMesh = true, bool playMirrored = false)
+    public IEnumerator<AnimationProgress> PlayAnimation(AnimationClip clip, bool remainOnNavMesh = true, bool playMirrored = false)
     {
         var result = _PlayAnimation(clip, remainOnNavMesh, playMirrored);
         result.MoveNext();
         return result;
     }
-    private IEnumerator<ProgressStatus> _PlayAnimation(AnimationClip clip, bool remainOnNavMesh, bool playMirrored)
+    private IEnumerator<AnimationProgress> _PlayAnimation(AnimationClip clip, bool remainOnNavMesh, bool playMirrored)
     {
         if (isLocked || !IsInitialized || clip == null)
         {
-            yield return ProgressStatus.Aborted;
+            var result = new AnimationProgress(ProgressStatus.Aborted, -1);
+            gameObject.DisplayTextComponent(result, this);
+            yield return result;
             yield break;
         }
 
@@ -506,63 +507,164 @@ public partial class UnifiedController : MonoBehaviour
         recoil = RecoilCode.None;
 
         movementSource = ControlMode.AnimatedRoot;
+
+        var stateInfo = anim.GetCurrentAnimatorStateInfo(0);
+        var nextInfo = anim.GetNextAnimatorStateInfo(0);
+        var playAnimationSlot = "ActionA";
+        if (anim.GetCurrentAnimatorStateInfo(0).IsName("ActionA"))
+            playAnimationSlot = "ActionB";
         this.playMirrored = playMirrored;
         playAnimationNext = clip;
 
-        var stateInfo = anim.GetCurrentAnimatorStateInfo(0);
-        bool isPlayingAnimation = false;
+        //conditions to be playing clip, placeholder == clip && (slot == playslot || nextslot == playslot)
+        //the animation will
 
-        //if not playing animation and either its still queued or its in transition, wait til animation is being played
-        while(isPlayingAnimation == false && (playAnimationNext == clip || anim.IsInTransition(0)))
+        while (playAnimationNext == clip)
         {
-            isPlayingAnimation = stateInfo.IsName("ActionA") || stateInfo.IsName("ActionB");
-            //if its not playing animation, and its not queued, and its not in transition, its been aborted somehow
-            if (!isPlayingAnimation && !playAnimationNext == clip && !anim.IsInTransition(0))
+            var result = new AnimationProgress(ProgressStatus.Pending, -1);
+            gameObject.DisplayTextComponent(result, this);
+            yield return result;
+        }
+        //check if transitioning to this animation in correct slot or in animation in this slot. Else its been aborted
+        stateInfo = anim.GetCurrentAnimatorStateInfo(0);
+        nextInfo = anim.GetNextAnimatorStateInfo(0);
+        var isAnimInSlot = overrideController["PlaceHolder_" + playAnimationSlot] == clip;
+        var isSlotCurrent = stateInfo.IsName(playAnimationSlot);
+        var isSlotNext = nextInfo.IsName(playAnimationSlot);// && anim.IsInTransition(0);
+        var finaltime = (isSlotCurrent) ? stateInfo.normalizedTime : nextInfo.normalizedTime;
+        if(isAnimInSlot)
+        {
+            var midResult = new AnimationProgress(ProgressStatus.Pending, -1);
+            gameObject.DisplayTextComponent(midResult, this);
+            yield return midResult;
+        }// else return aborted
+
+        while ( isAnimInSlot && (isSlotCurrent || isSlotNext))
+        {
+            var result = new AnimationProgress(ProgressStatus.InProgress, finaltime);
+
+            isAnimInSlot = overrideController["PlaceHolder_" + playAnimationSlot] == clip;
+            isSlotCurrent = stateInfo.IsName(playAnimationSlot);
+            isSlotNext = nextInfo.IsName(playAnimationSlot) && anim.IsInTransition(0);
+            finaltime = (isSlotCurrent) ? stateInfo.normalizedTime : nextInfo.normalizedTime;
+
+            gameObject.DisplayTextComponent(result, this);
+            yield return result;
+        }
+        var finalResult = new AnimationProgress(ProgressStatus.Complete, finaltime);
+        finaltime = (isSlotCurrent) ? stateInfo.normalizedTime : nextInfo.normalizedTime;
+        gameObject.DisplayTextComponent(finalResult, this);
+        yield return finalResult;
+    }
+
+
+        /*
+        private IEnumerator<AnimationProgress> _PlayAnimation(AnimationClip clip, bool remainOnNavMesh, bool playMirrored)
+        {
+            if (isLocked || !IsInitialized || clip == null)
             {
-                yield return ProgressStatus.Aborted;
+                var result = new AnimationProgress(ProgressStatus.Aborted, -1);
+                gameObject.DisplayTextComponent(result, this);
+                yield return result;
                 yield break;
             }
-            else
-                yield return ProgressStatus.Pending;
-        }
-        while(isPlayingAnimation)
-        {
+
+            //clear manual movement
+            animMovement = Vector3.zero;
+            //clear navigation
+            navAgent.isStopped = true;
+            navDestination = transform.position;
+            //clear jump
+            jump = false;
+            //clear playAnimation(recoil)
+            recoil = RecoilCode.None;
+
+            movementSource = ControlMode.AnimatedRoot;
+            this.playMirrored = playMirrored;
+            playAnimationNext = clip;
+
+            var stateInfo = anim.GetCurrentAnimatorStateInfo(0);
+            var nextInfo = anim.GetNextAnimatorStateInfo(0);
+            var stateName = "ActionA";
+            if (anim.GetCurrentAnimatorStateInfo(0).IsName("ActionA"))
+                stateName = "ActionB";
+
+            playAnimationSlot = stateName;
+
+            bool isPlayingAnimation = false;
+
+            //if not playing animation and either its still queued or its in transition, wait til animation is being played
+            while(isPlayingAnimation == false && playAnimationNext == clip)
+            {
+                stateInfo = anim.GetCurrentAnimatorStateInfo(0);
+                nextInfo = anim.GetNextAnimatorStateInfo(0);
+                isPlayingAnimation = stateInfo.IsName(stateName) || nextInfo.IsName(stateName);
+                //if its not playing animation, and its not queued, and its not in transition, its been aborted somehow
+                var result = new AnimationProgress(ProgressStatus.Pending, -1);
+                if (playAnimationNext != clip)
+                    result = new AnimationProgress(ProgressStatus.Aborted, -1);
+                gameObject.DisplayTextComponent(result, this);
+                yield return result;
+                if (playAnimationNext != clip)
+                    yield break;
+            }
             stateInfo = anim.GetCurrentAnimatorStateInfo(0);
-            isPlayingAnimation = stateInfo.IsName("ActionA") || stateInfo.IsName("ActionB");
-            yield return ProgressStatus.InProgress;
+            nextInfo = anim.GetNextAnimatorStateInfo(0);
+            var finalTime = (stateInfo.IsName(stateName))? stateInfo.normalizedTime : nextInfo.normalizedTime;
+            while (isPlayingAnimation)
+            {
+                var result = new AnimationProgress(ProgressStatus.InProgress, finalTime);
+                gameObject.DisplayTextComponent(result, this);
+                yield return result;
+
+                stateInfo = anim.GetCurrentAnimatorStateInfo(0);
+                nextInfo = anim.GetNextAnimatorStateInfo(0);
+                finalTime = (stateInfo.IsName(stateName)) ? stateInfo.normalizedTime : nextInfo.normalizedTime;
+            }
+
+            if (finalTime < 1)
+            {
+                var result = new AnimationProgress(ProgressStatus.Aborted, finalTime);
+                gameObject.DisplayTextComponent(result, this);
+                yield return result;
+            }
+            else
+            {
+                var result = new AnimationProgress(ProgressStatus.Complete, finalTime);
+                gameObject.DisplayTextComponent(result, this);
+                yield return result;
+            }
+
+            yield break;
         }
-        yield return ProgressStatus.Complete;
-        yield break;
-    }
 
-    /*
-    public IEnumerator PlayAnimation(RecoilCode code, bool remainOnNavMesh = true)
-    {
-        var result = _PlayAnimation(code, remainOnNavMesh);
-        result.MoveNext();
-        return result;
-    }
-    private IEnumerator _PlayAnimation(RecoilCode code, bool remainOnNavMesh)
-    {
-        if (isLocked || !IsInitialized || code == RecoilCode.None) yield break;
-        movementSource = ControlMode.AnimatedRoot;
+        public IEnumerator PlayAnimation(RecoilCode code, bool remainOnNavMesh = true)
+        {
+            var result = _PlayAnimation(code, remainOnNavMesh);
+            result.MoveNext();
+            return result;
+        }
+        private IEnumerator _PlayAnimation(RecoilCode code, bool remainOnNavMesh)
+        {
+            if (isLocked || !IsInitialized || code == RecoilCode.None) yield break;
+            movementSource = ControlMode.AnimatedRoot;
 
-        //clear manual movement
-        animMovement = Vector3.zero;
-        //clear navigation
-        navAgent.isStopped = true;
-        navDestination = transform.position;
-        //clear jump
-        jump = false;
-        //clear playAnimation
-        playAnimationNext = null;
+            //clear manual movement
+            animMovement = Vector3.zero;
+            //clear navigation
+            navAgent.isStopped = true;
+            navDestination = transform.position;
+            //clear jump
+            jump = false;
+            //clear playAnimation
+            playAnimationNext = null;
 
-        recoil = code;
-        yield break;
-    }
-    */
+            recoil = code;
+            yield break;
+        }
+        */
 
-    public void SetHurtBoxActiveState(bool isActive)
+        public void SetHurtBoxActiveState(bool isActive)
     {
         if (!IsInitialized) return;
         foreach (var hurtBox in hurtBoxes)
@@ -581,6 +683,36 @@ public partial class UnifiedController : MonoBehaviour
             hitBoxes[hitBoxType].enabled = isActive;
         }
         return result;
+    }
+
+    public override string ToString()
+    {
+        return base.ToString() + "\n" +
+            "movementSource: " + movementSource + "\n" +
+            "navAgent.pathPending: " + navAgent.pathPending + "\n" +
+            "navAgent.pathStatus: " + navAgent.pathStatus + "\n" +
+            "navAgent.desiredVelocity: " + navAgent.desiredVelocity + "\n" +
+            "navAgent.velocity: " + navAgent.velocity + "\n" +
+            "navAgent.destination: " + navAgent.destination + "\n";
+    }
+}
+
+public class AnimationProgress
+{
+    public readonly ProgressStatus status;
+    public readonly float normalizedTime;
+
+    public AnimationProgress(ProgressStatus status, float normalizedTime)
+    {
+        this.status = status;
+        this.normalizedTime = normalizedTime;
+    }
+
+    public override string ToString()
+    {
+        return
+            "ProgressStatus: " + status + "\n" +
+            "NormalizedTime: " + normalizedTime;
     }
 }
 

@@ -356,7 +356,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4488507308224088}
   - component: {fileID: 114936365439979010}
-  - component: {fileID: 114078990863542136}
+  - component: {fileID: 114431751679829526}
   m_Layer: 0
   m_Name: HumanFemale
   m_TagString: Untagged
@@ -1395,7 +1395,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1339464740402814}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 30.823893, y: 8.38, z: 31.466988}
+  m_LocalPosition: {x: 218.7576, y: 62.922215, z: 604.136}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4906277739348702}
@@ -2069,7 +2069,7 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.5, y: 2, z: 0.25}
   m_Center: {x: 0, y: 0.15, z: 0}
---- !u!114 &114078990863542136
+--- !u!114 &114431751679829526
 MonoBehaviour:
   m_ObjectHideFlags: 1
   m_PrefabParentObject: {fileID: 0}
@@ -2077,10 +2077,9 @@ MonoBehaviour:
   m_GameObject: {fileID: 1339464740402814}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2ff43f45c10746543856a6a884ba7c7a, type: 3}
+  m_Script: {fileID: 11500000, guid: 5ae510575af45a84cab4bedb62704981, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  controllerNumber: 0
 --- !u!114 &114936365439979010
 MonoBehaviour:
   m_ObjectHideFlags: 1

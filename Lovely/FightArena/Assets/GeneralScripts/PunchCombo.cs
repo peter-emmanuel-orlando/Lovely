@@ -27,9 +27,9 @@ public partial class PunchCombo : Ability
 
 
 
-    private IEnumerator statusEnumerator;
+    private IEnumerator<AnimationProgress> statusEnumerator;
     private readonly HashSet<Body> enemiesAffected = new HashSet<Body>();
-    private bool isActive = false;
+    private bool isActive = false;// { get { return statusEnumerator != null && statusEnumerator.Current != null && (statusEnumerator.Current.status == ProgressStatus.InProgress || statusEnumerator.Current.status == ProgressStatus.Pending); } }
     private float lockPerformUntil = 0;
     private float resetComboIfPerformedAfter = 0;
     private ComboPlaceMarker currentPlaceInCombo = new ComboPlaceMarker();
@@ -44,7 +44,14 @@ public partial class PunchCombo : Ability
 
 
     public PunchCombo(UpdateSubscriber SubscribeForUpdate, AnimationEventSubscriber SubscribeForAnimationEvents, TriggerEventSubscriber SubscribeForTriggerEvents, UnifiedController inteControl) : base(SubscribeForUpdate, SubscribeForAnimationEvents, SubscribeForTriggerEvents, inteControl)
-    {    }
+    { }
+
+    protected override void Update()
+    {
+        if (statusEnumerator != null && statusEnumerator.MoveNext())
+            statusEnumerator = null;
+    }
+
 
     public override ProgressStatus CheckStatus()
     {
@@ -67,6 +74,7 @@ public partial class PunchCombo : Ability
         result.MoveNext();
         return result;
     }
+
     private IEnumerator<ProgressStatus> _CastAbility()
     {
         //need a way to say which combo to perform
@@ -85,7 +93,7 @@ public partial class PunchCombo : Ability
                 resetComboIfPerformedAfter = Time.time + current.punchAnimation.length + comboHoldFor;
                 while (enumerator.MoveNext())
                 {
-                    yield return enumerator.Current;
+                    yield return enumerator.Current.status;
                 }
             }
         }
@@ -95,7 +103,37 @@ public partial class PunchCombo : Ability
             yield break;
         }
     }
+    /*
+    private IEnumerator<ProgressStatus> _CastAbility()
+    {
+        //need a way to say which combo to perform
+        currentPlaceInCombo.SetCombo(combo1);
 
+        if (Time.time > lockPerformUntil && !isActive)
+        {
+            if (!currentPlaceInCombo.IsEmpty)
+            {
+                if (Time.time > resetComboIfPerformedAfter || currentPlaceInCombo.IsAtEnd)
+                    currentPlaceInCombo.Reset();
+
+                var current = currentPlaceInCombo.GetCurrent();
+                statusEnumerator = uniControl.PlayAnimation(current.punchAnimation, true, current.isMirrored);
+                lockPerformUntil = Time.time + lockPerformFor;
+                resetComboIfPerformedAfter = Time.time + current.punchAnimation.length + comboHoldFor;
+                while (statusEnumerator != null && statusEnumerator.Current != null)
+                {
+                    yield return statusEnumerator.Current.status;
+                }
+                yield return ProgressStatus.Complete;
+            }
+        }
+        else
+        {
+            yield return ProgressStatus.Aborted;
+            yield break;
+        }
+    }
+    */
     protected override void ReceiveAnimationEvents(string message)
     {
         Debug.Log(this + " received an animationEvent message: " + message);
@@ -141,11 +179,6 @@ public partial class PunchCombo : Ability
                 body.ApplyAbilityEffects(body.Mind, current.deltaHealth, current.knockBackAnimation);
             }
         }
-    }
-
-    protected override void Update()
-    {
-        
     }
 }
 

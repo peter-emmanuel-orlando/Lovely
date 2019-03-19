@@ -208,7 +208,6 @@ GameObject:
   serializedVersion: 5
   m_Component:
   - component: {fileID: 4246875886643804}
-  - component: {fileID: 114901520425211318}
   - component: {fileID: 114254480426782998}
   m_Layer: 0
   m_Name: HumanMale
@@ -1126,7 +1125,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1150438817763460}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: -31.5, y: 8.37, z: 31.539751}
+  m_LocalPosition: {x: 221.08963, y: -0.045, z: 265.5986}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4188844194682608}
@@ -1846,18 +1845,6 @@ MonoBehaviour:
   overrideController: {fileID: 22100000, guid: 2a8a4c266b1daed479a4c6cf4140eb97, type: 2}
   health: 0
   stamina: 0
---- !u!114 &114901520425211318
-MonoBehaviour:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1150438817763460}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 2ff43f45c10746543856a6a884ba7c7a, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  controllerNumber: 0
 --- !u!136 &136006920710511614
 CapsuleCollider:
   m_ObjectHideFlags: 1
