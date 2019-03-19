@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
  
@@ -6,24 +7,17 @@ public abstract class Ability
 {
     public abstract float Range { get; }
 
-    protected readonly UnifiedController uniControl;
+    protected readonly Body body;
 
-    public Ability(UpdateSubscriber SubscribeForUpdate, TriggerEventSubscriber SubscribeForTriggerEvents, UnifiedController uniControl)
+    public Ability( Body body)
     {
-        SubscribeForUpdate(Update);
-        SubscribeForTriggerEvents(ReceiveTriggerEvents);
-        this.uniControl = uniControl;
+        this.body = body;
     }
 
 
     public abstract ProgressStatus CheckStatus();
     
     public abstract IEnumerator<ProgressStatus> CastAbility();
-
-    protected abstract void ReceiveTriggerEvents(Collider collider);
-
-    protected abstract void Update();
-
     
 }
 

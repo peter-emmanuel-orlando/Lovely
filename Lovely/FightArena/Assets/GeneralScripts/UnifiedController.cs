@@ -35,6 +35,12 @@ public partial class UnifiedController : MonoBehaviour
 
     private float WalkSideSpeed { get { return 5f; } }//overrideController["Race:Gender|AnimationName"].averageSpeed.z; } }
 
+
+    private bool IsInitialized = false;
+    public event EventHandler UpdateEvent;
+    public event TriggerEventHandler TriggerEnterEvent;
+    public event TriggerEventHandler TriggerStayEvent;
+    public event TriggerEventHandler TriggerExitEvent;
     private Vector3 animMovement;
     private Vector3 navDestination;
     private bool jump = false;
@@ -60,14 +66,66 @@ public partial class UnifiedController : MonoBehaviour
 
     //string currentAnimatorState { get { anim.GetAnimatorTransitionInfo(0).IsName("flight -> shot") } }
 
-
-    private bool IsInitialized = false;
+    //*////////////////////////////////////////////////////////////////////////////////////////////////////////
+    //************************************************************
+    //********for messages and callbacks**************************
 
     protected virtual void Awake()
     {
         if (avatar != null && overrideController != null) Initialize();
     }
 
+    private void Update()
+    {
+        if (!IsInitialized) return;
+        SyncAnimation();
+        SyncNavigation();
+        SyncPhysics();
+        //gameObject.DisplayTextComponent(this);
+
+        OnUpdateEvent(new EventArgs());
+    }
+
+    private void OnTriggerEnter(Collider other)
+    {
+        OnTriggerEnterEvent(new TriggerEventArgs(other));
+    }
+
+    private void OnTriggerStay(Collider other)
+    {
+        OnTriggerStayEvent(new TriggerEventArgs(other));
+    }
+
+    private void OnTriggerExit(Collider other)
+    {
+        OnTriggerExitEvent(new TriggerEventArgs(other));
+    }
+
+    protected virtual void OnTriggerEnterEvent(TriggerEventArgs e)
+    {
+        if (TriggerEnterEvent != null)
+            TriggerEnterEvent(this, e);
+    }
+
+    protected virtual void OnTriggerStayEvent(TriggerEventArgs e)
+    {
+        if (TriggerStayEvent != null)
+            TriggerStayEvent(this, e);
+    }
+
+    protected virtual void OnTriggerExitEvent(TriggerEventArgs e)
+    {
+        if (TriggerExitEvent != null)
+            TriggerExitEvent(this, e);
+    }
+
+    protected virtual void OnUpdateEvent(EventArgs e)
+    {
+        if (UpdateEvent != null)
+            UpdateEvent(this, e);
+    }
+
+    //*/////////////////////////////////////////////////////////////////////////////////////////
     protected void Initialize()
     {
         IsInitialized = true;
@@ -75,7 +133,7 @@ public partial class UnifiedController : MonoBehaviour
         physicsCollider = transform.FindDeepChild("root").GetComponent<Collider>();
 
         cameraBone = transform.FindDeepChild("cameraBone");
-        if(cameraBone == null)
+        if (cameraBone == null)
         {
             cameraBone = new GameObject("cameraBone").transform;
             cameraBone.SetParent(transform);
@@ -137,15 +195,6 @@ public partial class UnifiedController : MonoBehaviour
         rb.useGravity = true;
     }
 
-    protected virtual void Update()
-    {
-        if (!IsInitialized) return;        
-        SyncAnimation();
-        SyncNavigation();
-        SyncPhysics();
-        //gameObject.DisplayTextComponent(this);
-    }
-
     private void SyncAnimation()
     {
         if (playAnimationEnumerator != null && !playAnimationEnumerator.MoveNext())
@@ -195,7 +244,7 @@ public partial class UnifiedController : MonoBehaviour
                 // at animation end, needs to put in physics if not on nav mesh, or put on nav mesh             
                 overrideController["PlaceHolder_" + playAnimationSlot] = playAnimationNext;
                 anim.SetBool("PlayMirrored", playMirrored);
-                anim.CrossFade(playAnimationSlot, 0.0f, 0);                
+                anim.CrossFade(playAnimationSlot, 0.1f, 0);                
                 //if not on navmesh, activate body collider
                 playAnimationNext = null;
             }
@@ -469,9 +518,33 @@ public partial class UnifiedController : MonoBehaviour
         jump = true;
     }
 
+    float invulnerableUntil = 0;
+    //recoil animation inturrupts anything, including other recoil animations
+    public IEnumerator<float> PlayRecoilAnimation(AnimationClip clip, bool remainOnNavMesh = true, bool playMirrored = false)
+    {
+        if (Time.time < invulnerableUntil) return null;
+
+        invulnerableUntil = Time.time + 1;
+        //clear manual movement
+        animMovement = Vector3.zero;
+        //clear navigation
+        navAgent.isStopped = true;
+        navDestination = transform.position;
+        //clear jump
+        jump = false;
+        //clear playAnimation(recoil)
+        recoil = RecoilCode.None;
+
+        movementSource = ControlMode.AnimatedRoot;
+
+        var result = _PlayAnimation(clip, 0, 1, remainOnNavMesh, playMirrored);
+        result.MoveNext();
+        playAnimationEnumerator = result;
+        return result;
+    }
     //needs to lock when appropriate
     //unless stayOnNavMesh == true, use physics colliders while animating
-    public IEnumerator<float> PlayAnimation(AnimationClip clip, bool remainOnNavMesh = true, bool playMirrored = false)
+    public IEnumerator<float> PlayAnimation(AnimationClip clip, float lockInAnimStart = 0, float lockInAnimEnd = 1, bool remainOnNavMesh = true, bool playMirrored = false)
     {
         if (isLocked || !IsInitialized || clip == null)
         {
@@ -489,12 +562,12 @@ public partial class UnifiedController : MonoBehaviour
 
         movementSource = ControlMode.AnimatedRoot;
 
-        var result = _PlayAnimation(clip, remainOnNavMesh, playMirrored);
+        var result = _PlayAnimation(clip, lockInAnimStart, lockInAnimEnd,  remainOnNavMesh, playMirrored);
         result.MoveNext();
         playAnimationEnumerator = result;
         return result;
     }
-    private IEnumerator<float> _PlayAnimation(AnimationClip clip, bool remainOnNavMesh, bool playMirrored)
+    private IEnumerator<float> _PlayAnimation(AnimationClip clip, float lockInAnimStart, float lockInAnimEnd, bool remainOnNavMesh, bool playMirrored)
     {
 
         var stateInfo = anim.GetCurrentAnimatorStateInfo(0);
@@ -504,6 +577,7 @@ public partial class UnifiedController : MonoBehaviour
             playAnimationSlot = "ActionB";
         this.playMirrored = playMirrored;
         playAnimationNext = clip;
+        isLocked = true;
 
         while (playAnimationNext == clip)
         {
@@ -529,6 +603,12 @@ public partial class UnifiedController : MonoBehaviour
 
         while ( isAnimInSlot && (isSlotCurrent || isSlotNext))
         {
+            if(finaltime >= lockInAnimStart)
+                isLocked = true;
+
+            if (finaltime >= lockInAnimEnd)
+                isLocked = false;
+
             yield return finaltime;
 
             stateInfo = anim.GetCurrentAnimatorStateInfo(0);
@@ -539,6 +619,7 @@ public partial class UnifiedController : MonoBehaviour
             finaltime = (isSlotCurrent) ? stateInfo.normalizedTime : nextInfo.normalizedTime;            
         }
 
+        isLocked = false;
         yield return finaltime;
     }
 

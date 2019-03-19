@@ -36,9 +36,8 @@ GameObject:
   - component: {fileID: 4459949832913156}
   - component: {fileID: 33559483366925460}
   - component: {fileID: 23581127633635838}
-  - component: {fileID: 136754141588958036}
-  m_Layer: 9
-  m_Name: Cube
+  m_Layer: 0
+  m_Name: CensorCube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -209,6 +208,7 @@ GameObject:
   m_Component:
   - component: {fileID: 4246875886643804}
   - component: {fileID: 114254480426782998}
+  - component: {fileID: 114085463978932030}
   m_Layer: 0
   m_Name: HumanMale
   m_TagString: Untagged
@@ -1125,7 +1125,7 @@ Transform:
   m_PrefabInternal: {fileID: 100100000}
   m_GameObject: {fileID: 1150438817763460}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 221.08963, y: -0.045, z: 265.5986}
+  m_LocalPosition: {x: 215.64952, y: 62.28, z: 608.24945}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children:
   - {fileID: 4188844194682608}
@@ -1830,6 +1830,18 @@ BoxCollider:
   serializedVersion: 2
   m_Size: {x: 0.5, y: 2, z: 0.25}
   m_Center: {x: 0, y: 0.15, z: 0}
+--- !u!114 &114085463978932030
+MonoBehaviour:
+  m_ObjectHideFlags: 1
+  m_PrefabParentObject: {fileID: 0}
+  m_PrefabInternal: {fileID: 100100000}
+  m_GameObject: {fileID: 1150438817763460}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2ff43f45c10746543856a6a884ba7c7a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  controllerNumber: 0
 --- !u!114 &114254480426782998
 MonoBehaviour:
   m_ObjectHideFlags: 1
@@ -2079,19 +2091,6 @@ CapsuleCollider:
   m_Height: 0.3
   m_Direction: 1
   m_Center: {x: 0, y: 0.1, z: 0}
---- !u!136 &136754141588958036
-CapsuleCollider:
-  m_ObjectHideFlags: 1
-  m_PrefabParentObject: {fileID: 0}
-  m_PrefabInternal: {fileID: 100100000}
-  m_GameObject: {fileID: 1008244089930886}
-  m_Material: {fileID: 0}
-  m_IsTrigger: 1
-  m_Enabled: 1
-  m_Radius: 0.05
-  m_Height: 0.3
-  m_Direction: 1
-  m_Center: {x: 0, y: 0.1, z: 0}
 --- !u!136 &136790617759924892
 CapsuleCollider:
   m_ObjectHideFlags: 1
@@ -2133,7 +2132,7 @@ SkinnedMeshRenderer:
   m_ReflectionProbeUsage: 1
   m_RenderingLayerMask: 4294967295
   m_Materials:
-  - {fileID: 2100000, guid: 88dd1ec3136885b4e8690707b3b0a7c6, type: 3}
+  - {fileID: 2100000, guid: 8c8c881a96e93a54490cbb3de6affc2f, type: 2}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0

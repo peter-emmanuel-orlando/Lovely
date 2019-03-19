@@ -1799,7 +1799,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   avatar: {fileID: 9000000, guid: 844ffe7131b88b44a9706361bc015181, type: 3}
-  overrideController: {fileID: 22100000, guid: 2a8a4c266b1daed479a4c6cf4140eb97, type: 2}
+  overrideController: {fileID: 22100000, guid: c481de409b34f8442a07526444b79883, type: 2}
   health: 0
   stamina: 0
   maxHealth: 100

@@ -41,12 +41,12 @@ public abstract class Mind : IDecisionMaker
     public Mind(Body body)
     {
         this.body = body;
-        body.SubscribeForUpdates(Update);
+        body.UpdateEvent += Update;//  .SubscribeForUpdates(Update);
     }
 
 
     //private methods
-    private void Update()
+    private void Update(object sender, EventArgs e)
     {
         ManagePerformable();
         ManagePerception();

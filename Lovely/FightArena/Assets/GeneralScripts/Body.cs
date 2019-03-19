@@ -71,11 +71,7 @@ public abstract class Body : UnifiedController, ISpawnable
         }
         anim.SetFloat("BreathingLabor", 1f - (stamina / 100));        
     }
-
-    private void _ReceiveAnimationEvents(string message)
-    {
-
-    }
+    
 
     private void _OnTriggerStay(Collider collider)
     {
@@ -85,42 +81,14 @@ public abstract class Body : UnifiedController, ISpawnable
     //can be attacks or augments, good or bad
     public void ApplyAbilityEffects(Mind damager, float deltaHealth, AnimationClip effectAnimation)
     {
+        gameObject.DisplayTextComponent("i was hit by " + damager);
+        TurnToFace(damager.Body.transform.position);
         health += deltaHealth;
-        PlayAnimation(effectAnimation);
+        PlayRecoilAnimation(effectAnimation, true);
     }
 
 
 
 
-    //************************************************************
-    //********for messages and callbacks**************************
 
-    private Action updateCallbacks = delegate() { };
-    private Action<string> animationEventsCallbacks = delegate(string s) { };
-    private Action<Collider> triggerEventsCallbacks = delegate(Collider col) { };
-    
-    public void SubscribeForUpdates(Action updateMethod)
-    {
-        updateCallbacks += updateMethod;
-    }
-    public void SubscribeForAnimationEvents(Action<string> receiveAnimationEventsMethod)
-    {
-        animationEventsCallbacks += receiveAnimationEventsMethod;
-    }
-    public void SubscribeForTriggerEvents(Action<Collider> receiveTriggerEventsMethod)
-    {
-        triggerEventsCallbacks += receiveTriggerEventsMethod;
-    }
-    //*********************************************
-    protected override void Update()
-    {
-        base.Update();
-        _Update();
-        updateCallbacks();
-    }
-    protected virtual void OnTriggerStay(Collider collider)
-    {
-        _OnTriggerStay(collider);
-        triggerEventsCallbacks(collider);
-    }
 }

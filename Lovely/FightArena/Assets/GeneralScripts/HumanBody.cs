@@ -10,6 +10,6 @@ public abstract class HumanBody : Body
     protected override void Awake()
     {
         base.Awake();
-        bodyAbilities.Add(new AttackCombo(SubscribeForUpdates, SubscribeForTriggerEvents, this));
+        bodyAbilities.Add(new PhysicalAttack(this));//(new ComboAbility(SubscribeForUpdates, SubscribeForTriggerEvents, this));
     }
 }

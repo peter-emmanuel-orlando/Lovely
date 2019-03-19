@@ -62,7 +62,7 @@ public class FightPerformable : IPerformable
             }
             //what if no attacks?
             var statusEnumerator = performer.AllAbilities[0].CastAbility();
-            while(statusEnumerator.MoveNext())
+            while(statusEnumerator != null && statusEnumerator.MoveNext())
             {
                 yield return null;
             }
