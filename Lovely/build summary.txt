@@ -7,12 +7,5 @@ todo:
 partial: make abilities implement events based on normalized time returned from animation enumerator
 
 ------------------------------------------------------------------------------------------------
-added fight system design document into fightArena folder along side build summary
 
-many bugfixes
-added ScheduledActionsQueue class which prevents mutating queue and sorts scheduledActions
-
-made PowerUpEffects class cleaner and it disposes of itself when appropriate
-in Body class, all changes to empowermentLevel variable now go through either the Empower() method or the ConsumeEmpowerment() method, though the actual changing of the variable value happens in the OnEmpowermentLevelChange() method so that base classes could interrupt message.
-
- A system where the method "public bool ConsumeEmpowerment( int levels)" was considered but dismissed due to it not being in line with the fight system design document, and it making it harder for player to know which attack would execute.
+added projectile shootin'

@@ -1,5 +1,7 @@
 ﻿using System;
+using UnityEngine;
 
+public delegate void EmpowerChangeEventHandler(Body sender, EmpowerChangeEventArgs e);
 
 public class EmpowerChangeEventArgs : EventArgs
 {

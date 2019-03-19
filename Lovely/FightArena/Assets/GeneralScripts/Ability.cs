@@ -7,11 +7,11 @@ public abstract class Ability
 {
     public abstract float Range { get; }
 
-    protected readonly Body body;
+    public readonly Body performer;
 
     public Ability(Body body)
     {
-        this.body = body;
+        this.performer = body;
     }
 
 

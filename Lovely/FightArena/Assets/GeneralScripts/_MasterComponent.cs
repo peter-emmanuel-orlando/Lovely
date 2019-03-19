@@ -32,7 +32,7 @@ public abstract class _MasterComponent<T> : MasterComponentBase where T : Compon
 
     protected virtual void Awake()
     {
-        _Master.OnLoad();
+        //_Master.OnLoad();
         if (master == null)
         {
             try

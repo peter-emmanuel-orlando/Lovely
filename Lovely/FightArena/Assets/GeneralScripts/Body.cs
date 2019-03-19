@@ -32,7 +32,7 @@ public abstract partial class Body : UnifiedController, ISpawnable
     public const int maxEmpowermentLevel = 3;//in sec
     public const float empowerTime = 7;//in sec
     private float depowerAfter = 0;//time to reset empowerment
-    public event EventHandler<EmpowerChangeEventArgs> EmpowermentChangeEvent;
+    public event EmpowerChangeEventHandler EmpowermentChangeEvent;
     private PowerUpEffect powerUpEffects;
 
     public int EmpowermentLevel { get { return empowermentLevel; } }
@@ -52,6 +52,8 @@ public abstract partial class Body : UnifiedController, ISpawnable
     protected override void Awake()
     {
         base.Awake();
+        InitializeDamageBoxes();
+
         health = MaxHealth;
         stamina = MaxStamina;
 
@@ -83,7 +85,7 @@ public abstract partial class Body : UnifiedController, ISpawnable
         }
     }
 
-    protected virtual void OnEmpowermentChange(object sender, EmpowerChangeEventArgs e)
+    protected virtual void OnEmpowermentChange(Body sender, EmpowerChangeEventArgs e)
     {
         if( e.newPowerLevel != e.oldPowerLevel)
         {
@@ -111,7 +113,7 @@ public abstract partial class Body : UnifiedController, ISpawnable
             OnEmpowermentChange(this, new EmpowerChangeEventArgs(empowermentLevel, 0));
     }
 
-    protected virtual void EmpowerVisualEffect(object sender, EmpowerChangeEventArgs e)
+    protected virtual void EmpowerVisualEffect(Body sender, EmpowerChangeEventArgs e)
     {
         if (powerUpEffects == null)
         {
@@ -128,5 +130,82 @@ public abstract partial class Body : UnifiedController, ISpawnable
         health += deltaHealth;
         PlayInterruptAnimation(effectAnimation);
     }
-    
+
+    private readonly List<CapsuleCollider> hurtBoxes = new List<CapsuleCollider>();
+    private readonly Dictionary<HitBoxType, CapsuleCollider> hitBoxes = new Dictionary<HitBoxType, CapsuleCollider>();
+
+    private void InitializeDamageBoxes()
+    {
+        foreach (var collider in transform.GetComponentsInChildren<CapsuleCollider>())
+        {
+            if (collider.gameObject.layer == LayerMask.NameToLayer("HurtBox"))
+            {
+                hurtBoxes.Add(collider);
+            }
+            else if (collider.gameObject.layer == LayerMask.NameToLayer("HitBox"))
+            {
+                collider.enabled = false;
+                switch (collider.gameObject.name)
+                {
+                    case "hand.R":
+                        hitBoxes.Add(HitBoxType.HandR, collider);
+                        break;
+                    case "hand.L":
+                        hitBoxes.Add(HitBoxType.HandL, collider);
+                        break;
+                    case "foot.R":
+                        hitBoxes.Add(HitBoxType.FootR, collider);
+                        break;
+                    case "foot.L":
+                        hitBoxes.Add(HitBoxType.FootL, collider);
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+    }
+
+    //todo: void GetCollisionBoxByName
+
+
+    //make these based on string boneName
+    public void SetHurtBoxActiveState(bool isActive)
+    {
+        foreach (var hurtBox in hurtBoxes)
+        {
+            hurtBox.enabled = isActive;
+        }
+    }
+
+    public CapsuleCollider SetHitBoxActiveState(HitBoxType hitBoxType, bool isActive)
+    {
+        CapsuleCollider result = null;
+        if (hitBoxes.ContainsKey(hitBoxType))
+        {
+            result = hitBoxes[hitBoxType];
+            hitBoxes[hitBoxType].enabled = isActive;
+        }
+        return result;
+    }
+
+    public List<CapsuleCollider> SetHitBoxActiveState(bool isActive)
+    {
+        List<CapsuleCollider> result = new List<CapsuleCollider>();
+        foreach (var hitBoxType in hitBoxes.Keys)
+        {
+            result.Add(hitBoxes[hitBoxType]);
+            hitBoxes[hitBoxType].enabled = isActive;
+        }
+        return result;
+    }
+
+
+    private enum CollisionBoxType
+    {
+        None = 0,
+        Physics,
+        HitBox,
+        HurtBox,
+    }
 }

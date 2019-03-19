@@ -10,19 +10,20 @@ using UnityEditor;
 [InitializeOnLoad]
 [ExecuteInEditMode]
 #endif
+[DefaultExecutionOrder(-150)]
 public class _Master : MonoBehaviour
 {
-    public static _Master master;
+    public static _Master masterSingleton;
     public static _Master MasterSingleton
     {
         get
         {
-            if (master == null)
+            if (masterSingleton == null)
             {
                 try { OnLoad(); }
                 catch (Exception) { throw new MasterNotFoundInSceneException("there is no master component!"); }
             }
-            return master;
+            return masterSingleton;
         }
     }
 
@@ -32,17 +33,17 @@ public class _Master : MonoBehaviour
     [InitializeOnLoadMethod]
     public static void OnLoad()
     {
-        master = GameObject.FindObjectOfType<_Master>();
-        if (master == null)
+        masterSingleton = GameObject.FindObjectOfType<_Master>();
+        if (masterSingleton == null)
         {
-            master = new GameObject("Master").AddComponent<_Master>();
-            var gameObject = master.gameObject;
+            masterSingleton = new GameObject("Master").AddComponent<_Master>();
+            var gameObject = masterSingleton.gameObject;
         }
         foreach (var type in typeof(MasterComponentBase).Assembly.GetTypes().Where(type => type.IsSubclassOf(typeof(MasterComponentBase))))
         {
             if (type.IsAbstract) continue;
-            if(master.gameObject.GetComponent(type) == null)
-                master.gameObject.AddComponent(type);
+            if(masterSingleton.gameObject.GetComponent(type) == null)
+                masterSingleton.gameObject.AddComponent(type);
         }
     }
 
@@ -57,14 +58,20 @@ public class _Master : MonoBehaviour
         else
         {
             this.gameObject.name = "Master";
-            master = this;
+            masterSingleton = this;
+            foreach (var type in typeof(MasterComponentBase).Assembly.GetTypes().Where(type => type.IsSubclassOf(typeof(MasterComponentBase))))
+            {
+                if (type.IsAbstract) continue;
+                if (masterSingleton.gameObject.GetComponent(type) == null)
+                    masterSingleton.gameObject.AddComponent(type);
+            }
         }
     }
 
     private void Start()
     {
         this.gameObject.name = "Master";
-        master = this;
+        masterSingleton = this;
         if (Application.isPlaying)
             DontDestroyOnLoad(this.gameObject);
     }

@@ -6,40 +6,18 @@ public class DashPunch : PhysicalAttack
 {
     private static readonly AnimationClip attackAnimation = _AnimationPool.GetAnimation("Strike_Mid_R");
     private static readonly AnimationClip recoilAnimation = _AnimationPool.GetAnimation("KnockBack_Heavy");
-    private readonly ScheduledActionQueue scheduledActions = new ScheduledActionQueue();
+    private readonly ScheduledAction[] otherScheduledActions;
+    private const float damage = 10;
+    private const float range = 10;
 
-    protected override AnimationClip AttackAnimation { get { return attackAnimation; } }
+    protected override AnimationClip AbilityAnimation { get { return attackAnimation; } }
     protected override AnimationClip RecoilAnimation { get { return recoilAnimation; } }
-    protected override ScheduledActionQueue ScheduledActions { get { return scheduledActions; } }
+    protected override ScheduledAction[] OtherScheduledActions { get { return otherScheduledActions; } }
+    protected override float Damage { get { return damage; } }
+    public override float Range { get { throw new System.NotImplementedException(); } }
 
-    public DashPunch(Body body) : base(body)
+    public DashPunch(Body body) : base(body, 0.2f, 0.8f)
     {
-        scheduledActions = new ScheduledActionQueue
-        (
-            new ScheduledAction(0f, body.ConsumeEmpowerment),
-            new ScheduledAction(0.2f, () => { body.SetHitBoxActiveState(HitBoxType.HandR, true); }),
-            new ScheduledAction(0.8f, () => { body.SetHitBoxActiveState(HitBoxType.HandR, false); })
-        );
-    }
-}
-
-public class Punch : PhysicalAttack
-{
-    private static readonly AnimationClip attackAnimation = _AnimationPool.GetAnimation("Punch_Mid_R");
-    private static readonly AnimationClip recoilAnimation = _AnimationPool.GetAnimation("KnockBack_Light");
-    private readonly ScheduledActionQueue scheduledActions = new ScheduledActionQueue();
-
-    protected override AnimationClip AttackAnimation { get { return attackAnimation; } }
-    protected override AnimationClip RecoilAnimation { get { return recoilAnimation; } }
-    protected override ScheduledActionQueue ScheduledActions { get { return scheduledActions; } }
-
-    public Punch(Body body) : base(body)
-    {
-        scheduledActions = new ScheduledActionQueue
-        (
-            new ScheduledAction(0f, body.ConsumeEmpowerment),
-            new ScheduledAction(0.2f, () => { body.SetHitBoxActiveState(HitBoxType.HandR, true); }),
-            new ScheduledAction(0.8f, () => { body.SetHitBoxActiveState(HitBoxType.HandR, false); })
-        );
+        otherScheduledActions = new ScheduledAction[] { new ScheduledAction(0f, body.ConsumeEmpowerment) };
     }
 }

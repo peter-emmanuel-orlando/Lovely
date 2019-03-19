@@ -49,8 +49,6 @@ public partial class UnifiedController : MonoBehaviour
     PlayToken currentToken;
     private bool isLocked = false;
     private Collider physicsCollider;
-    private readonly List<CapsuleCollider> hurtBoxes = new List<CapsuleCollider>();
-    private readonly Dictionary<HitBoxType, CapsuleCollider> hitBoxes = new Dictionary<HitBoxType, CapsuleCollider>();
 
     private enum ControlMode
     { AnimNav = 0, Navigation, AnimatedRoot, Physics }
@@ -73,13 +71,13 @@ public partial class UnifiedController : MonoBehaviour
     //*////////////////////////////////////////////////////////////////////////
     #region events and callbacks
     //---------------------------------------------------------------------------
-    public event EventHandler AwakeEvent;
-    public event EventHandler UpdateEvent;
-    public event EventHandler OnDestroyEvent;
+    public event AwakeEventHandler AwakeEvent;
+    public event UpdateEventHandler UpdateEvent;
+    public event OnDestroyEventHandler OnDestroyEvent;
 
-    public event EventHandler<TriggerEventArgs> OnTriggerEnterEvent;
-    public event EventHandler<TriggerEventArgs> OnTriggerStayEvent;
-    public event EventHandler<TriggerEventArgs> OnTriggerExitEvent;
+    public event ColliderEventHandler OnTriggerEnterEvent;
+    public event ColliderEventHandler OnTriggerStayEvent;
+    public event ColliderEventHandler OnTriggerExitEvent;
 
 
     protected virtual void Awake()
@@ -104,17 +102,17 @@ public partial class UnifiedController : MonoBehaviour
     protected virtual void OnTriggerEnter(Collider other)
     {
         if (OnTriggerEnterEvent != null)
-            OnTriggerEnterEvent(this, new TriggerEventArgs(other));
+            OnTriggerEnterEvent(gameObject, new ColliderEventArgs(other));
     }
     protected virtual void OnTriggerStay(Collider other)
     {
         if (OnTriggerStayEvent != null)
-            OnTriggerStayEvent(this, new TriggerEventArgs(other));
+            OnTriggerStayEvent(gameObject, new ColliderEventArgs(other));
     }
     protected virtual void OnTriggerExit(Collider other)
     {
         if (OnTriggerExitEvent != null)
-            OnTriggerExitEvent(this, new TriggerEventArgs(other));
+            OnTriggerExitEvent(gameObject, new ColliderEventArgs(other));
     }
 
     #endregion
@@ -151,34 +149,6 @@ public partial class UnifiedController : MonoBehaviour
             cameraBone.localPosition = Vector3.zero;
         }
 
-        foreach (var collider in transform.GetComponentsInChildren<CapsuleCollider>())
-        {
-            if (collider.gameObject.layer == LayerMask.NameToLayer("HurtBox"))
-            {
-                hurtBoxes.Add(collider);
-            }
-            else if (collider.gameObject.layer == LayerMask.NameToLayer("HitBox"))
-            {
-                collider.enabled = false;
-                switch (collider.gameObject.name)
-                {
-                    case "hand.R":
-                        hitBoxes.Add(HitBoxType.HandR, collider);
-                        break;
-                    case "hand.L":
-                        hitBoxes.Add(HitBoxType.HandL, collider);
-                        break;
-                    case "foot.R":
-                        hitBoxes.Add(HitBoxType.FootR, collider);
-                        break;
-                    case "foot.L":
-                        hitBoxes.Add(HitBoxType.FootL, collider);
-                        break;
-                    default:
-                        break;
-                }
-            }
-        }
 
         navAgent = transform.GetComponent<NavMeshAgent>();
         if (navAgent == null) navAgent = gameObject.AddComponent<NavMeshAgent>();
@@ -536,6 +506,7 @@ public partial class UnifiedController : MonoBehaviour
         recoil = RecoilCode.None;
 
         movementSource = ControlMode.AnimatedRoot;
+        remainOnNavMesh = false;
         jump = true;
     }
 
@@ -639,40 +610,6 @@ public partial class UnifiedController : MonoBehaviour
         return result;
     }
 
-
-    //make these based on string boneName
-    public void SetHurtBoxActiveState(bool isActive)
-    {
-        if (!IsInitialized) return;
-        foreach (var hurtBox in hurtBoxes)
-        {
-            hurtBox.enabled = isActive;
-        }
-    }
-
-    public CapsuleCollider SetHitBoxActiveState(HitBoxType hitBoxType, bool isActive)
-    {
-        CapsuleCollider result = null;
-        if (!IsInitialized) return result;
-        if (hitBoxes.ContainsKey(hitBoxType))
-        {
-            result = hitBoxes[hitBoxType];
-            hitBoxes[hitBoxType].enabled = isActive;
-        }
-        return result;
-    }
-
-    public List<CapsuleCollider> SetHitBoxActiveState(bool isActive)
-    {
-        List<CapsuleCollider> result = new List<CapsuleCollider>();
-        if (!IsInitialized) return result;
-        foreach (var hitBoxType in hitBoxes.Keys)
-        {
-            result.Add(hitBoxes[hitBoxType]);
-            hitBoxes[hitBoxType].enabled = isActive;
-        }
-        return result;
-    }
 
     public override string ToString()
     {

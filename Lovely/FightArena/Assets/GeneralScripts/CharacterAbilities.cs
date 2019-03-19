@@ -31,6 +31,7 @@ public enum CharacterAbilitySlot
     BasicPunchCombo,
     DashPunch,
     ThrowItem,
+    RangedPower,
     Block,
     Meditate,
     SpecialAttack,

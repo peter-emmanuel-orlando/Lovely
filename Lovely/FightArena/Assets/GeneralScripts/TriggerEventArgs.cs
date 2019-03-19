@@ -1,9 +1,11 @@
 ﻿using System;
 using UnityEngine;
 
-public class TriggerEventArgs : EventArgs
+public delegate void ColliderEventHandler(GameObject sender, ColliderEventArgs e);
+
+public class ColliderEventArgs : EventArgs
 {
     public readonly Collider collider;
-    public TriggerEventArgs(Collider collider)
+    public ColliderEventArgs(Collider collider)
     { this.collider = collider; }
 }

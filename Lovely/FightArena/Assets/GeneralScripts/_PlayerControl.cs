@@ -53,6 +53,30 @@ public class _PlayerControl : MonoBehaviour
     }
 }
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 public class PlayerControl : IDecisionMaker, IPerformable
 {
     private static readonly PlayerControl[] players = new PlayerControl[] { new PlayerControl(1), new PlayerControl(2), new PlayerControl(3), new PlayerControl(4), new PlayerControl(5) };
@@ -142,6 +166,11 @@ public class PlayerControl : IDecisionMaker, IPerformable
         cam = body.GetComponentInChildren<Camera>();
         if(cam == null)
             cam = new GameObject("Camera").AddComponent<Camera>();
+        if (cam.GetComponent<AudioListener>() == null)
+            SingleAudioListner.AttachAudioListner(cam.gameObject);
+
+        
+
         cam.transform.SetParent(Performer.Body.transform.FindDeepChild("cameraBone"));
         cam.transform.localPosition = Vector3.zero;
         cam.transform.localRotation = Quaternion.identity;
@@ -170,6 +199,7 @@ public class PlayerControl : IDecisionMaker, IPerformable
                 var lookSpeedV = PlayerInput.GetAsAxis(AxisCode.R_YAxis, playerNumber);
                 var lookSpeedH = PlayerInput.GetAsAxis(AxisCode.R_XAxis, playerNumber);
                 var activatePunch = PlayerInput.GetAsButtonDown(ButtonCode.B, playerNumber);
+                var activateRanged = PlayerInput.GetAsButtonDown(ButtonCode.X, playerNumber);
                 var activateJump = PlayerInput.GetAsButtonDown(ButtonCode.A, playerNumber);
                 var empower = PlayerInput.GetAsButtonDown(ButtonCode.Y, playerNumber);
 
@@ -181,8 +211,13 @@ public class PlayerControl : IDecisionMaker, IPerformable
                         abilities[CharacterAbilitySlot.DashPunch].CastAbility();
                     else
                         abilities[CharacterAbilitySlot.BasicPunchCombo].CastAbility();
-
-
+                }
+                if(activateRanged)
+                {
+                    if (performerBody.EmpowermentLevel > 0)
+                        abilities[CharacterAbilitySlot.RangedPower].CastAbility();
+                    else
+                        abilities[CharacterAbilitySlot.ThrowItem].CastAbility();
                 }
                 if (activateJump)
                     performerBody.Jump();

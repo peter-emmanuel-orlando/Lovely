@@ -13,5 +13,6 @@ public abstract class HumanBody : Body
         base.Awake();
         characterAbilities[CharacterAbilitySlot.BasicPunchCombo] = new Punch(this);
         characterAbilities[CharacterAbilitySlot.DashPunch] = new DashPunch(this);
+        characterAbilities[CharacterAbilitySlot.RangedPower] = new BloodNovaBeamAttack(this);
     }
 }
