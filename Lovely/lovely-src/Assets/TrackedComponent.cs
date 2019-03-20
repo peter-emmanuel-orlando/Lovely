@@ -17,7 +17,8 @@ public static class TrackedComponent<T> where T : MonoBehaviour, ISpawnable
     private static float cellSize = 10f;
     private static int locUpdatesPerFrame = 5;
     private static int lastUpdatedIndex = 0;
-    private static int lastUpdateFrameCount = 0;  
+    private static int lastUpdateFrameCount = 0;
+    private static bool isUpdating = false;
 
     private static IEnumerator UpdateTracked()
     {
@@ -45,8 +46,13 @@ public static class TrackedComponent<T> where T : MonoBehaviour, ISpawnable
         //if the gameobject is destroyed do nothing
         if (m == null) return;
 
-        m.StopCoroutine("UpdateTracked");
-        m.StartCoroutine(UpdateTracked());
+        if(!isUpdating)
+        {
+            var master = _Master.MasterSingleton;
+            master.StopCoroutine("UpdateTracked");
+            master.StartCoroutine(UpdateTracked());
+            isUpdating = true;
+        }
 
         var roundedPoints = GetRoundedOverlapPoints(m.Bounds);
 
@@ -62,6 +68,25 @@ public static class TrackedComponent<T> where T : MonoBehaviour, ISpawnable
 
         objToPosList.Add(m, new HashSet<Vector3>(roundedPoints));
     }
+
+    public static void Untrack(T m)
+    {
+        if (!objToPosList.ContainsKey(m)) return;
+
+        foreach (var roundedPos in objToPosList[m])
+        {
+            if (posToObjList.ContainsKey(roundedPos))
+            {
+                if (posToObjList[roundedPos].Contains(m))
+                    posToObjList[roundedPos].Remove(m);
+                if (posToObjList[roundedPos].Count <= 0)
+                    posToObjList.Remove(roundedPos);
+            }
+        }
+        objToPosList.Remove(m);
+    }
+
+
 
     private static Vector3[] GetRoundedOverlapPoints(Bounds b)
     {
@@ -87,23 +112,6 @@ public static class TrackedComponent<T> where T : MonoBehaviour, ISpawnable
     {
         var roundedPos = new Vector3(sourcePos.x - (sourcePos.x % cellSize), sourcePos.y - (sourcePos.y % cellSize), sourcePos.z - (sourcePos.z % cellSize));
         return roundedPos;
-    }
-
-    public static void Untrack(T m)
-    {
-        if (!objToPosList.ContainsKey(m)) return;
-
-        foreach (var roundedPos in objToPosList[m])
-        {
-            if (posToObjList.ContainsKey(roundedPos))
-            {
-                if (posToObjList[roundedPos].Contains(m))
-                    posToObjList[roundedPos].Remove(m);
-                if (posToObjList[roundedPos].Count <= 0)
-                    posToObjList.Remove(roundedPos);
-            }
-        }
-        objToPosList.Remove(m);
     }
 
 
