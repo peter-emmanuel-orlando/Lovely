@@ -33,7 +33,7 @@ public class SleepPerformable : Performable
     public SleepPerformable(PerceivingMind mind, Func<bool> awakeConditions ) : base(mind)
     {
         this.awakeConditions = awakeConditions;
-        _isComplete = false;
+        _isComplete = true;
     }
 
     public void AwakeSleeper()
