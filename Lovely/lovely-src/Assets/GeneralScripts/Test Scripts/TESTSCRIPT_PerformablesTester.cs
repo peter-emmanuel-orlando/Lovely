@@ -5,7 +5,7 @@ using UnityEngine;
 public class TESTSCRIPT_PerformablesTester : MonoBehaviour, IDecisionMaker
 {
     [ShowOnly]
-    Mind performer;
+    PerceivingMind performer;
     IPerformable currentPerformable;
 
     [SerializeField]

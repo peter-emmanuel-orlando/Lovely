@@ -4,7 +4,7 @@ using UnityEngine;
 
 public interface IPerformable
 {
-    Mind Performer { get; }
+    PerceivingMind Performer { get; }
     ActivityState ActivityType { get; }
 
     //"yield return Tick();"is called every frame until this evaluates to true. If on the first call this is false, tick will never be called, but start and end will be called sequentially

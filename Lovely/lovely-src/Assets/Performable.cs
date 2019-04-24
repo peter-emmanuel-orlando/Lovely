@@ -20,8 +20,8 @@ public abstract class Performable : IPerformable
 
     public abstract ActivityState ActivityType { get; }
 
-    protected Mind _performer;
-	public Mind Performer{get{ return _performer; } set{ _performer = value; }}
+    protected PerceivingMind _performer;
+	public PerceivingMind Performer{get{ return _performer; } set{ _performer = value; }}
 
 	protected bool _isPerforming = false;
 	public bool IsPerforming{get{ return _isPerforming; }}
@@ -32,7 +32,7 @@ public abstract class Performable : IPerformable
 	//body looks at this when performable is complete to determine whether to call onSuccess or Onfaliure
 	protected bool _success = true;
 
-    protected Performable(Mind performer)
+    protected Performable(PerceivingMind performer)
     {
         if (performer == null) throw new ArgumentNullException();
         _performer = performer;

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public abstract class HumanMind : ReptilianMind
+public abstract class HumanMind : SurvivalMind
 {
     public HumanMind(Body body) : base(body)
     {

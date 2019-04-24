@@ -50,7 +50,7 @@ public abstract class Body : UnifiedController, ISpawnable
     [SerializeField]
     private ItemPack backpack = new ItemPack();
     
-    public abstract Mind Mind { get; }
+    public abstract PerceivingMind Mind { get; }
 
 
     public float BloodMax { get { return bloodMax; } protected set { bloodMax = value; } }
@@ -178,7 +178,7 @@ public abstract class Body : UnifiedController, ISpawnable
     #endregion
 
     //can be attacks or augments, good or bad
-    public void ApplyAbilityEffects(Mind damager, float deltaHealth, AnimationClip effectAnimation)
+    public void ApplyAbilityEffects(PerceivingMind damager, float deltaHealth, AnimationClip effectAnimation)
     {
         blood += deltaHealth;
         PlayInterruptAnimation(effectAnimation);
@@ -196,7 +196,8 @@ public abstract class Body : UnifiedController, ISpawnable
     public bool GetRestAssignment(Body being, ref IPerformable assignment)
     {
         var assignedPerformable = true;
-        assignment = new SleepPerformable(this.Mind, () => { return true; });
+        //sleep until its no longer sleep period or mind enters an emergency state
+        assignment = new SleepPerformable(this.Mind, () => { return this.Mind.IsSleepPeriod == false || this.Mind.IsInEmergency; });
         return assignedPerformable;
     }
 

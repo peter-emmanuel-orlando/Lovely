@@ -162,7 +162,7 @@ public class PlayerControl : IPerformable, IDecisionMaker
     public readonly int playerNumber;
 
     Body performerBody;
-    public Mind Performer { get { return performerBody.Mind; } }
+    public PerceivingMind Performer { get { return performerBody.Mind; } }
     CharacterAbilities abilities { get { return Performer.Body.CharacterAbilities; } }
     Transform head;
     internal Vector3 cameraOffset = Vector3.zero;//offset from the head

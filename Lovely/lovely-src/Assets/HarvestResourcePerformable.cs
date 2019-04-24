@@ -54,7 +54,7 @@ public abstract class HarvestResourcePerformable : Performable
     }
     //************************************************************************************************************************************
 
-    public HarvestResourcePerformable(Mind harvester, Resource resourceToHarvest) : base(harvester)
+    public HarvestResourcePerformable(PerceivingMind harvester, Resource resourceToHarvest) : base(harvester)
     {
         base._performer = harvester;
         this._resourceToHarvest = resourceToHarvest;

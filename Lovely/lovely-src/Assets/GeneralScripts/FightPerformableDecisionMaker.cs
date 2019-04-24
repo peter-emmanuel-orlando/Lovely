@@ -24,7 +24,7 @@ public class AttackPerformableDecisionMaker : Performable, IDecisionMaker
 
     public override ActivityState ActivityType { get { return ActivityState.Nothing; } }
     
-    public AttackPerformableDecisionMaker(Mind performer) : base(performer)
+    public AttackPerformableDecisionMaker(PerceivingMind performer) : base(performer)
     {
 
     }

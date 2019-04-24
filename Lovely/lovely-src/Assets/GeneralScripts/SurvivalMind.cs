@@ -3,18 +3,15 @@ using System.Collections.Generic;
 using UnityEngine;
 
 
-public abstract class ReptilianMind : Mind
+public abstract class SurvivalMind : PerceivingMind
 {
-    public LivingPlace home;// if no home, create a temporary one
-    public WorkPlace workPlace;//this is by default food storage. you work to fill up your food storage, by hunting and preserving//by default workplace is just the urge to hunt
-    public ItemPack backpack;
-    public List<RecreationPlace> restPlaces = new List<RecreationPlace>();//by default interaction with peers or enjoying a local natural feature
+    public LivingPlace Home { get; protected set; }// if no home, create a temporary one
+    public WorkPlace WorkPlace { get; protected set; }//this is by default food storage. you work to fill up your food storage, by hunting and preserving//by default workplace is just the urge to hunt
+    public List<RecreationPlace> RestPlaces { get; protected set; } = new List<RecreationPlace>();//by default interaction with peers or enjoying a local natural feature
 
     IPerformable decision = null;
 
-    public ReptilianMind(Body body) : base(body)
-    {
-    }
+    public SurvivalMind(Body body) : base(body) { }
     
 
     public override IPerformable GetDecisions()
@@ -74,8 +71,8 @@ public abstract class ReptilianMind : Mind
         //      clean and sharpen weapons
         //      refill foodPack
         //      etc
-        if (!hasMadeDecision && Backpack != null)
-            hasMadeDecision = Backpack.GetMaintinenceAssignment(Body, ref newDecision);
+        if (!hasMadeDecision && base.Backpack != null)
+            hasMadeDecision = base.Backpack.GetMaintinenceAssignment(Body, ref newDecision);
 
 
 
@@ -84,8 +81,8 @@ public abstract class ReptilianMind : Mind
         //      clean/maintain home
         //      patrol /maintain home perimeter
         //      hunt to fill home food reserves
-        if (!hasMadeDecision && home != null)
-            hasMadeDecision = home.GetMaintinenceAssignment(Body, ref newDecision);
+        if (!hasMadeDecision && Home != null)
+            hasMadeDecision = Home.GetMaintinenceAssignment(Body, ref newDecision);
 
 
 
@@ -110,8 +107,8 @@ public abstract class ReptilianMind : Mind
 
         //work performable. work is a communal idea. Work is something you do for the community that indirectly benefits you
         //get work performable.
-        if (workPlace != null)
-            hasMadeDecision = workPlace.GetAssignment(Body, ref newDecision);
+        if (WorkPlace != null)
+            hasMadeDecision = WorkPlace.GetAssignment(Body, ref newDecision);
 
         //if no work, do chores
         if (!hasMadeDecision)

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class EmptyMind : Mind
+public class EmptyMind : PerceivingMind
 {
 
     public EmptyMind(Body body) : base(body)

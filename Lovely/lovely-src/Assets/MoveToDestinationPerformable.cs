@@ -33,7 +33,7 @@ public class MoveToDestinationPerformable : Performable
     bool isUrgent = true;
     NavMeshAgent navAgent { get { return Performer.Body.NavAgent; } }
 
-    public MoveToDestinationPerformable(Mind performer, Action<bool> callBack, Vector3 destination, bool acceptClosestLocation = false, float stoppingDistance = 1f, bool isUrgent = true) : base(performer)
+    public MoveToDestinationPerformable(PerceivingMind performer, Action<bool> callBack, Vector3 destination, bool acceptClosestLocation = false, float stoppingDistance = 1f, bool isUrgent = true) : base(performer)
     {
         base._performer = performer;
         this.callBack = callBack;

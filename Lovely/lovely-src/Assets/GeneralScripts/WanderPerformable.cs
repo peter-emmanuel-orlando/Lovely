@@ -31,7 +31,7 @@ public class WanderPerformable : Performable
     private Vector3 destination;
     float setNext = 0;
 
-    public WanderPerformable(Mind performer)
+    public WanderPerformable(PerceivingMind performer)
     {
         this._performer = performer;
         destination = Transform.position;

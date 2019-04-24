@@ -11,7 +11,7 @@ public class GenericBody : Body
 
     EmptyMind emptyMind;
 
-    public override Mind Mind { get { return emptyMind; } }
+    public override PerceivingMind Mind { get { return emptyMind; } }
     public override string PrefabName { get { return prefabName; } }
     public override Gender Gender { get { return gender; } }
 

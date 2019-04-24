@@ -30,10 +30,10 @@ public class SleepPerformable : Performable
 
     UnifiedController.PlayToken token = null;
 
-    public SleepPerformable(Mind mind, Func<bool> awakeConditions ) : base(mind)
+    public SleepPerformable(PerceivingMind mind, Func<bool> awakeConditions ) : base(mind)
     {
         this.awakeConditions = awakeConditions;
-        _isComplete = true;
+        _isComplete = false;
     }
 
     public void AwakeSleeper()
@@ -53,10 +53,10 @@ public class SleepPerformable : Performable
         //if not look for suteable spot to sleep
         //being.anim.SetBool("Sleep", true);
         _isComplete = false;        
-        var tryUntil = Time.time + 2f;
-        while(Time.time < tryUntil)
+        //var tryUntil = Time.time + 2f;
+        while(!awakeConditions() && !IsComplete)//Time.time < tryUntil)
         {
-            token = Performer.Body.PlayAnimation(_AnimationPool.GetAnimation("HumanoidFall"));
+            token = Performer.Body.PlayAnimation(_AnimationPool.GetAnimation("HumanoidFall"), true, false, false);
             yield return null;
         }
         while (!awakeConditions() && !IsComplete && token != null)

@@ -26,11 +26,11 @@ public class FightPerformable : Performable
 
     public override ActivityState ActivityType { get { return ActivityState.Nothing; } }
 
-    private Mind performer;
+    private PerceivingMind performer;
     private readonly float reassessmentInterval = 2f;
     private float nextReassessment = 0;
 
-    public FightPerformable(Mind performer)
+    public FightPerformable(PerceivingMind performer)
     {
         this.performer = performer;
     }

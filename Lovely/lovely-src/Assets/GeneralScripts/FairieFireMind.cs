@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class FairieFireMind : Mind
+public class FairieFireMind : PerceivingMind
 {
     private readonly WanderPerformable wander;
 

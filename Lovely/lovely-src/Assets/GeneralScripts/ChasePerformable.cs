@@ -30,7 +30,7 @@ public class ChasePerformable : Performable
     public float stoppingDistance = 0;
     float TotalStoppingDist { get { return Performer.Body.NavAgent.radius + 1 /* + target.radius*/ + stoppingDistance + 0.1f; } }
 
-    public ChasePerformable(Mind performer, ISpawnable target)
+    public ChasePerformable(PerceivingMind performer, ISpawnable target)
     {
         this.Performer = performer;
         this.target = target;

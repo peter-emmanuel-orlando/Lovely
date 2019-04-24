@@ -14,6 +14,6 @@ public class HumanMaleMind : HumanMind
     public override IPerformable GetDecisions()
     {
         //Debug.LogWarning("HumanMaleMind does not yet have any behaviors!");
-        return new EmptyPerformable();
+        return base.GetDecisions();
     }
 }

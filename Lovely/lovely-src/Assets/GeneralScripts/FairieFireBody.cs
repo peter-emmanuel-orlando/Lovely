@@ -8,7 +8,7 @@ public class FairieFireBody : Body, IBodyCanGlow
     Light lightSource;
     private FairieFireMind fairieFireMind;
     
-    public override Mind Mind { get { return fairieFireMind; } }
+    public override PerceivingMind Mind { get { return fairieFireMind; } }
     public override string PrefabName { get { return "FairieFire"; } }
     public override Gender Gender { get { return Gender.Nongendered; } }
 

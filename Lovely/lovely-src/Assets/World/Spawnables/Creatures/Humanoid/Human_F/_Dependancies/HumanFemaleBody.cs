@@ -7,7 +7,7 @@ public class HumanFemaleBody : HumanBody
     HumanFemaleMind femaleMind;
     private readonly List<Ability> femaleBodyAbilities = new List<Ability>();
 
-    public override Mind Mind { get { return femaleMind; } }
+    public override PerceivingMind Mind { get { return femaleMind; } }
     public override string PrefabName { get { return "HumanFemale"; } }
     public override Gender Gender { get { return Gender.Female; } }
 
