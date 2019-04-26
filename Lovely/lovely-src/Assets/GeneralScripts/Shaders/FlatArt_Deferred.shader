@@ -23,12 +23,9 @@
 				return (i > _Knee) ? (((i - _Knee) * _Compress) + _Knee) : i;
 			}
 
-			inline half4 LightingStandardToneMappedGI_Deferred (SurfaceOutputStandard s, UnityGI gi, out half4 outDiffuseOcclusion, out half4 outSpecSmoothness, out half4 outNormal)
+			inline half4 LightingStandardToneMappedGI_Deferred (SurfaceOutputStandard s, float3 viewDir, UnityGI gi, out half4 outDiffuseOcclusion, out half4 outSpecSmoothness, out half4 outNormal)
 			{
-				outDiffuseOcclusion = half4(0, 0, 0, 0);
-				outSpecSmoothness = half4(0, 0, 0, 0);
-				outNormal = half4(0, 0, 0, 0);
-				return LightingStandard(s, half3(0,0,0), gi);
+				return LightingStandard_Deferred(s, viewDir, gi, outDiffuseOcclusion, outSpecSmoothness, outNormal);
 			}
 
 			inline void LightingStandardToneMappedGI_GI(
