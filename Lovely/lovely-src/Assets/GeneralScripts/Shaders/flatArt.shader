@@ -1,35 +1,55 @@
-﻿Shader "Example/FlatArt" {
+﻿Shader "Lovely/FlatArt"{
 	Properties{
-		_MainTex("Texture", 2D) = "white" {}
-		_Ramp("Ramp", 2D) = "white" {}
+		_NormalInfluence("Normals Influence", Range(-5, 5)) = 0.33
+		_MainTex("Albedo (RGB)", 2D) = "white" {}
+		_EmissionTex("Emission (RGB)", 2D) = "black" {}
+		_Metallic("Metallic", Range(0, 1)) = 0
+		_Smoothness("Smoothness", Range(-5, 5)) = 0.33
+		_Occlusion("Normals Influence", Float) = 1
 	}
 		SubShader{
-		Tags { "RenderType" = "Opaque" }
-		CGPROGRAM
-	#pragma surface surf Ramp
+			Tags { "RenderType" = "Opaque" }
 
-	sampler2D _Ramp;
+			CGPROGRAM
+			#pragma surface surf StandardToneMappedGI
 
-	half4 LightingRamp(SurfaceOutput s, half3 lightDir, half atten) {
-		half NdotL = dot(s.Normal, lightDir);
-		half diff = NdotL * 0.5 + 0.5;
-		half3 ramp = tex2D(_Ramp, float2(diff, diff)).rgb;
-		half4 c;
-		c.rgb = s.Albedo * _LightColor0.rgb * ramp * atten;
-		c.a = s.Alpha;
-		return c;
-	}
+			#include "UnityPBSLighting.cginc"
 
-	struct Input {
-		float2 uv_MainTex;
-	};
+			half _NormalInfluence;
+			sampler2D _MainTex;
+			sampler2D _EmissionTex;
 
-	sampler2D _MainTex;
+			inline half4 LightingStandardToneMappedGI(SurfaceOutputStandard s, half3 viewDir, UnityGI gi)
+			{
+				float3 prevNormal = s.Normal;
+				s.Normal = ((s.Normal * _NormalInfluence) + (viewDir * (1 - _NormalInfluence))) / 2;
+				half4 result = LightingStandard(s, viewDir, gi);
+				s.Normal = prevNormal;
+				return result;
+			}
 
-	void surf(Input IN, inout SurfaceOutput o) {
-		o.Albedo = tex2D(_MainTex, IN.uv_MainTex).rgb;
-	}
-	ENDCG
-	}
-		Fallback "Diffuse"
+			inline half4 LightingStandardToneMappedGI_Deferred (SurfaceOutputStandard s, float3 viewDir, UnityGI gi, out half4 outDiffuseOcclusion, out half4 outSpecSmoothness, out half4 outNormal)
+			{
+				float3 prevNormal = s.Normal;
+				s.Normal = ((s.Normal* _NormalInfluence) + (viewDir*(1- _NormalInfluence)))/2;
+				half4 result = LightingStandard_Deferred(s, viewDir, gi, outDiffuseOcclusion, outSpecSmoothness, outNormal);
+				s.Normal = prevNormal;
+				return result;
+			}
+
+			inline void LightingStandardToneMappedGI_GI( SurfaceOutputStandard s, UnityGIInput data, inout UnityGI gi)
+			{}
+
+			struct Input {
+				float2 uv_MainTex;
+				float2 uv_EmissionTex;
+			};
+
+			void surf(Input IN, inout SurfaceOutputStandard o) {
+				o.Albedo = tex2D(_MainTex, IN.uv_MainTex);
+				o.Emission = tex2D(_EmissionTex, IN.uv_EmissionTex);
+			}
+			ENDCG
+		}
+			//FallBack "Diffuse"
 }
