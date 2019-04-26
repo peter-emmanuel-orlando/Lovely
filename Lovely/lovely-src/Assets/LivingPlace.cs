@@ -4,15 +4,11 @@ using System.Collections.Generic;
 
 public class LivingPlace : Place
 {
-    readonly Dictionary<ItemType, float> storageMax = Item.GetItemTypeDictionary<float>();
-    readonly Container foodHolder = new Container(100, delegate(IItem item) { return (item.type & ItemType.Food) != 0; });
+    readonly Container foodHolder = new Container(100, delegate(IItem item) { return item.type.HasFlag(ItemType.Food); });
 
     protected override void Awake()
     {
-        foreach (var code in Item.allItemTypes)
-        {
-            storageMax[code] = 10;
-        }
+        base.Awake();
     }
 
 
