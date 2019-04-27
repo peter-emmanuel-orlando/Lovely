@@ -20,8 +20,8 @@ Material:
     serializedVersion: 3
     m_TexEnvs: []
     m_Floats:
-    - _SkyExponent1: 1
-    - _SkyExponent2: 1
+    - _SkyExponent1: 0.5
+    - _SkyExponent2: 0.5
     - _SkyIntensity: 1
     - _SunAlpha: 550
     - _SunAltitude: -55
@@ -29,8 +29,8 @@ Material:
     - _SunBeta: 1
     - _SunIntensity: 21.98
     m_Colors:
-    - _SkyColor1: {r: 0.0010616505, g: 0.0006369902, b: 0.002123301, a: 3}
-    - _SkyColor2: {r: 0.087217644, g: 0.07647215, b: 0.09522622, a: 3}
-    - _SkyColor3: {r: 0, g: 0, b: 0, a: 3}
+    - _SkyColor1: {r: 0, g: 0, b: 0, a: 2}
+    - _SkyColor2: {r: 0, g: 0, b: 0, a: 2}
+    - _SkyColor3: {r: 0, g: 0, b: 0, a: 2}
     - _SunColor: {r: 1, g: 0.98999995, b: 0.87, a: 1}
     - _SunVector: {r: -0.08, g: 0.79, b: 0.71, a: 183.24}
