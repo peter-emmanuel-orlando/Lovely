@@ -383,6 +383,20 @@ public abstract class UnifiedController : MonoBehaviour
         //are too complex to be scripted with physics. Therefore follow root motion animation
         //physics (ie falling, ragdolling getting hit by certain things) is to complex to do everything via animation so turn off everything and just physics
         //navigation is a downer to script, its better to use the built in, no matter how troublesome
+        Action SynchRbPosToNavViaPhysics = () =>
+        {
+            rb.isKinematic = false;
+            rb.velocity = Vector3.zero;
+            navAgent.Warp(navAgent.nextPosition);
+            var desired = ((navAgent.nextPosition - rb.position) / Time.fixedDeltaTime);
+            //desired = Vector3.ProjectOnPlane(desired, Vector3.up); //* rb.mass ;
+            rb.AddForce(desired, ForceMode.VelocityChange);
+            //rb.MovePosition(navAgent.nextPosition);
+        };
+        Action SynchRbRotToNavViaPhysics = () =>
+        {
+            rb.MoveRotation(rb.rotation * deltaRotForPhys);
+        };
 
         if (movementSource == ControlMode.Navigation)
         {
@@ -397,27 +411,23 @@ public abstract class UnifiedController : MonoBehaviour
         }
         else if (movementSource == ControlMode.AnimatedNavAgent)
         {
-            rb.isKinematic = false;
-            rb.velocity = Vector3.zero;
-            navAgent.Warp(navAgent.nextPosition);
-            var desired = ((navAgent.nextPosition - rb.position) / Time.fixedDeltaTime);
-            //desired = Vector3.ProjectOnPlane(desired, Vector3.up); //* rb.mass ;
-            Debug.Log(desired);
-            rb.AddForce(desired, ForceMode.VelocityChange);
-            //rb.MovePosition(navAgent.nextPosition);
+            SynchRbPosToNavViaPhysics();
         }
         else if (movementSource == ControlMode.AnimationRootMotion)
         {
             if (remainOnNavMesh)
             {
-                rb.isKinematic = true;
-                rb.MovePosition(navAgent.nextPosition);
-                rb.MoveRotation(rb.rotation * deltaRotForPhys);
+                //rb.isKinematic = true;
+                //rb.MovePosition(navAgent.nextPosition);
+                //rb.MoveRotation(rb.rotation * deltaRotForPhys);
+                SynchRbPosToNavViaPhysics();
+                SynchRbRotToNavViaPhysics();
             }
             else
             {
                 rb.isKinematic = false;
-                rb.velocity = (deltaPosForPhys) / Time.fixedDeltaTime;
+                rb.velocity = Vector3.zero;
+                rb.AddForce (deltaPosForPhys / Time.fixedDeltaTime, ForceMode.VelocityChange);
                 rb.angularDrag = 8f;
                 // not yet working rb.angularVelocity = (anim.deltaRotation.eulerAngles) / Time.deltaTime;
                 //rb.MoveRotation(rb.rotation * anim.deltaRotation);
@@ -481,17 +491,10 @@ public abstract class UnifiedController : MonoBehaviour
         StartCoroutine(Cleanup());
     }
 
-    bool isCleaning = false;
     private IEnumerator Cleanup()
     {
-        if (isCleaning) yield break;
-        isCleaning = true;
         yield return new WaitForFixedUpdate();
-        //yield return new WaitForEndOfFrame();
-        isCleaning = false;
-        var maxDiff = 0.1;
-        //if((navAgent.nextPosition - rb.position).sqrMagnitude > maxDiff * maxDiff )
-            navAgent.Warp(rb.position);
+        navAgent.Warp(rb.position);
     }
 
     //helper methods    
