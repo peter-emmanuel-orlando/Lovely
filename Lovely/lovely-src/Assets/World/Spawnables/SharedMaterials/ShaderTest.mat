@@ -41,7 +41,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _EmissionTex:
         m_Texture: {fileID: 0}
-        m_Scale: {x: 0, y: 0}
+        m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _FlatCutoutTex:
         m_Texture: {fileID: 0}
@@ -64,7 +64,7 @@ Material:
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _NormalMap:
-        m_Texture: {fileID: 2800000, guid: 3b5b7be0f2332c24f89a2af018daa62d, type: 3}
+        m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
         m_Offset: {x: 0, y: 0}
     - _OcclusionMap:
@@ -101,11 +101,11 @@ Material:
     - _GlossyReflections: 1
     - _Height: 10
     - _Knee: 11.6
-    - _LightPenetration: 0
+    - _LightPenetration: 0.57
     - _MainTexAlpha: 1
     - _Metallic: 0
     - _Mode: 0
-    - _NormalInfluence: 1
+    - _NormalInfluence: 0
     - _Occlusion: 1
     - _OcclusionStrength: 1
     - _Parallax: 0.02
@@ -117,7 +117,7 @@ Material:
     - _SkyExponent1: 8.5
     - _SkyExponent2: 3
     - _SkyIntensity: 1
-    - _Smoothness: 0
+    - _Smoothness: 0.889
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1

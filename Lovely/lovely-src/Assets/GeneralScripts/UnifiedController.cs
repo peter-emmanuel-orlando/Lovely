@@ -40,6 +40,7 @@ public abstract class UnifiedController : MonoBehaviour
     protected Vector3 jumpVelocity = new Vector3(5, 5, 5);
 
     private Vector3 animMovement;
+    private Vector3 animVelo;
     private Vector3 navDestination;
     private bool jump = false;
     private RecoilCode recoil = RecoilCode.None;
@@ -59,9 +60,9 @@ public abstract class UnifiedController : MonoBehaviour
     Quaternion deltaRotForPhys = Quaternion.identity;
 
     private enum ControlMode
-    { AnimNav = 0, Navigation, AnimatedRoot, Physics }
+    { AnimatedNavAgent = 0, Navigation, AnimationRootMotion, Physics }
 
-    private ControlMode movementSource = ControlMode.AnimNav;
+    private ControlMode movementSource = ControlMode.AnimatedNavAgent;
 
 
     private RuntimeAnimatorController BaseController { get { return overrideController.runtimeAnimatorController; } }
@@ -203,6 +204,8 @@ public abstract class UnifiedController : MonoBehaviour
         //anim.deltas will be zero if applyrootmotion is set to false and this method doesnt exist
         //this methods existence has the side effect of anim.deltas being calculated, and thus 
         //everything else works as expected
+        if(anim.velocity.sqrMagnitude > 0.01) animVelo = anim.velocity;
+        //Debug.Log(animVelo);
     }
 
     private void InnerUpdate()
@@ -246,7 +249,7 @@ public abstract class UnifiedController : MonoBehaviour
         }
 
 
-        if (movementSource == ControlMode.AnimNav)
+        if (movementSource == ControlMode.AnimatedNavAgent)
         {
             //if state isnt movement, go to movement
             //set animator parameters here for physics or navigation
@@ -262,7 +265,7 @@ public abstract class UnifiedController : MonoBehaviour
                 anim.SetFloat("SpeedForward", localizedNormalized.z);
             }
         }
-        else if (movementSource == ControlMode.AnimatedRoot)
+        else if (movementSource == ControlMode.AnimationRootMotion)
         {
             if (recoil != RecoilCode.None)
             {
@@ -309,15 +312,18 @@ public abstract class UnifiedController : MonoBehaviour
         }
         else if (movementSource == ControlMode.Physics)
         {
-            anim.SetFloat("SpeedHorizontal", 0);
-            anim.SetFloat("SpeedForward", 0);
+            if(IsGrounded)
+            {
+                anim.SetFloat("SpeedHorizontal", 0);
+                anim.SetFloat("SpeedForward", 0);
+            }
         }
     }
 
     private void SyncNavigation()
     {
 
-        if (movementSource == ControlMode.AnimNav)
+        if (movementSource == ControlMode.AnimatedNavAgent)
         {
             var tmp = new NavMeshHit();
             if (!NavMesh.SamplePosition(transform.position, out tmp, 2f, NavMesh.AllAreas))
@@ -348,7 +354,7 @@ public abstract class UnifiedController : MonoBehaviour
                 navDestination = transform.position;
             }
         }
-        else if (movementSource == ControlMode.AnimatedRoot)
+        else if (movementSource == ControlMode.AnimationRootMotion)
         {
             //navAgent.nextPosition = transform.position;
             if (remainOnNavMesh)
@@ -364,8 +370,10 @@ public abstract class UnifiedController : MonoBehaviour
 
     private void SyncPhysics()
     {
+        //if attached to navmesh
         deltaPosForPhys = anim.deltaPosition;
         deltaRotForPhys = anim.deltaRotation;
+        //else enable move via physics
     }
 
     private void FixedUpdate()
@@ -387,12 +395,18 @@ public abstract class UnifiedController : MonoBehaviour
             }
             //use a turntoface to update rotation to face navagent velocity
         }
-        else if (movementSource == ControlMode.AnimNav)
+        else if (movementSource == ControlMode.AnimatedNavAgent)
         {
-            rb.isKinematic = true;
-            rb.MovePosition(navAgent.nextPosition);
+            rb.isKinematic = false;
+            rb.velocity = Vector3.zero;
+            navAgent.Warp(navAgent.nextPosition);
+            var desired = ((navAgent.nextPosition - rb.position) / Time.fixedDeltaTime);
+            //desired = Vector3.ProjectOnPlane(desired, Vector3.up); //* rb.mass ;
+            Debug.Log(desired);
+            rb.AddForce(desired, ForceMode.VelocityChange);
+            //rb.MovePosition(navAgent.nextPosition);
         }
-        else if (movementSource == ControlMode.AnimatedRoot)
+        else if (movementSource == ControlMode.AnimationRootMotion)
         {
             if (remainOnNavMesh)
             {
@@ -430,20 +444,16 @@ public abstract class UnifiedController : MonoBehaviour
 
             rb.isKinematic = false;
 
-            if (additionalPhysics != null)
-            {
-                additionalPhysics();
-            }
+            additionalPhysics?.Invoke();
             additionalPhysics = null;
 
-            if(requirePhysicsTimeLength > 0)
+            if (requirePhysicsTimeLength > 0)
             {
                 requirePhysicsTimeLength -= Time.fixedDeltaTime;
             }
             else
             {
-                var tmp = new NavMeshHit();
-                if (NavMesh.SamplePosition(lowerCenter, out tmp, samplePositionRadius, NavMesh.AllAreas))
+                if (NavMesh.SamplePosition(lowerCenter, out NavMeshHit tmp, samplePositionRadius, NavMesh.AllAreas))
                 {
                     movementSource = ControlMode.Navigation;
                     navAgent.Warp(tmp.position);
@@ -451,10 +461,10 @@ public abstract class UnifiedController : MonoBehaviour
                     //rb.freezeRotation = true;
                     isLocked = false;
                 }
-                else if ( NavMesh.SamplePosition(headPos, out tmp, samplePositionRadius, NavMesh.AllAreas))
+                else if (NavMesh.SamplePosition(headPos, out tmp, samplePositionRadius, NavMesh.AllAreas))
                 {
                     var grabPoint = tmp.position;
-                    if(NavMesh.FindClosestEdge(grabPoint, out tmp, NavMesh.AllAreas) && Vector3.SqrMagnitude(tmp.position - grabPoint) < samplePositionRadius * samplePositionRadius)
+                    if (NavMesh.FindClosestEdge(grabPoint, out tmp, NavMesh.AllAreas) && Vector3.SqrMagnitude(tmp.position - grabPoint) < samplePositionRadius * samplePositionRadius)
                     {
                         movementSource = ControlMode.Navigation;
                         navAgent.Warp(tmp.position);
@@ -465,14 +475,26 @@ public abstract class UnifiedController : MonoBehaviour
                 }
             }
         }
-
         //additionalPhysics = null;//consume physics regardless of its use above
         deltaPosForPhys = Vector3.zero;
         deltaRotForPhys = Quaternion.identity;
-
+        StartCoroutine(Cleanup());
     }
 
-    //helper methods
+    bool isCleaning = false;
+    private IEnumerator Cleanup()
+    {
+        if (isCleaning) yield break;
+        isCleaning = true;
+        yield return new WaitForFixedUpdate();
+        //yield return new WaitForEndOfFrame();
+        isCleaning = false;
+        var maxDiff = 0.1;
+        //if((navAgent.nextPosition - rb.position).sqrMagnitude > maxDiff * maxDiff )
+            navAgent.Warp(rb.position);
+    }
+
+    //helper methods    
     private Vector3 GetNormalizedSpeed(Vector3 speed)
     {
         var speedNormalized_Z = 0f;
@@ -524,7 +546,7 @@ public abstract class UnifiedController : MonoBehaviour
         }
 
         //set up for manual movement
-        movementSource = ControlMode.AnimNav;
+        movementSource = ControlMode.AnimatedNavAgent;
         horizontalSpeedNormalized = Mathf.Clamp(horizontalSpeedNormalized, -1f, 1f);
         forwardSpeedNormalized = Mathf.Clamp(forwardSpeedNormalized, -1f, 1f);
         animMovement = new Vector3(horizontalSpeedNormalized, 0, forwardSpeedNormalized);
@@ -602,7 +624,6 @@ public abstract class UnifiedController : MonoBehaviour
 
         yield return ProgressStatus.Complete;
     }
-
     public void Jump(Vector3 normalizedJump)
     {
         //todo: nothing here prevents double jumping except animation time length, thats bad design.
@@ -619,7 +640,7 @@ public abstract class UnifiedController : MonoBehaviour
         //clear playAnimation(recoil)
         recoil = RecoilCode.None;
 
-        movementSource = ControlMode.AnimatedRoot;
+        movementSource = ControlMode.AnimationRootMotion;
         anim.ResetTrigger("Abort");
         anim.SetBool("ExitWhenComplete", true);
         remainOnNavMesh = false;
@@ -737,7 +758,7 @@ public abstract class UnifiedController : MonoBehaviour
         //clear playAnimation(recoil)
         recoil = RecoilCode.None;
 
-        this.movementSource = ControlMode.AnimatedRoot;
+        this.movementSource = ControlMode.AnimationRootMotion;
 
         anim.ResetTrigger("Abort");
         anim.SetBool("ExitWhenComplete", exitWhenComplete);
@@ -830,6 +851,265 @@ public abstract class UnifiedController : MonoBehaviour
     }
 }
 
+internal class RigidbodyController
+{
+    /*
+        [Serializable]
+        public class MovementSettings
+        {
+            public float ForwardSpeed = 8.0f;   // Speed when walking forward
+            public float BackwardSpeed = 4.0f;  // Speed when walking backwards
+            public float StrafeSpeed = 4.0f;    // Speed when walking sideways
+            public float RunMultiplier = 2.0f;   // Speed when sprinting
+            public KeyCode RunKey = KeyCode.LeftShift;
+            public float JumpForce = 30f;
+            public AnimationCurve SlopeCurveModifier = new AnimationCurve(new Keyframe(-90.0f, 1.0f), new Keyframe(0.0f, 1.0f), new Keyframe(90.0f, 0.0f));
+            [HideInInspector] public float CurrentTargetSpeed = 8f;
+
+    #if !MOBILE_INPUT
+            private bool m_Running;
+    #endif
+
+            public void UpdateDesiredTargetSpeed(Vector2 input)
+            {
+                if (input == Vector2.zero) return;
+                if (input.x > 0 || input.x < 0)
+                {
+                    //strafe
+                    CurrentTargetSpeed = StrafeSpeed;
+                }
+                if (input.y < 0)
+                {
+                    //backwards
+                    CurrentTargetSpeed = BackwardSpeed;
+                }
+                if (input.y > 0)
+                {
+                    //forwards
+                    //handled last as if strafing and moving forward at the same time forwards speed should take precedence
+                    CurrentTargetSpeed = ForwardSpeed;
+                }
+    #if !MOBILE_INPUT
+                if (Input.GetKey(RunKey))
+                {
+                    CurrentTargetSpeed *= RunMultiplier;
+                    m_Running = true;
+                }
+                else
+                {
+                    m_Running = false;
+                }
+    #endif
+            }
+
+    #if !MOBILE_INPUT
+            public bool Running
+            {
+                get { return m_Running; }
+            }
+    #endif
+        }
+
+
+        [Serializable]
+        public class AdvancedSettings
+        {
+            public float groundCheckDistance = 0.01f; // distance for checking if the controller is grounded ( 0.01f seems to work best for this )
+            public float stickToGroundHelperDistance = 0.5f; // stops the character
+            public float slowDownRate = 20f; // rate at which the controller comes to a stop when there is no input
+            public bool airControl; // can the user control the direction that is being moved in the air
+            [Tooltip("set it to 0.1 or more if you get stuck in wall")]
+            public float shellOffset; //reduce the radius by that ratio to avoid getting stuck in wall (a value of 0.1f is nice)
+        }
+
+
+        public Camera cam;
+        public MovementSettings movementSettings = new MovementSettings();
+        public MouseLook mouseLook = new MouseLook();
+        public AdvancedSettings advancedSettings = new AdvancedSettings();
+
+
+        private Rigidbody m_RigidBody;
+        private CapsuleCollider m_Capsule;
+        private float m_YRotation;
+        private Vector3 m_GroundContactNormal;
+        private bool m_Jump, m_PreviouslyGrounded, m_Jumping, m_IsGrounded;
+
+
+        public Vector3 Velocity
+        {
+            get { return m_RigidBody.velocity; }
+        }
+
+        public bool Grounded
+        {
+            get { return m_IsGrounded; }
+        }
+
+        public bool Jumping
+        {
+            get { return m_Jumping; }
+        }
+
+        public bool Running
+        {
+            get
+            {
+    #if !MOBILE_INPUT
+                return movementSettings.Running;
+    #else
+                    return false;
+    #endif
+            }
+        }
+
+
+        private void Start()
+        {
+            m_RigidBody = GetComponent<Rigidbody>();
+            m_Capsule = GetComponent<CapsuleCollider>();
+            mouseLook.Init(transform, cam.transform);
+        }
+
+
+        private void Update()
+        {
+            RotateView();
+
+            if (CrossPlatformInputManager.GetButtonDown("Jump") && !m_Jump)
+            {
+                m_Jump = true;
+            }
+        }
+
+
+        private void FixedUpdate()
+        {
+            GroundCheck();
+            Vector2 input = GetInput();
+
+            if ((Mathf.Abs(input.x) > float.Epsilon || Mathf.Abs(input.y) > float.Epsilon) && (advancedSettings.airControl || m_IsGrounded))
+            {
+                // always move along the camera forward as it is the direction that it being aimed at
+                Vector3 desiredMove = cam.transform.forward * input.y + cam.transform.right * input.x;
+                desiredMove = Vector3.ProjectOnPlane(desiredMove, m_GroundContactNormal).normalized;
+
+                desiredMove.x = desiredMove.x * movementSettings.CurrentTargetSpeed;
+                desiredMove.z = desiredMove.z * movementSettings.CurrentTargetSpeed;
+                desiredMove.y = desiredMove.y * movementSettings.CurrentTargetSpeed;
+                if (m_RigidBody.velocity.sqrMagnitude <
+                    (movementSettings.CurrentTargetSpeed * movementSettings.CurrentTargetSpeed))
+                {
+                    m_RigidBody.AddForce(desiredMove * SlopeMultiplier(), ForceMode.Impulse);
+                }
+            }
+
+            if (m_IsGrounded)
+            {
+                m_RigidBody.drag = 5f;
+
+                if (m_Jump)
+                {
+                    m_RigidBody.drag = 0f;
+                    m_RigidBody.velocity = new Vector3(m_RigidBody.velocity.x, 0f, m_RigidBody.velocity.z);
+                    m_RigidBody.AddForce(new Vector3(0f, movementSettings.JumpForce, 0f), ForceMode.Impulse);
+                    m_Jumping = true;
+                }
+
+                if (!m_Jumping && Mathf.Abs(input.x) < float.Epsilon && Mathf.Abs(input.y) < float.Epsilon && m_RigidBody.velocity.magnitude < 1f)
+                {
+                    m_RigidBody.Sleep();
+                }
+            }
+            else
+            {
+                m_RigidBody.drag = 0f;
+                if (m_PreviouslyGrounded && !m_Jumping)
+                {
+                    StickToGroundHelper();
+                }
+            }
+            m_Jump = false;
+        }
+
+
+        private float SlopeMultiplier()
+        {
+            float angle = Vector3.Angle(m_GroundContactNormal, Vector3.up);
+            return movementSettings.SlopeCurveModifier.Evaluate(angle);
+        }
+
+
+        private void StickToGroundHelper()
+        {
+            RaycastHit hitInfo;
+            if (Physics.SphereCast(transform.position, m_Capsule.radius * (1.0f - advancedSettings.shellOffset), Vector3.down, out hitInfo,
+                                   ((m_Capsule.height / 2f) - m_Capsule.radius) +
+                                   advancedSettings.stickToGroundHelperDistance, Physics.AllLayers, QueryTriggerInteraction.Ignore))
+            {
+                if (Mathf.Abs(Vector3.Angle(hitInfo.normal, Vector3.up)) < 85f)
+                {
+                    m_RigidBody.velocity = Vector3.ProjectOnPlane(m_RigidBody.velocity, hitInfo.normal);
+                }
+            }
+        }
+
+
+        private Vector2 GetInput()
+        {
+
+            Vector2 input = new Vector2
+            {
+                x = CrossPlatformInputManager.GetAxis("Horizontal"),
+                y = CrossPlatformInputManager.GetAxis("Vertical")
+            };
+            movementSettings.UpdateDesiredTargetSpeed(input);
+            return input;
+        }
+
+
+        private void RotateView()
+        {
+            //avoids the mouse looking if the game is effectively paused
+            if (Mathf.Abs(Time.timeScale) < float.Epsilon) return;
+
+            // get the rotation before it's changed
+            float oldYRotation = transform.eulerAngles.y;
+
+            mouseLook.LookRotation(transform, cam.transform);
+
+            if (m_IsGrounded || advancedSettings.airControl)
+            {
+                // Rotate the rigidbody velocity to match the new direction that the character is looking
+                Quaternion velRotation = Quaternion.AngleAxis(transform.eulerAngles.y - oldYRotation, Vector3.up);
+                m_RigidBody.velocity = velRotation * m_RigidBody.velocity;
+            }
+        }
+
+        /// sphere cast down just beyond the bottom of the capsule to see if the capsule is colliding round the bottom
+        private void GroundCheck()
+        {
+            m_PreviouslyGrounded = m_IsGrounded;
+            RaycastHit hitInfo;
+            if (Physics.SphereCast(transform.position, m_Capsule.radius * (1.0f - advancedSettings.shellOffset), Vector3.down, out hitInfo,
+                                   ((m_Capsule.height / 2f) - m_Capsule.radius) + advancedSettings.groundCheckDistance, Physics.AllLayers, QueryTriggerInteraction.Ignore))
+            {
+                m_IsGrounded = true;
+                m_GroundContactNormal = hitInfo.normal;
+            }
+            else
+            {
+                m_IsGrounded = false;
+                m_GroundContactNormal = Vector3.up;
+            }
+            if (!m_PreviouslyGrounded && m_IsGrounded && m_Jumping)
+            {
+                m_Jumping = false;
+            }
+        }
+        */
+}
+
 
 
 
@@ -852,4 +1132,3 @@ public abstract class UnifiedController : MonoBehaviour
  * 
 */
 
-    
