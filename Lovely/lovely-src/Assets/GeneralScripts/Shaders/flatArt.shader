@@ -24,11 +24,15 @@
 			half _Smoothness;
 			half _Occlusion;
 
-			inline half3 Lerp3(half3 val1, half3 val2, half lerpFactor)
+			inline half3 Lerp(half3 val1, half3 val2, half lerpFactor)
 			{
 				return ((val2 * lerpFactor) + (val1 * (1 - lerpFactor)));
 			}
-			inline half4 Lerp4(half4 val1, half4 val2, half lerpFactor)
+			inline half4 Lerp(half4 val1, half4 val2, half lerpFactor)
+			{
+				return (val2 * lerpFactor) + (val1 * (1 - lerpFactor));
+			}
+			inline float3 Lerp(float3 val1, float3 val2, half lerpFactor)
 			{
 				return (val2 * lerpFactor) + (val1 * (1 - lerpFactor));
 			}
@@ -37,25 +41,33 @@
 			/*inline half4 LightingStandardToneMappedGI(SurfaceOutputStandard s, half3 viewDir, UnityGI gi)
 			{
 				half4 result;
-				s.Normal = Lerp3(viewDir, s.Normal, _NormalInfluence);
+				s.Normal = Lerp(viewDir, s.Normal, _NormalInfluence);
 				result = LightingStandard(s, viewDir, gi);
-				s.Normal = Lerp4(s.Normal, s.Occlusion, _LightPenetration); // no shadow from any angle
+				s.Normal = Lerp(s.Normal, s.Occlusion, _LightPenetration); // no shadow from any angle
 				half4 origOcclusion = s.Occlusion;
-				s.Occlusion = Lerp4(s.Occlusion, s.Normal, _LightPenetration);//dont correct occlusion if light is penetrating
-				s.Occlusion = Lerp4(s.Occlusion, origOcclusion, _NormalInfluence);//dont correct occlusion if doing normals
+				s.Occlusion = Lerp(s.Occlusion, s.Normal, _LightPenetration);//dont correct occlusion if light is penetrating
+				s.Occlusion = Lerp(s.Occlusion, origOcclusion, _NormalInfluence);//dont correct occlusion if doing normals
 				return result;
 			}*/
 
 			inline half4 LightingStandardToneMappedGI_Deferred (SurfaceOutputStandard s, float3 viewDir, UnityGI gi, out half4 outDiffuseOcclusion, out half4 outSpecSmoothness, out half4 outNormal)
 			{
 				half4 result;
-				s.Normal = Lerp3( viewDir, s.Normal, _NormalInfluence);
-				result = LightingStandard_Deferred(s, viewDir, gi, outDiffuseOcclusion, outSpecSmoothness, outNormal);
-				outNormal = Lerp4( outNormal, outDiffuseOcclusion, _LightPenetration); // no shadow from any angle
 
+				s.Normal = Lerp( viewDir, s.Normal, _NormalInfluence);// flattening
+
+				result = LightingStandard_Deferred(s, viewDir, gi, outDiffuseOcclusion, outSpecSmoothness, outNormal);
+
+				s.Normal = Lerp( outNormal, outDiffuseOcclusion, _LightPenetration); // no shadow from any angle
+
+				result = LightingStandard_Deferred(s, viewDir, gi, (outDiffuseOcclusion), (outSpecSmoothness), (outNormal));
+
+				//correct occlusion. 
+				//Occlusion could cause a 3d non flat effect if not manually handled here
 				half4 origOcclusion = outDiffuseOcclusion;
-				outDiffuseOcclusion = Lerp4(outDiffuseOcclusion, outNormal, _LightPenetration);//dont correct occlusion if light is penetrating
-				outDiffuseOcclusion = Lerp4(outDiffuseOcclusion, origOcclusion, _NormalInfluence);//dont correct occlusion if doing normals
+				outDiffuseOcclusion = Lerp(origOcclusion, outNormal, _LightPenetration);//dont correct occlusion if light is penetrating
+				outDiffuseOcclusion = Lerp(outDiffuseOcclusion, origOcclusion, _NormalInfluence);//dont correct occlusion if doing normals
+				
 				return result;
 			}
 
@@ -64,14 +76,17 @@
 				LightingStandard_GI(s, data, gi);
 			}
 
-			struct Input {
+			struct Input 
+			{
 				float2 uv_MainTex;
-				float2 uv_EmissionTex;
+				float2 uv_EmissionTex; 
+				
 			};
 
-			void surf(Input IN, inout SurfaceOutputStandard o) {
-				o.Albedo = tex2D(_MainTex, IN.uv_MainTex);;      // base (diffuse or specular) color
-				//float3 Normal;      // tangent space normal, if written
+			void surf(Input IN, inout SurfaceOutputStandard o)
+			{
+				o.Albedo = tex2D(_MainTex, IN.uv_MainTex);      // base (diffuse or specular) color
+				//o.Normal;      // tangent space normal, if written
 				o.Emission = tex2D(_EmissionTex, IN.uv_EmissionTex);
 				o.Metallic = _Metallic;      // 0=non-metal, 1=metal
 				o.Smoothness = _Smoothness;    // 0=rough, 1=smooth
