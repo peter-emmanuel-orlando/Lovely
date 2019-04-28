@@ -3,6 +3,7 @@
 		_NormalInfluence("Normals Influence", Range(-5, 5)) = 0.2
 		_LightPenetration("Light Penetration", Range(-1, 1)) = 0
 		_MainTex("Albedo (RGB)", 2D) = "white" {}
+		_NormalMap("Normal Map", 2D) = "bump" {}
 		_EmissionTex("Emission (RGB)", 2D) = "black" {}
 		_Metallic("Metallic", Range(-10, 10)) = 0
 		_Smoothness("Smoothness", Range(0, 1)) = 0.33
@@ -19,6 +20,7 @@
 			half _NormalInfluence;
 			half _LightPenetration;
 			sampler2D _MainTex;
+			sampler2D _NormalMap;
 			sampler2D _EmissionTex;
 			half _Metallic;
 			half _Smoothness;
@@ -50,25 +52,36 @@
 				return result;
 			}*/
 
-			inline half4 LightingStandardToneMappedGI_Deferred (SurfaceOutputStandard s, float3 viewDir, UnityGI gi, out half4 outDiffuseOcclusion, out half4 outSpecSmoothness, out half4 outNormal)
+			inline half4 LightingStandardToneMappedGI_Deferred(SurfaceOutputStandard s, float3 viewDir, UnityGI gi, out half4 outDiffuseOcclusion, out half4 outSpecSmoothness, out half4 outNormal)
 			{
-				half4 result;
+				half oneMinusReflectivity;
+				half3 specColor;
+				s.Albedo = DiffuseAndSpecularFromMetallic(s.Albedo, s.Metallic, /*out*/ specColor, /*out*/ oneMinusReflectivity);
 
-				s.Normal = Lerp( viewDir, s.Normal, _NormalInfluence);// flattening
+				s.Normal = Lerp(viewDir, s.Normal, _NormalInfluence);// flattening
+				half4 c = UNITY_BRDF_PBS(s.Albedo, specColor, oneMinusReflectivity, s.Smoothness, s.Normal, viewDir, gi.light, gi.indirect);
 
-				result = LightingStandard_Deferred(s, viewDir, gi, outDiffuseOcclusion, outSpecSmoothness, outNormal);
-
-				s.Normal = Lerp( outNormal, outDiffuseOcclusion, _LightPenetration); // no shadow from any angle
-
-				result = LightingStandard_Deferred(s, viewDir, gi, (outDiffuseOcclusion), (outSpecSmoothness), (outNormal));
+				s.Normal = Lerp(s.Normal, s.Occlusion, _LightPenetration); // no shadow from any angle
+				c = UNITY_BRDF_PBS(s.Albedo, specColor, oneMinusReflectivity, s.Smoothness, s.Normal, viewDir, gi.light, gi.indirect);
 
 				//correct occlusion. 
 				//Occlusion could cause a 3d non flat effect if not manually handled here
-				half4 origOcclusion = outDiffuseOcclusion;
-				outDiffuseOcclusion = Lerp(origOcclusion, outNormal, _LightPenetration);//dont correct occlusion if light is penetrating
-				outDiffuseOcclusion = Lerp(outDiffuseOcclusion, origOcclusion, _NormalInfluence);//dont correct occlusion if doing normals
-				
-				return result;
+				half4 origOcclusion = s.Occlusion;
+				s.Occlusion = Lerp(s.Occlusion, s.Normal, _LightPenetration);//dont correct occlusion if light is penetrating
+				s.Occlusion = Lerp(s.Occlusion, origOcclusion, _NormalInfluence);//dont correct occlusion if doing normals
+
+
+				UnityStandardData data;
+				data.diffuseColor = s.Albedo;
+				data.occlusion = s.Occlusion;
+				data.specularColor = specColor;
+				data.smoothness = s.Smoothness;
+				data.normalWorld = s.Normal;
+
+				UnityStandardDataToGbuffer(data, outDiffuseOcclusion, outSpecSmoothness, outNormal);
+
+				half4 emission = half4(s.Emission + c.rgb, 1);
+				return emission;
 			}
 
 			inline void LightingStandardToneMappedGI_GI( SurfaceOutputStandard s, UnityGIInput data, inout UnityGI gi)
@@ -80,13 +93,14 @@
 			{
 				float2 uv_MainTex;
 				float2 uv_EmissionTex; 
+				float2 uv_NormalMap;
 				
 			};
 
 			void surf(Input IN, inout SurfaceOutputStandard o)
 			{
 				o.Albedo = tex2D(_MainTex, IN.uv_MainTex);      // base (diffuse or specular) color
-				//o.Normal;      // tangent space normal, if written
+				o.Normal = UnpackNormal(tex2D(_NormalMap, IN.uv_NormalMap));      // tangent space normal, if written
 				o.Emission = tex2D(_EmissionTex, IN.uv_EmissionTex);
 				o.Metallic = _Metallic;      // 0=non-metal, 1=metal
 				o.Smoothness = _Smoothness;    // 0=rough, 1=smooth
