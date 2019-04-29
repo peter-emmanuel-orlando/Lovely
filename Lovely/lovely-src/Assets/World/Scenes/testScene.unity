@@ -1901,37 +1901,37 @@ MonoBehaviour:
     - serializedVersion: 3
       time: 0
       value: 0
-      inSlope: 1
-      outSlope: 1
-      tangentMode: 34
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
       weightedMode: 0
       inWeight: 0
       outWeight: 0
     - serializedVersion: 3
       time: 1
-      value: 1
-      inSlope: 1
-      outSlope: 1
-      tangentMode: 34
+      value: 0.7
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
       weightedMode: 0
       inWeight: 0
       outWeight: 0
-    m_PreInfinity: 2
-    m_PostInfinity: 2
+    m_PreInfinity: 0
+    m_PostInfinity: 0
     m_RotationOrder: 4
   lightColor:
     serializedVersion: 2
-    key0: {r: 1, g: 0, b: 0.8152466, a: 1}
-    key1: {r: 0.7921569, g: 1, b: 0.8666667, a: 1}
-    key2: {r: 0, g: 0, b: 0, a: 0}
+    key0: {r: 0.24528301, g: 0.23174383, b: 0.17702028, a: 1}
+    key1: {r: 1, g: 0, b: 0.8152466, a: 1}
+    key2: {r: 0.7921569, g: 1, b: 0.8666667, a: 0}
     key3: {r: 0, g: 0, b: 0, a: 0}
     key4: {r: 0, g: 0, b: 0, a: 0}
     key5: {r: 0, g: 0, b: 0, a: 0}
     key6: {r: 0, g: 0, b: 0, a: 0}
     key7: {r: 0, g: 0, b: 0, a: 0}
-    ctime0: 0
-    ctime1: 65535
-    ctime2: 0
+    ctime0: 14842
+    ctime1: 31226
+    ctime2: 65535
     ctime3: 0
     ctime4: 0
     ctime5: 0
@@ -1946,21 +1946,21 @@ MonoBehaviour:
     atime6: 0
     atime7: 0
     m_Mode: 0
-    m_NumColorKeys: 2
+    m_NumColorKeys: 3
     m_NumAlphaKeys: 2
   skyColor:
     serializedVersion: 2
-    key0: {r: 1, g: 0.57096726, b: 0, a: 1}
-    key1: {r: 0.23921567, g: 1, b: 0.9023228, a: 1}
-    key2: {r: 0, g: 0, b: 0, a: 0}
+    key0: {r: 0.020172099, g: 0, b: 0.09433961, a: 1}
+    key1: {r: 1, g: 0.57096726, b: 0, a: 1}
+    key2: {r: 0.23921567, g: 1, b: 0.9023228, a: 0}
     key3: {r: 0, g: 0, b: 0, a: 0}
     key4: {r: 0, g: 0, b: 0, a: 0}
     key5: {r: 0, g: 0, b: 0, a: 0}
     key6: {r: 0, g: 0, b: 0, a: 0}
     key7: {r: 0, g: 0, b: 0, a: 0}
-    ctime0: 0
-    ctime1: 65535
-    ctime2: 0
+    ctime0: 578
+    ctime1: 20624
+    ctime2: 65535
     ctime3: 0
     ctime4: 0
     ctime5: 0
@@ -1975,7 +1975,7 @@ MonoBehaviour:
     atime6: 0
     atime7: 0
     m_Mode: 0
-    m_NumColorKeys: 2
+    m_NumColorKeys: 3
     m_NumAlphaKeys: 2
   skyExponent:
     serializedVersion: 2
@@ -1994,17 +1994,17 @@ MonoBehaviour:
     m_RotationOrder: 4
   horizonColor:
     serializedVersion: 2
-    key0: {r: 0.46226418, g: 0.06759523, b: 0.06759523, a: 1}
-    key1: {r: 1, g: 1, b: 1, a: 1}
-    key2: {r: 0, g: 0, b: 0, a: 0}
+    key0: {r: 0.020172099, g: 0, b: 0.09433961, a: 1}
+    key1: {r: 0.46226418, g: 0.06759523, b: 0.06759523, a: 1}
+    key2: {r: 0.6179246, g: 0.9464681, b: 1, a: 0}
     key3: {r: 0, g: 0, b: 0, a: 0}
     key4: {r: 0, g: 0, b: 0, a: 0}
     key5: {r: 0, g: 0, b: 0, a: 0}
     key6: {r: 0, g: 0, b: 0, a: 0}
     key7: {r: 0, g: 0, b: 0, a: 0}
     ctime0: 0
-    ctime1: 65535
-    ctime2: 0
+    ctime1: 20817
+    ctime2: 65535
     ctime3: 0
     ctime4: 0
     ctime5: 0
@@ -2019,21 +2019,21 @@ MonoBehaviour:
     atime6: 0
     atime7: 0
     m_Mode: 0
-    m_NumColorKeys: 2
+    m_NumColorKeys: 3
     m_NumAlphaKeys: 2
   groundColor:
     serializedVersion: 2
-    key0: {r: 0.0753932, g: 0, b: 1, a: 1}
-    key1: {r: 1, g: 1, b: 1, a: 1}
-    key2: {r: 0, g: 0, b: 0, a: 0}
+    key0: {r: 0.020172099, g: 0, b: 0.09433961, a: 1}
+    key1: {r: 0.0753932, g: 0, b: 1, a: 1}
+    key2: {r: 1, g: 1, b: 1, a: 0}
     key3: {r: 0, g: 0, b: 0, a: 0}
     key4: {r: 0, g: 0, b: 0, a: 0}
     key5: {r: 0, g: 0, b: 0, a: 0}
     key6: {r: 0, g: 0, b: 0, a: 0}
     key7: {r: 0, g: 0, b: 0, a: 0}
-    ctime0: 0
-    ctime1: 65535
-    ctime2: 0
+    ctime0: 771
+    ctime1: 22166
+    ctime2: 65535
     ctime3: 0
     ctime4: 0
     ctime5: 0
@@ -2048,7 +2048,7 @@ MonoBehaviour:
     atime6: 0
     atime7: 0
     m_Mode: 0
-    m_NumColorKeys: 2
+    m_NumColorKeys: 3
     m_NumAlphaKeys: 2
   groundExponent:
     serializedVersion: 2
