@@ -2,19 +2,10 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System;
-
-
-
-
-//responsible for...
-//  perceiving the world around. this means quering all the spawnables in sight range and classifying them as friend/enemy/resource/danger etc.
-public abstract class PerceivingMind : DecisionManager
+public abstract class PerceivingMind : Mind
 {
 
-    public PerceivingMind(Body body) : base(body)
-    {
-
-    }
+    public PerceivingMind(Body body) : base(body) { }
 
     protected override void ReceiveUpdates(object senter, EventArgs e)
     {
