@@ -6,29 +6,40 @@ public interface IConstrainedType<out T>
 {
     Type type { get; }
 }
-public class ConstrainedType<TBase> : IConstrainedType<TBase>
+
+/// <summary>
+/// the variable holding the generic type should be IConstrainedType, not the class!!!
+/// </summary>
+public class ConstrainedType<TBase> : ConstrainedType, IConstrainedType<TBase>
 {
-    public Type type { get; }
-    public ConstrainedType() : this(typeof(TBase)) { }
-    public ConstrainedType( Type type)
-    {
-        var v = new List<IConstrainedType<Mind>>();
-        v.Add(new ConstrainedType<PerceivingMind>());
-        this.type = type;
-    }
+    public ConstrainedType() : base(typeof(TBase)) { }
+    public ConstrainedType(Type type) : base(type) { }
 
     public static implicit operator Type(ConstrainedType<TBase> subject)
     {
         return subject.type;
     }
-
-    public static implicit operator ConstrainedType<TBase> (Type subject)
+    public static implicit operator ConstrainedType<TBase>(Type subject)
     {
         if (subject.IsAssignableFrom(typeof(TBase)))
             return new ConstrainedType<TBase>(subject);
         else
             throw new InvalidCastException($"{subject} is not assignable from {typeof(TBase)}!");
     }
+}
+public class ConstrainedType : IConstrainedType<object>
+{
+    public Type type { get; }
+    public ConstrainedType( Type type)
+    {
+        this.type = type;
+    }
+
+    public static implicit operator Type(ConstrainedType subject)
+    {
+        return subject.type;
+    }
+
 
     public override string ToString()
     {
