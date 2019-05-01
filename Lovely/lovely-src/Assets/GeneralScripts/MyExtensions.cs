@@ -8,6 +8,26 @@ using UnityEngine;
 
 static class MyExtensions
 {
+    public static IEnumerable<Type> BaseTypes(this Type type)
+    {
+        foreach (Type i in type.GetInterfaces())
+        {
+            yield return i;
+            foreach (Type t in i.BaseTypes())
+            {
+                yield return t;
+            }
+        }
+
+        if (type.BaseType != null)
+        {
+            yield return type.BaseType;
+            foreach (Type b in type.BaseType.BaseTypes())
+            {
+                yield return b;
+            }
+        }
+    }
     public static Vector3[] GetCornerVerticies(this Bounds bounds)
     {
 
@@ -112,41 +132,6 @@ static class MyExtensions
     public static bool IsNull(this ISpawnable s)
     {
         var result = s.GameObject == null;
-        return result;
-    }
-
-
-    /// <summary>
-    /// seperates a flags enum into component flags
-    /// </summary>
-    /// <param name="input"></param>
-    /// <returns></returns>
-    public static IEnumerable<ItemType> Enumerate(this ItemType input)
-    {
-        foreach (ItemType value in Enum.GetValues(typeof(ItemType)))
-            if ((input & value) != 0)//input.HasFlag(value))
-                yield return value;
-    }
-
-    public static bool ContanisAll(this ItemType input, params ItemType[] query)
-    {
-        var result = true;
-        foreach (var item in query)
-        {
-            result &= (input & item) != 0;
-
-        }
-        return result;
-    }
-
-    public static bool ContanisAny(this ItemType input, params ItemType[] query)
-    {
-        var result = true;
-        foreach (var item in query)
-        {
-            result |= (input & item) != 0;
-
-        }
         return result;
     }
 

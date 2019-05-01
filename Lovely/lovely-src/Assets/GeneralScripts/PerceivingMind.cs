@@ -25,20 +25,35 @@ public abstract class PerceivingMind : Mind
     readonly List<BodyIntel> visibleEnemies = new List<BodyIntel>();
     readonly List<BodyIntel> visibleAllies = new List<BodyIntel>();
     readonly List<BodyIntel> allBodiesInSightRange = new List<BodyIntel>();
-    readonly Dictionary<ItemType, List<ResourceIntel>> allResourcesInSightRange = Item.GetItemTypeDictionary<List<ResourceIntel>>();
+    readonly Dictionary<Type, List<ResourceIntel>> allResourcesInSightRange = new Dictionary<Type, List<ResourceIntel>>();
     
     public List<BodyIntel> VisibleEnemies { get { return new List<BodyIntel>(visibleEnemies); } }//change so they return an array
     public List<BodyIntel> VisibleAllies { get { return new List<BodyIntel>(visibleAllies); } }
-    public List<BodyIntel> AllBeingsInSightRange { get { return new List<BodyIntel>(allBodiesInSightRange); } }
-    public ResourceIntel[] GetResourcesInSight(ItemType type) { return allResourcesInSightRange[type].ToArray(); }
+    public IEnumerable<BodyIntel> AllBeingsInSightRange { get { return allBodiesInSightRange; } }
+    public IEnumerable<ResourceIntel> GetResourcesInSight(Type type) { return allResourcesInSightRange[type]; }
 
     public abstract float SightRadius { get; }//move to body
     //public abstract float SightArc { get; }//move to body
 
     private void LookAround()
     {
+        LookForResources();
+        LookForCreatures();
+    }
+
+    private void LookForResources()
+    {
+        var inRangeProviders = TrackedComponent.GetOverlapping<IResourceProvider<IResource>>(Body.CameraBone.transform.position, SightRadius);
+        foreach (var provider in inRangeProviders)
+        {
+            var intel = new ResourceIntel(Body, provider);
+        }
+    }
+
+    private void LookForCreatures()
+    {
         visibleEnemies.Clear();
-        var inRangeBodies = TrackedComponent<Body>.GetOverlapping(Body.CameraBone.transform.position, SightRadius);
+        var inRangeBodies = TrackedComponent.GetOverlapping<Body>(Body.CameraBone.transform.position, SightRadius);
         foreach (var current in inRangeBodies)
         {
             if (!ReferenceEquals(current, Body))

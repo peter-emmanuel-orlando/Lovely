@@ -4,7 +4,7 @@ using UnityEngine.AI;
 using UnityEngine;
 
 [RequireComponent(typeof(Rigidbody))]
-public class OccupiableLocation : MonoBehaviour
+public class OccupiableLocation : MonoBehaviour, IBounded
 {
     /// 
     /// this is a "move your feet, loose your seat" sort of location. A being occupies it simply by standing in it. This is opposed to an assignable location
@@ -21,6 +21,7 @@ public class OccupiableLocation : MonoBehaviour
     List<Body> currentOccupiers = new List<Body>(); // make hashsett
 
 
+    public Bounds Bounds { get => throw new System.NotImplementedException(); }
     public virtual bool HasVacancy { get { return currentOccupiers.Count < maxOccupants; } }
     public bool IsFull { get { return !HasVacancy; } }
 

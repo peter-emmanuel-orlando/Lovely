@@ -27,8 +27,8 @@ public abstract class HarvestResourcePerformable : Performable
     public override ActivityState ActivityType { get { return ActivityState.Work; } }
 
 
-    Resource _resourceToHarvest;
-    public Resource resourceToHarvest { get { return _resourceToHarvest; } }
+    ResourceProvider<IResource> _resourceToHarvest;
+    public ResourceProvider<IResource> resourceToHarvest { get { return _resourceToHarvest; } }
     protected abstract AnimationClip harvestAnimationClip { get; }
 
     //************************************************************************************************************************************
@@ -54,7 +54,7 @@ public abstract class HarvestResourcePerformable : Performable
     }
     //************************************************************************************************************************************
 
-    public HarvestResourcePerformable(PerceivingMind harvester, Resource resourceToHarvest) : base(harvester)
+    public HarvestResourcePerformable(PerceivingMind harvester, ResourceProvider<IResource> resourceToHarvest) : base(harvester)
     {
         base._performer = harvester;
         this._resourceToHarvest = resourceToHarvest;

@@ -1,11 +1,13 @@
 ﻿
 
-public class ResourceIntel : Intel<Resource>, System.IComparable<ResourceIntel>//ResourceIntel
-{
-    public ItemType recourceType { get { return subject.providedItemType; } }
+using System;
 
-    public ResourceIntel(Body requester, Resource subject) : base(requester, subject)
-    {    }
+public class ResourceIntel : Intel<ResourceProvider<IResource>>, System.IComparable<ResourceIntel>
+{
+    public Type recourceType { get { return subject.ProvidedResource; } }
+
+    public ResourceIntel(Body requester, ResourceProvider<IResource> subject) : base(requester, subject)
+    { }
 
     public int CompareTo(ResourceIntel other)
     {

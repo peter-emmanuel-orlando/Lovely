@@ -175,6 +175,18 @@ PrefabInstance:
       propertyPath: m_LocalEulerAnglesHint.z
       value: 0
       objectReference: {fileID: 0}
+    - target: {fileID: 4488507308224088, guid: 8e6a7fa2beba72841ba466c5232de825, type: 3}
+      propertyPath: m_LocalScale.z
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4488507308224088, guid: 8e6a7fa2beba72841ba466c5232de825, type: 3}
+      propertyPath: m_LocalScale.y
+      value: 5
+      objectReference: {fileID: 0}
+    - target: {fileID: 4488507308224088, guid: 8e6a7fa2beba72841ba466c5232de825, type: 3}
+      propertyPath: m_LocalScale.x
+      value: 5
+      objectReference: {fileID: 0}
     - target: {fileID: 114374055689382984, guid: 8e6a7fa2beba72841ba466c5232de825,
         type: 3}
       propertyPath: m_Enabled
@@ -557,7 +569,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!108 &197598246
 Light:
   m_ObjectHideFlags: 0
@@ -568,9 +580,9 @@ Light:
   m_Enabled: 1
   serializedVersion: 9
   m_Type: 2
-  m_Color: {r: 0.7109108, g: 0.91973174, b: 0.26269847, a: 1}
-  m_Intensity: 1.8403537
-  m_Range: 8.281591
+  m_Color: {r: 0.5603526, g: 0.30531183, b: 0.9369541, a: 1}
+  m_Intensity: 1.4128834
+  m_Range: 6.3579755
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
@@ -614,7 +626,7 @@ Light:
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: 409.3819, y: 35.826813, z: 5.02e-43, w: 5.42e-43}
+  m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 1}
   m_UseBoundingSphereOverride: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
@@ -631,9 +643,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animLight: {fileID: 197598246}
-  currentTime: 8.5568495
-  completedIterations: 2
-  evaluationTime: 7.4699306
+  currentTime: 4.416575
+  completedIterations: 0
+  evaluationTime: 4.416575
   reset: 0
   lifeTime: 10
   destroyOnComplete: 0
@@ -1363,103 +1375,103 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   textList:
-  - 'NEW FRAME -- timestamp: 2.691286'
+  - 'NEW FRAME -- timestamp: 1417.868'
   - 'sender: GameTime'
   - 'CycleName: Air'
   - 'WeekName: Phoenix'
-  - 'Cycle: 0.000244270438743853'
-  - 'Year: 0.0002442704'
-  - 'Week: 0.00586249'
-  - 'Day: 0.03517494'
-  - 'Hour: 0.4220993'
-  - 'Minute: 25.32596'
-  - 'Second: 19.55725'
-  - 'elapsedRealTime: 2.532595'
-  - 'elapsedGameTime: 1519.557'
+  - 'Cycle: 0.00817973542604557'
+  - 'Year: 0.008179735'
+  - 'Week: 0.1963136'
+  - 'Day: 1.177882'
+  - 'Hour: 2.134582'
+  - 'Minute: 8.074849'
+  - 'Second: 4.488281'
+  - 'elapsedRealTime: 84.80748'
+  - 'elapsedGameTime: 50884.49'
   - 'timeScale: 1'
   - '-----------------END-----------------'
   - 
-  - 'NEW FRAME -- timestamp: 2.532595'
+  - 'NEW FRAME -- timestamp: 1417.699'
   - 'sender: GameTime'
   - 'CycleName: Air'
   - 'WeekName: Phoenix'
-  - 'Cycle: 0.000229209230029036'
-  - 'Year: 0.0002292092'
-  - 'Week: 0.005501021'
-  - 'Day: 0.03300613'
-  - 'Hour: 0.3960735'
-  - 'Minute: 23.76441'
-  - 'Second: 45.8645'
-  - 'elapsedRealTime: 2.376441'
-  - 'elapsedGameTime: 1425.865'
+  - 'Cycle: 0.00816470331813909'
+  - 'Year: 0.008164703'
+  - 'Week: 0.1959529'
+  - 'Day: 1.175717'
+  - 'Hour: 2.108606'
+  - 'Minute: 6.51632'
+  - 'Second: 30.97656'
+  - 'elapsedRealTime: 84.65163'
+  - 'elapsedGameTime: 50790.98'
   - 'timeScale: 1'
   - '-----------------END-----------------'
   - 
-  - 'NEW FRAME -- timestamp: 2.376441'
+  - 'NEW FRAME -- timestamp: 1417.543'
   - 'sender: GameTime'
   - 'CycleName: Air'
   - 'WeekName: Phoenix'
-  - 'Cycle: 0.000214353767757521'
-  - 'Year: 0.0002143538'
-  - 'Week: 0.00514449'
-  - 'Day: 0.03086694'
-  - 'Hour: 0.3704033'
-  - 'Minute: 22.2242'
-  - 'Second: 13.45166'
-  - 'elapsedRealTime: 2.22242'
-  - 'elapsedGameTime: 1333.452'
+  - 'Cycle: 0.0081535468178185'
+  - 'Year: 0.008153547'
+  - 'Week: 0.1956851'
+  - 'Day: 1.174111'
+  - 'Hour: 2.089328'
+  - 'Minute: 5.359614'
+  - 'Second: 21.57422'
+  - 'elapsedRealTime: 84.53596'
+  - 'elapsedGameTime: 50721.57'
   - 'timeScale: 1'
   - '-----------------END-----------------'
   - 
-  - 'NEW FRAME -- timestamp: 2.22242'
+  - 'NEW FRAME -- timestamp: 1417.428'
   - 'sender: GameTime'
   - 'CycleName: Air'
   - 'WeekName: Phoenix'
-  - 'Cycle: 0.000198792488240496'
-  - 'Year: 0.0001987925'
-  - 'Week: 0.00477102'
-  - 'Day: 0.02862612'
-  - 'Hour: 0.3435134'
-  - 'Minute: 20.6108'
-  - 'Second: 36.64807'
-  - 'elapsedRealTime: 2.06108'
-  - 'elapsedGameTime: 1236.648'
+  - 'Cycle: 0.00813611663062321'
+  - 'Year: 0.008136117'
+  - 'Week: 0.1952668'
+  - 'Day: 1.171601'
+  - 'Hour: 2.059208'
+  - 'Minute: 3.552453'
+  - 'Second: 33.14453'
+  - 'elapsedRealTime: 84.35524'
+  - 'elapsedGameTime: 50613.14'
   - 'timeScale: 1'
   - '-----------------END-----------------'
   - 
-  - 'NEW FRAME -- timestamp: 2.06108'
+  - 'NEW FRAME -- timestamp: 1417.247'
   - 'sender: GameTime'
   - 'CycleName: Air'
   - 'WeekName: Phoenix'
-  - 'Cycle: 0.000184377521549265'
-  - 'Year: 0.0001843775'
-  - 'Week: 0.00442506'
-  - 'Day: 0.02655036'
-  - 'Hour: 0.3186043'
-  - 'Minute: 19.11626'
-  - 'Second: 6.975464'
-  - 'elapsedRealTime: 1.911626'
-  - 'elapsedGameTime: 1146.975'
+  - 'Cycle: 0.00812162203407343'
+  - 'Year: 0.008121622'
+  - 'Week: 0.1949189'
+  - 'Day: 1.169513'
+  - 'Hour: 2.034162'
+  - 'Minute: 2.049653'
+  - 'Second: 2.976563'
+  - 'elapsedRealTime: 84.20496'
+  - 'elapsedGameTime: 50522.98'
   - 'timeScale: 1'
   - '-----------------END-----------------'
   - 
-  - 'NEW FRAME -- timestamp: 1.911626'
+  - 'NEW FRAME -- timestamp: 1417.097'
   - 'sender: GameTime'
   - 'CycleName: Air'
   - 'WeekName: Phoenix'
-  - 'Cycle: 0.0001703087818724'
-  - 'Year: 0.0001703088'
-  - 'Week: 0.004087411'
-  - 'Day: 0.02452446'
-  - 'Hour: 0.2942936'
-  - 'Minute: 17.65761'
-  - 'Second: 39.45667'
-  - 'elapsedRealTime: 1.765761'
-  - 'elapsedGameTime: 1059.457'
+  - 'Cycle: 0.00810741817088597'
+  - 'Year: 0.008107418'
+  - 'Week: 0.194578'
+  - 'Day: 1.167468'
+  - 'Hour: 2.009617'
+  - 'Minute: 0.576997'
+  - 'Second: 34.61719'
+  - 'elapsedRealTime: 84.05769'
+  - 'elapsedGameTime: 50434.62'
   - 'timeScale: 1'
   - '-----------------END-----------------'
   - 
-  - 'NEW FRAME -- timestamp: 1.765761'
+  - 'NEW FRAME -- timestamp: 1416.949'
   - 'sender: GameTime'
   - 'CycleName: Air'
   - 'WeekName: Phoenix'
@@ -1554,6 +1566,70 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 369069897}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &619703317
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 619703318}
+  - component: {fileID: 619703319}
+  m_Layer: 0
+  m_Name: Reflection Probe
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &619703318
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 619703317}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.42, z: -3.41}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 1185438059}
+  m_RootOrder: 5
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!215 &619703319
+ReflectionProbe:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 619703317}
+  m_Enabled: 0
+  serializedVersion: 2
+  m_Type: 0
+  m_Mode: 0
+  m_RefreshMode: 0
+  m_TimeSlicingMode: 0
+  m_Resolution: 128
+  m_UpdateFrequency: 0
+  m_BoxSize: {x: 20, y: 20, z: 20}
+  m_BoxOffset: {x: 0, y: 0, z: 0}
+  m_NearClip: 0.3
+  m_FarClip: 1000
+  m_ShadowDistance: 100
+  m_ClearFlags: 1
+  m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
+  m_CullingMask:
+    serializedVersion: 2
+    m_Bits: 4294967295
+  m_IntensityMultiplier: 1
+  m_BlendDistance: 1
+  m_HDR: 1
+  m_BoxProjection: 1
+  m_RenderDynamicObjects: 0
+  m_UseOcclusionCulling: 1
+  m_Importance: 1
+  m_CustomBakedTexture: {fileID: 0}
 --- !u!1 &722723197
 GameObject:
   m_ObjectHideFlags: 0
@@ -1574,7 +1650,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!108 &722723198
 Light:
   m_ObjectHideFlags: 0
@@ -1585,9 +1661,9 @@ Light:
   m_Enabled: 1
   serializedVersion: 9
   m_Type: 2
-  m_Color: {r: 0.7109108, g: 0.91973174, b: 0.26269847, a: 1}
-  m_Intensity: 1.8403537
-  m_Range: 8.281591
+  m_Color: {r: 0.97718394, g: 0.6374327, b: 0, a: 1}
+  m_Intensity: 1.9528551
+  m_Range: 8.7878475
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
@@ -1631,8 +1707,7 @@ Light:
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: -6.3384464e+29, y: 1.7592186e+13, z: -1.7014118e+38,
-    w: 2.5243547e-29}
+  m_BoundingSphereOverride: {x: 1.6817e-41, y: 0, z: 1.71e-43, w: 0.03515625}
   m_UseBoundingSphereOverride: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
@@ -1649,9 +1724,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animLight: {fileID: 722723198}
-  currentTime: 8.5568495
-  completedIterations: 2
-  evaluationTime: 7.4699306
+  currentTime: 1.4152257
+  completedIterations: 1
+  evaluationTime: 8.687687
   reset: 0
   lifeTime: 10
   destroyOnComplete: 0
@@ -1899,6 +1974,189 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 849440173}
   m_Mesh: {fileID: 10207, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!1 &864581184
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 864581188}
+  - component: {fileID: 864581187}
+  - component: {fileID: 864581186}
+  - component: {fileID: 864581185}
+  m_Layer: 0
+  m_Name: Stone
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!65 &864581185
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 864581184}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  serializedVersion: 2
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!23 &864581186
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 864581184}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 2100000, guid: 6dc9ccc7a8628bb47b814cf9a191c2a2, type: 2}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+--- !u!33 &864581187
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 864581184}
+  m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!4 &864581188
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 864581184}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 743.618, y: 50.52, z: 298.4}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 10
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!1 &875533979
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 875533983}
+  - component: {fileID: 875533982}
+  - component: {fileID: 875533981}
+  - component: {fileID: 875533980}
+  m_Layer: 0
+  m_Name: Wood
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!136 &875533980
+CapsuleCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 875533979}
+  m_Material: {fileID: 0}
+  m_IsTrigger: 0
+  m_Enabled: 1
+  m_Radius: 0.5000001
+  m_Height: 2
+  m_Direction: 1
+  m_Center: {x: 0.000000059604645, y: 0, z: -0.00000008940697}
+--- !u!23 &875533981
+MeshRenderer:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 875533979}
+  m_Enabled: 1
+  m_CastShadows: 1
+  m_ReceiveShadows: 1
+  m_DynamicOccludee: 1
+  m_MotionVectors: 1
+  m_LightProbeUsage: 1
+  m_ReflectionProbeUsage: 1
+  m_RenderingLayerMask: 1
+  m_RendererPriority: 0
+  m_Materials:
+  - {fileID: 10303, guid: 0000000000000000f000000000000000, type: 0}
+  m_StaticBatchInfo:
+    firstSubMesh: 0
+    subMeshCount: 0
+  m_StaticBatchRoot: {fileID: 0}
+  m_ProbeAnchor: {fileID: 0}
+  m_LightProbeVolumeOverride: {fileID: 0}
+  m_ScaleInLightmap: 1
+  m_PreserveUVs: 0
+  m_IgnoreNormalsForChartDetection: 0
+  m_ImportantGI: 0
+  m_StitchLightmapSeams: 1
+  m_SelectedEditorRenderState: 3
+  m_MinimumChartSize: 4
+  m_AutoUVMaxDistance: 0.5
+  m_AutoUVMaxAngle: 89
+  m_LightmapParameters: {fileID: 0}
+  m_SortingLayerID: 0
+  m_SortingLayer: 0
+  m_SortingOrder: 0
+--- !u!33 &875533982
+MeshFilter:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 875533979}
+  m_Mesh: {fileID: 10206, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!4 &875533983
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 875533979}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 739.9, y: 50.178, z: 335.49283}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_RootOrder: 9
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &888793733
 GameObject:
   m_ObjectHideFlags: 0
@@ -2101,7 +2359,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!108 &956759808
 Light:
   m_ObjectHideFlags: 0
@@ -2112,9 +2370,9 @@ Light:
   m_Enabled: 1
   serializedVersion: 9
   m_Type: 2
-  m_Color: {r: 0.7109108, g: 0.91973174, b: 0.26269847, a: 1}
-  m_Intensity: 1.8403537
-  m_Range: 8.281591
+  m_Color: {r: 0.85179543, g: 0.96437746, b: 0.116583884, a: 1}
+  m_Intensity: 1.8690264
+  m_Range: 8.410619
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
@@ -2158,7 +2416,7 @@ Light:
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: 1.24972515e+33, y: 0, z: 0, w: 6e-45}
+  m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
   m_UseBoundingSphereOverride: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
@@ -2175,9 +2433,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animLight: {fileID: 956759808}
-  currentTime: 8.5568495
-  completedIterations: 2
-  evaluationTime: 7.4699306
+  currentTime: 7.7320833
+  completedIterations: 0
+  evaluationTime: 7.7320833
   reset: 0
   lifeTime: 10
   destroyOnComplete: 0
@@ -2594,6 +2852,7 @@ Transform:
   - {fileID: 956759813}
   - {fileID: 1783584295}
   - {fileID: 197598251}
+  - {fileID: 619703318}
   m_Father: {fileID: 0}
   m_RootOrder: 7
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2748,7 +3007,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 1
+  m_IsActive: 0
 --- !u!108 &1426762744
 Light:
   m_ObjectHideFlags: 0
@@ -2759,9 +3018,9 @@ Light:
   m_Enabled: 1
   serializedVersion: 9
   m_Type: 2
-  m_Color: {r: 0.7109108, g: 0.91973174, b: 0.26269847, a: 1}
-  m_Intensity: 1.8403537
-  m_Range: 8.281591
+  m_Color: {r: 0.7629052, g: 0.1646498, b: 0.91416466, a: 1}
+  m_Intensity: 1.3221896
+  m_Range: 5.949853
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
@@ -2805,7 +3064,7 @@ Light:
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: -1.18109445e+14, y: 0, z: 0, w: 1.15e-43}
+  m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 1}
   m_UseBoundingSphereOverride: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
@@ -2822,9 +3081,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animLight: {fileID: 1426762744}
-  currentTime: 8.5568495
-  completedIterations: 2
-  evaluationTime: 7.4699306
+  currentTime: 3.7910373
+  completedIterations: 0
+  evaluationTime: 3.7910373
   reset: 0
   lifeTime: 10
   destroyOnComplete: 0
@@ -3084,7 +3343,7 @@ Light:
   m_Enabled: 1
   serializedVersion: 9
   m_Type: 1
-  m_Color: {r: 0.81860113, g: 0.8207547, b: 0.7859113, a: 1}
+  m_Color: {r: 0.36584193, g: 0.36271805, b: 0.3679245, a: 1}
   m_Intensity: 1
   m_Range: 10
   m_SpotAngle: 30
@@ -3706,14 +3965,14 @@ Light:
   m_Enabled: 1
   serializedVersion: 9
   m_Type: 2
-  m_Color: {r: 0.7109108, g: 0.91973174, b: 0.26269847, a: 1}
-  m_Intensity: 1.8403537
-  m_Range: 8.281591
+  m_Color: {r: 0.19364744, g: 0.5599691, b: 0.9782125, a: 1}
+  m_Intensity: 1.5820282
+  m_Range: 7.119127
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
   m_Shadows:
-    m_Type: 0
+    m_Type: 1
     m_Resolution: -1
     m_CustomResolution: -1
     m_Strength: 1
@@ -3752,7 +4011,7 @@ Light:
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: 0, y: 27.351715, z: 5.02e-43, w: 27.351715}
+  m_BoundingSphereOverride: {x: 0, y: -0.20500082, z: -0.0000000023454854, w: -2.5217252e-20}
   m_UseBoundingSphereOverride: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
@@ -3769,9 +4028,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animLight: {fileID: 1783584290}
-  currentTime: 8.5568495
-  completedIterations: 2
-  evaluationTime: 7.4699306
+  currentTime: 6.9858875
+  completedIterations: 10
+  evaluationTime: 5.549061
   reset: 0
   lifeTime: 10
   destroyOnComplete: 0
@@ -3922,7 +4181,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1783584289}
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.57995605, y: 0, z: -4.169983}
+  m_LocalPosition: {x: -0.22, y: 0.4, z: -3.46}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 1185438059}

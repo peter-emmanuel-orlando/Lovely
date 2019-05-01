@@ -4,10 +4,11 @@ using System.Collections.Generic;
 public class LivingPlaceRecord
 {
     public static LivingPlaceRecord Instance { get; } = new LivingPlaceRecord();
-    public static Dictionary<Mind, HashSet<LivingPlace>> prefabs = new Dictionary<Mind, HashSet<LivingPlace>>();
+    private static TypeDictionary<List<ISpawnable>> prefabs = new TypeDictionary< List<ISpawnable>>();
     static LivingPlaceRecord()
     {
-        _PrefabPool.GetPrefab()
+        prefabs.Add(typeof(HumanMind), new List<ISpawnable>() );
+        prefabs[typeof(HumanMind)].Add(_PrefabPool.GetPrefab("hut"));
     }
 
     public TwoWayDictionary<Mind, LivingPlace> ResidenceRecord { get; } = new TwoWayDictionary<Mind, LivingPlace>(true);

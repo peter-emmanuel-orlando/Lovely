@@ -8,6 +8,156 @@ using UnityEngine;
 ///     todo: untested!
 /// </summary>
 /// <typeparam name="T"></typeparam>
+public static class TrackedComponent
+{
+    //the z component of the vector3's is not tracked. right now the quantity of points is size^3 but by essentially
+    //flattening to 2d it can be size^2
+    private static readonly Dictionary<Vector3, TypeDictionary<HashSet<IBounded>>> posToObjList = new Dictionary<Vector3, TypeDictionary<HashSet<IBounded>>>();
+    private static readonly HashSet<IBounded> trackedObjects = new HashSet<IBounded>();
+    private static float cellSize = 10f;
+    private static int locUpdatesPerFrame = 5;
+    private static int lastUpdatedIndex = 0;
+    private static int lastUpdateFrameCount = 0;
+    private static bool isUpdating = false;
+
+    private static IEnumerator UpdateTracked()
+    {
+        while (true)
+        {
+            if (Time.frameCount > lastUpdateFrameCount)
+            {
+                foreach (var item in trackedObjects)
+                {
+                    Untrack(item);
+                    if (item != null)
+                        Track(item);
+                }
+                lastUpdateFrameCount = Time.frameCount;
+            }
+            yield return null;
+        }
+    }
+
+    //called like TrackedComponent<Resource>.Track(Resource m);
+    //by specifying what kind of tracked component, itll only let you submit that type for tracking
+    public static void Track<T>(T m) where T : IBounded
+    {
+        //if the gameobject is destroyed do nothing
+        if (m == null) return;
+
+        if (!isUpdating)
+        {
+            var master = _Master.MasterSingleton;
+            master.StopCoroutine("UpdateTracked");
+            master.StartCoroutine(UpdateTracked());
+            isUpdating = true;
+        }
+
+        var roundedPoints = GetRoundedOverlapPoints(m.Bounds);
+
+        Untrack(m);
+
+        var mType = m.GetType();
+        foreach (var roundedPos in roundedPoints)
+        {
+            if (!posToObjList.ContainsKey(roundedPos))
+                posToObjList.Add(roundedPos, new TypeDictionary<HashSet<IBounded>>());
+            if (!posToObjList[roundedPos].ContainsKey(mType))
+                posToObjList[roundedPos].Add(mType, new HashSet<IBounded>());
+            posToObjList[roundedPos][mType].Add(m);
+        }
+        trackedObjects.Add(m);
+    }
+
+    public static void Untrack<T>(T m) where T : IBounded
+    {
+        if (m != null && trackedObjects.Remove(m))
+        {
+            var mType = m.GetType();
+            foreach (var roundedPos in GetRoundedOverlapPoints(m.Bounds))
+            {
+                if (posToObjList.ContainsKey(roundedPos))
+                {
+                    if (posToObjList[roundedPos][mType].Contains(m))
+                        posToObjList[roundedPos][mType].Remove(m);
+                    if (posToObjList[roundedPos][mType].Count == 0)
+                        posToObjList[roundedPos].Remove(mType);
+                    if (posToObjList[roundedPos].Count == 0)
+                        posToObjList.Remove(roundedPos);
+                }
+            }
+        }
+    }
+
+    private static Vector3[] GetRoundedOverlapPoints(Bounds b)
+    {
+        var minPoint = GetRoundedPos(b.center - b.extents);
+        var maxPoint = GetRoundedPos(b.center + b.extents);
+        List<Vector3> points = new List<Vector3>();
+
+        for (float i = minPoint.x; i <= maxPoint.x; i += cellSize)
+        {
+            for (float j = minPoint.y; j <= maxPoint.y; j += cellSize)
+            {
+                for (float k = minPoint.z; k <= maxPoint.z; k += cellSize)
+                {
+                    points.Add(new Vector3(i, j, k));
+                    //DebugShape.DrawSphere(new Vector3(i, j, k), .5f, Color.green, 1);
+                }
+            }
+        }
+        return points.ToArray();
+    }
+
+    private static Vector3 GetRoundedPos(Vector3 sourcePos)
+    {
+        var roundedPos = new Vector3(sourcePos.x - (sourcePos.x % cellSize), sourcePos.y - (sourcePos.y % cellSize), sourcePos.z - (sourcePos.z % cellSize));
+        return roundedPos;
+    }
+
+    //sorted by distance
+    public static IEnumerable<T> GetOverlapping<T>(Vector3 sourcePos, float radius) where T : IBounded
+    {
+        var bounds = new Bounds(sourcePos, Vector3.one * radius);
+        foreach (var item in GetOverlapping<T>(bounds))
+        {
+            var closestPoint = item.Bounds.ClosestPoint(sourcePos);
+            if ((closestPoint - sourcePos).sqrMagnitude < radius * radius + 0.01)
+                yield return item;
+        }
+    }
+    //sorted by distance
+    public static IEnumerable<T> GetOverlapping<T>(Bounds b) where T : IBounded
+    {
+        var posList = GetRoundedOverlapPoints(b);
+        foreach (var roundedPos in posList)
+        {
+            if (posToObjList.ContainsKey(roundedPos))
+            {
+                foreach (var itemListEnum in posToObjList[roundedPos].Get(typeof(T), TypeIncludeMode.IncludeExtendingTypes))
+                {
+                    foreach (var item in itemListEnum)
+                    {
+                        if (item.Bounds.Intersects(b))
+                            yield return (T)item;
+                    }
+                }
+            }
+        }
+    }
+}
+
+/*
+ * using System;
+using System.Linq;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+
+/// <summary>
+///     todo: untested!
+/// </summary>
+/// <typeparam name="T"></typeparam>
 public static class TrackedComponent<T> where T : MonoBehaviour, ISpawnable
 {
     //the z component of the vector3's is not tracked. right now the quantity of points is size^3 but by essentially
@@ -124,21 +274,13 @@ public static class TrackedComponent<T> where T : MonoBehaviour, ISpawnable
     //sorted by distance
     public static T[] GetOverlapping(Vector3 sourcePos, float radius)
     {
-        //throw new NotImplementedException();
-        //todo : finish this
         var bounds = new Bounds(sourcePos, Vector3.one * radius);
-        return GetOverlapping(bounds);
-
-        var roundedPos = GetRoundedPos(sourcePos);
         List<T> result = new List<T>();
-        if (posToObjList.ContainsKey(roundedPos))
+        foreach (var item in GetOverlapping(bounds))
         {
-            foreach (var item in posToObjList[roundedPos])
-            {
-                if (item.Bounds.Contains(sourcePos) )
-                    result.Add(item);
-            }
-        }
+            if (item.Bounds.Contains(sourcePos))
+                result.Add(item);
+        } 
         return result.ToArray();
     }
     //sorted by distance
@@ -164,3 +306,4 @@ public static class TrackedComponent<T> where T : MonoBehaviour, ISpawnable
     ///getclosest(maxrange)
     ///getallinrange
 }
+ * */

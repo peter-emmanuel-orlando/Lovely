@@ -4,6 +4,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
 public abstract class TrackedGameObject<T> : MonoBehaviour where T : TrackedGameObject<T>
 {
     private static readonly Dictionary<Vector3, HashSet<T>> inner = new Dictionary<Vector3, HashSet<T>>();
@@ -130,7 +131,7 @@ public abstract class TrackedGameObject<T> : MonoBehaviour where T : TrackedGame
         }
 
         return roundedCornerPositions;
-        */
+        
     }
 
     private static Vector3 GetRoundedPos(Vector3 sourcePos)
@@ -187,4 +188,4 @@ public abstract class TrackedGameObject<T> : MonoBehaviour where T : TrackedGame
     //Getinbounds
     ///getclosest(maxrange)
     ///getallinrange
-}
+}*/

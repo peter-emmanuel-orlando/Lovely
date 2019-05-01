@@ -9,7 +9,7 @@ using UnityEngine;
 /// animator goes into navAgent. navAgent goes into rigidbody. If gameobject
 /// is under the influence of physics, then bypass navAgent
 /// </summary>
-public abstract class UnifiedController : MonoBehaviour
+public abstract class UnifiedController : MonoBehaviour, IPhysicsable
 {
     [SerializeField]
     public Avatar avatar;
@@ -801,9 +801,9 @@ public abstract class UnifiedController : MonoBehaviour
 
     public void AddForce(Vector3 force, ForceMode forceMode)
     {
-        AddForce(force, forceMode, 0);
+        AddForce(force, forceMode);
     }
-    public void AddForce(Vector3 force, ForceMode forceMode, float requirePhysicsTimeLength)
+    public void AddForce(Vector3 force, ForceMode forceMode, float requirePhysicsTimeLength = 0.1f )
     {
         var poise = 8f;
         if(force.sqrMagnitude < poise.Pow(2) && navAgent.isOnNavMesh)
@@ -812,7 +812,6 @@ public abstract class UnifiedController : MonoBehaviour
         }
         else
         {
-            //need to set mode to physics if using this, else multiple calls will stack
             //clear manual movement
             animMovement = Vector3.zero;
             //clear navigation
@@ -825,6 +824,7 @@ public abstract class UnifiedController : MonoBehaviour
             recoil = RecoilCode.None;
 
             isLocked = true;
+            //need to set mode to physics if using this, else multiple calls will stack
             movementSource = ControlMode.Physics;
             additionalPhysics += delegate ()
             {

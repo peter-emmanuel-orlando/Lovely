@@ -1,28 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-
-public interface IItem
-{
-	float Volume { get; }
-    MatterPhase Phase { get; }
-    //get item preview
-}
-
-public interface ISpawnedItem<out T> : ISpawnable, IItemProvider<T> where T : IItem
-{ }
-public interface IItemSpawner<TSpawned, TItem> : IBounded where TSpawned : ISpawnedItem<TItem> where TItem : IItem { }
-public interface IItemProvider<out T>  : IBounded where T : IItem { }
-
-
-public interface IResource : IItem{ }
-public interface ICraftingMaterial : IResource { }
-public interface ConstructionMaterial : IResource { }
-public interface PreciousMaterial : IResource { }
-public interface Tool : IResource { }
-public interface Food : IResource { }
-public interface Fuel : IResource { }
-
-
+﻿
 
 
 

@@ -7,7 +7,7 @@ Material:
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_Name: ShaderTest
+  m_Name: ShaderTest 1
   m_Shader: {fileID: 4800000, guid: 59b52dab8cbd9164eae67dd9a167fbe4, type: 3}
   m_ShaderKeywords: _ENABLERIMLIGHT_ON _PERSPECTIVECORRECTION_ON
   m_LightmapFlags: 4
@@ -41,7 +41,7 @@ Material:
         m_Offset: {x: 0, y: 0}
     - _EmissionTex:
         m_Texture: {fileID: 0}
-        m_Scale: {x: 0.13, y: 0.49}
+        m_Scale: {x: 0, y: 0}
         m_Offset: {x: 0, y: 0}
     - _FlatCutoutTex:
         m_Texture: {fileID: 0}
@@ -101,12 +101,12 @@ Material:
     - _GlossyReflections: 1
     - _Height: 10
     - _Knee: 11.6
-    - _LightPenetration: 1
+    - _LightPenetration: 0.32
     - _MainTexAlpha: 1
     - _Metallic: 0
     - _Mode: 0
-    - _NormalInfluence: 1.15
-    - _Occlusion: 1.17
+    - _NormalInfluence: -0.46
+    - _Occlusion: 1
     - _OcclusionStrength: 1
     - _Parallax: 0.02
     - _PerspectiveCorrection: 1
@@ -117,7 +117,7 @@ Material:
     - _SkyExponent1: 8.5
     - _SkyExponent2: 3
     - _SkyIntensity: 1
-    - _Smoothness: 0
+    - _Smoothness: 0.764
     - _SmoothnessTextureChannel: 0
     - _SpecularHighlights: 1
     - _SrcBlend: 1

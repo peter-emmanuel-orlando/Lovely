@@ -12,114 +12,32 @@ using UnityEngine;
 /// a resource is an occupiablelocation that you can extract Commodities or items from
 /// </summary>
 // a resource should only return items. an item can be food, constructionMaterials, magic, PreciousMaterials or any combination thereof. Each of these is an interface so a resource can implement any one
-public abstract class Resource : OccupiableLocation
+
+
+public interface IResourceProvider<out OutT> : IItemProvider<OutT> where OutT : IResource
 {
-    static readonly Dictionary<ItemType, HashSet<Resource>> allResourceLists = Item.GetItemTypeDictionary<HashSet<Resource>>();
-
-    public static HashSet<Resource> GetAllResources()
+    Type ProvidedResource { get; }
+    void Harvest(out IResource harvestedResources, out ISpawnedItem<IResource> spawnedResources);
+}
+public abstract class ResourceProvider<T> : OccupiableLocation, IResourceProvider<T> where T : IResource
+{
+    public Type ProvidedResource => typeof(T);
+    protected override void Awake()
     {
-        var result = new HashSet<Resource>();
-        foreach (var item in allResourceLists.Values)
-        {
-            result.UnionWith(item);
-        }
-        return result;
+        base.Awake();
     }
-
-    public static HashSet<Resource> GetAllResources(params ItemType[] types)
-    {
-        return GetAllResources(new List<ItemType>(types));
-    }
-
-    public static HashSet<Resource> GetAllResources(List<ItemType> types)
-    {
-        var result = new HashSet<Resource>();
-        foreach (var type in types)
-        {
-            result.UnionWith(allResourceLists[type]);
-        }
-        return result;
-    }
-
-
-
-
-    public static Dictionary<ItemType, List<ResourceIntel>> GetIntelOnAllResourcesInSightRange(Body harvester)
-    {
-        return GetIntelOnAllResourcesInSightRange(harvester, (ItemType[])Enum.GetValues(typeof(ItemType)));
-    }
-
-    public static Dictionary<ItemType, List<ResourceIntel>> GetIntelOnAllResourcesInSightRange(Body harvester, params ItemType[] resourceTypes)
-    {
-        return GetIntelOnAllResourcesInSightRange(harvester, new List<ItemType>(resourceTypes));
-    }
-
-    public static Dictionary<ItemType, List<ResourceIntel>> GetIntelOnAllResourcesInSightRange(Body harvester, List<ItemType> resourceTypes)
-    {
-        var result = new Dictionary<ItemType, List<ResourceIntel>>();
-        foreach (var code in resourceTypes)
-        {
-            result.Add(code, new List<ResourceIntel>());
-            foreach (var resource in allResourceLists[code])
-            {
-                if ((resource.transform.position - harvester.transform.position).sqrMagnitude <= harvester.Mind.SightRadius * harvester.Mind.SightRadius)
-                    result[code].Add(new ResourceIntel(harvester, resource));
-            }
-        }
-        return result;
-    }
-
-    /*
-    List<Resource> GetResourcesInRange( Vector3 centerPoint, float searchRadius, ItemType resourcesToSearchFor)
-    {
-        var result = new List<Resource>();
-        foreach (var code in allResourceLists.Keys)
-        {
-            if(resourcesToSearchFor.contanisAny(code))
-            {
-
-            }
-        }
-        return result;
-    }
-    */
-
-
-
-
-
-
-
-    public abstract ItemType providedItemType { get; }
-    protected abstract IItem SpawnHarvestedItem();//when a resource is harvested, this is the resulting item
     public abstract float harvestTime { get; }//in game hrs it takes to get one of the item
     public abstract float harvestCount { get; }//how many items are left to be harvested    
     public bool hasResources { get { return harvestCount != 0; } }
 
     private void OnEnable()
     {
-        foreach (var t in providedItemType.Enumerate())
-        {
-            allResourceLists[t].Add(this);
-        }
+        TrackedComponent.Track(this);
     }
 
     private void OnDisable()
     {
-        foreach (var t in providedItemType.Enumerate())
-        {
-            allResourceLists[t].Remove(this);
-        }
-    }
-
-    public bool HarvestResource(Body harvester, out IItem value)
-    {
-        var result = CanBeingHarvest(harvester);
-        if (result)
-            value = SpawnHarvestedItem();
-        else
-            value = null;
-        return result;
+        TrackedComponent.Untrack(this);
     }
 
     public virtual bool CanBeingHarvest(Body potentialHarvester)
@@ -139,6 +57,50 @@ public abstract class Resource : OccupiableLocation
     }
 
     public abstract HarvestResourcePerformable GetHarvestPerformable(Body performer);
+    public bool HarvestResource(Body harvester, out T harvestedResources, out ISpawnedItem<T> spawnedResources)
+    {
+        var result = CanBeingHarvest(harvester);
+        if (result)
+            Harvest(out harvestedResources, out spawnedResources);
+        else
+        {
+            harvestedResources = default;
+            spawnedResources = default;
+        }
+        return result;
+    }
+    public abstract void Harvest(out T harvestedResources, out ISpawnedItem<T> spawnedResources);
+
+    public void Harvest(out IResource harvestedResources, out ISpawnedItem<IResource> spawnedResources)
+    {
+        throw new NotImplementedException();
+    }
+}
+
+
+
+
+/*
+public abstract class ResourceProvider<T> : ResourceProvider, IItemProvider<T> where T : IResource
+{
+
+    public bool HarvestResource(Body harvester, out T harvestedResources, out ISpawnedItem<T> spawnedResources)
+    {
+        harvestedResources = default;
+        spawnedResources = default;
+        var result = CanBeingHarvest(harvester);
+        if (result)
+            Harvest( out harvestedResources, out spawnedResources);
+        return result;
+    }
+
+    protected override void Harvest(out IResource harvestedResources, out ISpawnedItem<IResource> spawnedResources)
+    {
+        Harvest(out T tmp1, out ISpawnedItem<T> tmp2);
+        harvestedResources = tmp1;
+        spawnedResources = (ISpawnedItem<IResource>)tmp2;
+    }
+    protected abstract void Harvest(out T harvestedResources, out ISpawnedItem<T> spawnedResources);
 }
 
 

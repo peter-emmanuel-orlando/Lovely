@@ -11,10 +11,12 @@
 	}
 		SubShader{
 			Tags { "RenderType" = "Opaque" }
+			LOD 200
 			//Cull Off
 
 			CGPROGRAM
-			#pragma surface surf StandardToneMappedGI
+			#pragma surface surf StandardToneMappedGI //addshadow
+			#pragma target 3.0
 
 			#include "UnityPBSLighting.cginc"
 
@@ -58,7 +60,7 @@
 				half oneMinusReflectivity;
 				half3 specColor;
 				s.Albedo = DiffuseAndSpecularFromMetallic(s.Albedo, s.Metallic, /*out*/ specColor, /*out*/ oneMinusReflectivity);
-
+				half3 norm = s.Normal;
 				s.Normal = Lerp(viewDir, s.Normal, _NormalInfluence);// flattening
 				half4 c = UNITY_BRDF_PBS(s.Albedo, specColor, oneMinusReflectivity, s.Smoothness, s.Normal, viewDir, gi.light, gi.indirect);
 
@@ -82,32 +84,41 @@
 				UnityStandardDataToGbuffer(data, outDiffuseOcclusion, outSpecSmoothness, outNormal);
 
 				half4 emission = half4(s.Emission + c.rgb, 1);
-				return emission;
+				return normalize(emission);
 			}
 
-			inline void LightingStandardToneMappedGI_GI( SurfaceOutputStandard s, UnityGIInput data, inout UnityGI gi)
+			inline void LightingStandardToneMappedGI_GI(SurfaceOutputStandard s, UnityGIInput data, inout UnityGI gi)
 			{
 				LightingStandard_GI(s, data, gi);
 			}
 
-			struct Input 
+			struct Input
 			{
 				float2 uv_MainTex;
-				float2 uv_EmissionTex; 
+				float2 uv_EmissionTex;
 				float2 uv_NormalMap;
-				
+				float4 screenPos;
+				float3 worldPos;
 			};
+
+			// Add instancing support for this shader. You need to check 'Enable Instancing' on materials that use the shader.
+			// See https://docs.unity3d.com/Manual/GPUInstancing.html for more information about instancing.
+			// #pragma instancing_options assumeuniformscaling
+			UNITY_INSTANCING_BUFFER_START(Props)
+				// put more per-instance properties here
+			UNITY_INSTANCING_BUFFER_END(Props)
 
 			void surf(Input IN, inout SurfaceOutputStandard o)
 			{
-				o.Albedo = tex2D(_MainTex, IN.uv_MainTex);      // base (diffuse or specular) color
+				o.Albedo = tex2D(_MainTex, IN.uv_MainTex).rgb;      // base (diffuse or specular) color
 				o.Normal = UnpackNormal(tex2D(_NormalMap, IN.uv_NormalMap));      // tangent space normal, if written
 				o.Emission = tex2D(_EmissionTex, IN.uv_EmissionTex);
 				o.Metallic = _Metallic;      // 0=non-metal, 1=metal
 				o.Smoothness = _Smoothness;    // 0=rough, 1=smooth
-				o.Occlusion = _Occlusion;     // occlusion (default 1)
+				//o.Occlusion = _Occlusion;     // occlusion (default 1)
+				o.Alpha = 1;
 			}
 			ENDCG
+				
 		}
-			//FallBack "Diffuse"
 }

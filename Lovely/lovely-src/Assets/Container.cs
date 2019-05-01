@@ -6,7 +6,7 @@ using UnityEngine;
 //allows one more item to overfill it
 public class Container
 {
-    readonly Dictionary<ItemType, HashSet<IItem>> inner = Item.GetItemTypeDictionary<HashSet<IItem>>();
+    readonly TypeDictionary<HashSet<IItem>> inner = new TypeDictionary<HashSet<IItem>>();
     public readonly Predicate<IItem> canContainerHoldItem;
     float maxHoldableVolume = 100f;
     public float MaxHoldableVolume { get { return maxHoldableVolume; } }

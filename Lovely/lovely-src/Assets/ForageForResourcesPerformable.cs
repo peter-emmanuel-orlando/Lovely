@@ -1,4 +1,5 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
@@ -18,24 +19,22 @@ public class ForageForResourcesPerformable : Performable
 
     public override ActivityState ActivityType { get { return ActivityState.Work; } }
     //dumb implementation, unoptomised. Nee do do a thing like in Being
-    ItemType resourcesToSearchFor;
+    IEnumerable<Type> resourcesToSearchFor;
     float SearchRadius { get { return Performer.SightRadius; } }
 
-    public ForageForResourcesPerformable(PerceivingMind performer, ItemType resourcesToSearchFor) : base(performer)
+    public ForageForResourcesPerformable(PerceivingMind performer, List<TypeLimiter<IResource>> resourcesToSearchFor) : base(performer)
     {
-        base._performer = performer;
-        this.resourcesToSearchFor = resourcesToSearchFor;
+        this.resourcesToSearchFor = resourcesToSearchFor.Cast<Type>();
     }
 
     public ForageForResourcesPerformable(PerceivingMind performer) : base(performer)
     {
-        base._performer = performer;
-        this.resourcesToSearchFor = (ItemType)0xFF;
+        this.resourcesToSearchFor = new Type[] { typeof(IResource) };
     }
 
-    public void ChangeDesiredResources(ItemType relevantResources)
+    public void ChangeDesiredResources(List<TypeLimiter<IItem>> newResourcesToSearchFor)
     {
-        resourcesToSearchFor = relevantResources;
+        this.resourcesToSearchFor = newResourcesToSearchFor.Cast<Type>();
     }
 
     IPerformable currentPerformable = null;
@@ -53,7 +52,7 @@ public class ForageForResourcesPerformable : Performable
             while (relevantResources.Count <= 0 && !IsComplete)
             {
                 relevantResources.Clear();
-                foreach (var code in resourcesToSearchFor.Enumerate())
+                foreach (var code in resourcesToSearchFor)
                 {
                     relevantResources.AddRange(Performer.GetResourcesInSight(code));
                 }
