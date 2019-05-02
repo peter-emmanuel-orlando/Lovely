@@ -1,26 +1,33 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 
 public interface IItem
 {
-	float Volume { get; }
+    Type ItemType { get; }
+    float Volume { get; }
     MatterPhase Phase { get; }
     //get item preview
 }
 
-public interface ISpawnedItem<out T> : ISpawnable, IItemProvider<T> where T : IItem
-{ }
-public interface IItemSpawner<TSpawned, TItem> : IBounded where TSpawned : ISpawnedItem<TItem> where TItem : IItem { }
-public interface IItemProvider<out T>  : IBounded where T : IItem { }
+public interface ISpawnedItem : ISpawnable, IItem { }
 
 
-public interface IResource : IItem{ }
+public interface IItemProvider
+{
+    void Acquire(out List<IItem> acquiredItems, out List<ISpawnedItem> spawnedResources);
+}
+//
+//should be used for all potentially provided types
+//i.e. public class Foo : IItemProvider<IFood>, IItemProvider<IFuel>, ...etc 
+public interface IItemProvider<out T> : IItemProvider { }
+public interface IResource : IItem { }
 public interface ICraftingMaterial : IResource { }
-public interface ConstructionMaterial : IResource { }
-public interface PreciousMaterial : IResource { }
-public interface Tool : IResource { }
-public interface Food : IResource { }
-public interface Fuel : IResource { }
+public interface IConstructionMaterial : IResource { }
+public interface IPreciousMaterial : IResource { }
+public interface ITool : IResource { }
+public interface IFood : IResource { }
+public interface IFuel : IResource { }
 
 
 

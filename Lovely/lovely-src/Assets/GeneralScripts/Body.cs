@@ -78,7 +78,7 @@ public abstract class Body : UnifiedController, ISpawnable
     protected override void Awake()
     {
         base.Awake();
-        TrackedComponent<Body>.Track(this);
+        TrackedComponent.Track(this);
 
         InitializeDamageBoxes();
 

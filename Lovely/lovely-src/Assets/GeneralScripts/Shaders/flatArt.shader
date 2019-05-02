@@ -1,4 +1,6 @@
-﻿Shader "Lovely/FlatArt"{
+﻿// Upgrade NOTE: replaced 'mul(UNITY_MATRIX_MVP,*)' with 'UnityObjectToClipPos(*)'
+
+Shader "Lovely/FlatArt"{
 	Properties{
 		_NormalInfluence("Normals Influence", Range(-5, 5)) = 0.2
 		_LightPenetration("Light Penetration", Range(-1, 1)) = 0
@@ -10,15 +12,16 @@
 		_Occlusion("Occlusion", Float) = 1
 	}
 		SubShader{
-			Tags { "RenderType" = "Opaque" }
+			Tags { "RenderType" = "Opaque" "RenderQueue" = "Transparent"}
 			LOD 200
 			//Cull Off
 
 			CGPROGRAM
-			#pragma surface surf StandardToneMappedGI //addshadow
+			#pragma surface surf StandardToneMappedGI addshadow
 			#pragma target 3.0
 
 			#include "UnityPBSLighting.cginc"
+			#include "UnityGlobalIllumination.cginc"
 
 			half _NormalInfluence;
 			half _LightPenetration;
@@ -57,6 +60,8 @@
 
 			inline half4 LightingStandardToneMappedGI_Deferred(SurfaceOutputStandard s, float3 viewDir, UnityGI gi, out half4 outDiffuseOcclusion, out half4 outSpecSmoothness, out half4 outNormal)
 			{
+				//s.Albedo = gi.light.color;
+				//gi.light.color = half3(1,1,1);
 				half oneMinusReflectivity;
 				half3 specColor;
 				s.Albedo = DiffuseAndSpecularFromMetallic(s.Albedo, s.Metallic, /*out*/ specColor, /*out*/ oneMinusReflectivity);
@@ -89,7 +94,16 @@
 
 			inline void LightingStandardToneMappedGI_GI(SurfaceOutputStandard s, UnityGIInput data, inout UnityGI gi)
 			{
-				LightingStandard_GI(s, data, gi);
+				//data.light.color = half3(0, 1, 0);
+				//gi.light.color = half3(0, 0, 1);
+				//gi.light.dir = half3(0, 0, 0);
+				//gi.light.ndotl = 1;
+				//gi.light2.color = half3(0, 1, 0);
+				//gi.light3.color = half3(0, 1, 0);
+				//gi.indirect.diffuse = half3(1, 0, 0);
+				//UnityGI_Base(data, .2, data.normalWorld);
+				//data.atten = -1;
+				//LightingStandard_GI(s, data, gi);
 			}
 
 			struct Input
@@ -120,5 +134,43 @@
 			}
 			ENDCG
 				
+			Pass
+			{
+				Tags
+				{ 
+					"Queue" = "Transparent" 
+					"LightMode" = "Deferred" 
+				}
+				Blend One One
+
+				CGPROGRAM
+				#pragma vertex vert
+				#pragma fragment frag
+
+				#include "UnityCG.cginc"
+				//#include "AutoLight.cginc"
+				
+
+				struct v2f {
+					float4 pos : SV_POSITION;
+					//SHADOW_COORDS(0)
+				};
+
+				v2f vert(appdata_full v) {
+					v2f o;
+					o.pos = UnityObjectToClipPos(v.vertex);
+					//TRANSFER_SHADOW(o);
+					return o;
+				}
+
+				float4 frag(v2f i) : SV_Target
+				{
+					//fixed s = SHADOW_ATTENUATION(i);
+					//s *= 0.1;
+					return 1;//float4(0,0,0,0);
+				}
+				ENDCG
+			} //Pass
 		}
+		FallBack Off
 }

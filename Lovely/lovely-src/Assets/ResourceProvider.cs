@@ -14,14 +14,9 @@ using UnityEngine;
 // a resource should only return items. an item can be food, constructionMaterials, magic, PreciousMaterials or any combination thereof. Each of these is an interface so a resource can implement any one
 
 
-public interface IResourceProvider<out OutT> : IItemProvider<OutT> where OutT : IResource
+public abstract class ResourceProvider : OccupiableLocation, IItemProvider<IResource>
 {
-    Type ProvidedResource { get; }
-    void Harvest(out IResource harvestedResources, out ISpawnedItem<IResource> spawnedResources);
-}
-public abstract class ResourceProvider<T> : OccupiableLocation, IResourceProvider<T> where T : IResource
-{
-    public Type ProvidedResource => typeof(T);
+    public abstract Type ItemType{ get; }
     protected override void Awake()
     {
         base.Awake();
@@ -40,41 +35,12 @@ public abstract class ResourceProvider<T> : OccupiableLocation, IResourceProvide
         TrackedComponent.Untrack(this);
     }
 
-    public virtual bool CanBeingHarvest(Body potentialHarvester)
+    public virtual bool CanHarvest<T>(T potentialHarvester)
     {
-        var result = false;
-        if (hasResources && isActiveAndEnabled && IsInHarvestRange(potentialHarvester))
-            result = false;
-        Debug.LogWarning("checking if being qualifies to harvest resource is only partially implemented");
+        bool result = hasResources && isActiveAndEnabled;
         return result;//checks if the being has the tools neccessary to harvest
     }
-
-    // harvester can only harvest the resource if it in in the occupiableArea
-    public bool IsInHarvestRange(Body potentialHarvester)
-    {
-        var result = IsOccupant(potentialHarvester) && isActiveAndEnabled;
-        return result;
-    }
-
-    public abstract HarvestResourcePerformable GetHarvestPerformable(Body performer);
-    public bool HarvestResource(Body harvester, out T harvestedResources, out ISpawnedItem<T> spawnedResources)
-    {
-        var result = CanBeingHarvest(harvester);
-        if (result)
-            Harvest(out harvestedResources, out spawnedResources);
-        else
-        {
-            harvestedResources = default;
-            spawnedResources = default;
-        }
-        return result;
-    }
-    public abstract void Harvest(out T harvestedResources, out ISpawnedItem<T> spawnedResources);
-
-    public void Harvest(out IResource harvestedResources, out ISpawnedItem<IResource> spawnedResources)
-    {
-        throw new NotImplementedException();
-    }
+    public abstract bool Acquire<T>(T acquisitioner, out List<IItem> acquiredItems, out List<ISpawnedItem> spawnedResources);
 }
 
 

@@ -22,7 +22,7 @@ public class ForageForResourcesPerformable : Performable
     IEnumerable<Type> resourcesToSearchFor;
     float SearchRadius { get { return Performer.SightRadius; } }
 
-    public ForageForResourcesPerformable(PerceivingMind performer, List<TypeLimiter<IResource>> resourcesToSearchFor) : base(performer)
+    public ForageForResourcesPerformable(PerceivingMind performer, params TypeLimiter<IResource>[] resourcesToSearchFor) : base(performer)
     {
         this.resourcesToSearchFor = resourcesToSearchFor.Cast<Type>();
     }
@@ -74,10 +74,10 @@ public class ForageForResourcesPerformable : Performable
 
             if(relevantResources.Count > 0 && relevantResources[0] != null && !IsComplete)
             {
-                HarvestResourcePerformable harvestPerformable = relevantResources[0].subject.GetHarvestPerformable(Performer.Body);
+                AcquireItemPerformable harvestPerformable = relevantResources[0].subject.GetHarvestPerformable(Performer.Body);
                 current = harvestPerformable.Perform();
                 currentPerformable = harvestPerformable;
-                while (!harvestPerformable.IsComplete && current != null && current.MoveNext() == true && !IsComplete && resourcesToSearchFor.ContanisAny( harvestPerformable.resourceToHarvest.providedItemType))
+                while (!harvestPerformable.IsComplete && current != null && current.MoveNext()&& !this.IsComplete && resourcesToSearchFor.IsAssignableFromAny(harvestPerformable.resourceToHarvest.GetType()))
                 {
                     yield return null;
                 }

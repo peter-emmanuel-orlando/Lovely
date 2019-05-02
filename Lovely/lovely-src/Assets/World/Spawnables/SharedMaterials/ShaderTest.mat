@@ -101,11 +101,11 @@ Material:
     - _GlossyReflections: 1
     - _Height: 10
     - _Knee: 11.6
-    - _LightPenetration: 1
+    - _LightPenetration: 0
     - _MainTexAlpha: 1
     - _Metallic: 0
     - _Mode: 0
-    - _NormalInfluence: 1.15
+    - _NormalInfluence: 1
     - _Occlusion: 1.17
     - _OcclusionStrength: 1
     - _Parallax: 0.02

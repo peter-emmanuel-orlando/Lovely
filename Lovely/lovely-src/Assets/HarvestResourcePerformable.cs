@@ -1,9 +1,10 @@
-﻿using System.Collections;
+﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public abstract class HarvestResourcePerformable : Performable
+public abstract class AcquireItemPerformable : Performable
 {
 
     //change to each mindStat in in-game days. negative takes away, positive adds
@@ -27,9 +28,8 @@ public abstract class HarvestResourcePerformable : Performable
     public override ActivityState ActivityType { get { return ActivityState.Work; } }
 
 
-    ResourceProvider<IResource> _resourceToHarvest;
-    public ResourceProvider<IResource> resourceToHarvest { get { return _resourceToHarvest; } }
-    protected abstract AnimationClip harvestAnimationClip { get; }
+    public Type ItemToAcquire { get; }
+    protected abstract AnimationClip AcquisitionAnimation { get; }
 
     //************************************************************************************************************************************
     //in the animator controller there is a placeholder animation named "Interact". This gets the override controller from Being and changes the 
@@ -42,41 +42,41 @@ public abstract class HarvestResourcePerformable : Performable
         overriddenAnimationClip = controller["Interact"];
         if (overriddenAnimationClip == null)
             throw new UnityException("there must be a place holder animation named 'Interact' for this Interact to override");
-        controller["Interact"] = harvestAnimationClip;
+        controller["Interact"] = AcquisitionAnimation;
     }
     void ResetAnimationForPerformer()
     {
         if (hasOverriddenClip)
         {
-            Performer.Body.overrideController[harvestAnimationClip.name] = overriddenAnimationClip;
+            Performer.Body.overrideController[AcquisitionAnimation.name] = overriddenAnimationClip;
             hasOverriddenClip = false;
         }
     }
     //************************************************************************************************************************************
 
-    public HarvestResourcePerformable(PerceivingMind harvester, ResourceProvider<IResource> resourceToHarvest) : base(harvester)
+    public AcquireItemPerformable(PerceivingMind acquireer, TypeLimiter<IItem> itemToAcquire) : base(acquireer)
     {
-        base._performer = harvester;
-        this._resourceToHarvest = resourceToHarvest;
+        base._performer = acquireer;
+        this._itemToAcquire = itemToAcquire;
     }
 
     public override IEnumerator Perform()
     {
-        //move to resource
-        //harvest resource
-        var current = new MoveToDestinationPerformable(Performer, null, resourceToHarvest.transform.position).Perform();
+        //move to item
+        //acquire item
+        var current = new MoveToDestinationPerformable(Performer, null, itemToAcquire.transform.position).Perform();
         while (current.MoveNext())
             yield return null;
-        if (resourceToHarvest != null && resourceToHarvest.hasResources && resourceToHarvest.CanBeingHarvest(Performer.Body))
+        if (itemToAcquire != null && itemToAcquire.hasItems && itemToAcquire.CanBeingAcquire(Performer.Body))
         {
             /*
             AddAnimationToPerformer();
-            if (harvestAnimationClip != null)
+            if (acquireAnimationClip != null)
                 Performer.Body.anim.SetTrigger("StartInteraction");
              */
         }
         IItem result;
-        while (resourceToHarvest != null && resourceToHarvest.HarvestResource(Performer.Body, out result))
+        while (itemToAcquire != null && itemToAcquire.AcquireItem(Performer.Body, out result))
         {  
             //pick up item performable            
             yield return null;

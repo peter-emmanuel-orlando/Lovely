@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 public class LivingPlace : Place
 {
-    readonly Container foodHolder = new Container(100, delegate(IItem item) { return item.type.HasFlag(ItemType.Food); });
+    readonly Container foodHolder = new Container(100, delegate(IItem item) { return item.GetType().IsAssignableFrom(typeof(IFood)); });
 
     protected override void Awake()
     {
@@ -35,7 +35,7 @@ public class LivingPlace : Place
         //if their personal storage is full, come back
         //need to check if being is already doing this
         if (body.Backpack != null && body.Backpack.FreeVolume > body.Backpack.MaxHoldableVolume * 0.9f)
-            assignment = new ForageForResourcesPerformable(body.Mind, ItemType.Food);
+            assignment = new ForageForResourcesPerformable(body.Mind, typeof(IFood));
         else
             assignment = new MoveToDestinationPerformable(body.Mind, null, transform.position, true);
 
