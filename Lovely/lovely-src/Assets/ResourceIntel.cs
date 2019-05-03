@@ -1,12 +1,13 @@
 ﻿
 
 using System;
+using System.Collections.Generic;
 
-public class ResourceIntel : Intel<ResourceProvider<IResource>>, System.IComparable<ResourceIntel>
+public class ResourceIntel : Intel<IItemsProvider<IResource>>, System.IComparable<ResourceIntel>
 {
-    public Type recourceType { get { return subject.ProvidedResource; } }
+    public IEnumerable<Type> recourceType { get { return subject.ItemTypes; } }
 
-    public ResourceIntel(Body requester, ResourceProvider<IResource> subject) : base(requester, subject)
+    public ResourceIntel(Body requester, IItemsProvider<IResource> subject) : base(requester, subject)
     { }
 
     public int CompareTo(ResourceIntel other)

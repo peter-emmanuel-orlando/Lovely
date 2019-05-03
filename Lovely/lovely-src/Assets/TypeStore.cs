@@ -7,6 +7,8 @@ using UnityEngine;
 public class TypeStore<BaseT>
 {
     private TypeStore inner { get; } = new TypeStore();
+
+    public int Count => inner.Count;
     public void Add(BaseT data)
     {
         inner.Add(data);
@@ -22,6 +24,15 @@ public class TypeStore<BaseT>
     public void Remove<T>(T data) where T : BaseT
     {
         inner.Remove(data);
+    }
+
+    public bool ContainsKey(Type type)
+    {
+        return inner.ContainsKey(type);
+    }
+    public bool ContainsValue<T>(T data)
+    {
+        return inner.ContainsValue(data);
     }
 
     public IEnumerable<BaseT> GetData(bool includeDerivedTypes)
@@ -45,6 +56,7 @@ public class TypeStore
     private ClassNode classRoot = new ClassNode() { BaseType = null, Type = typeof(object) };
     private InterfaceNode interfaceRoot = new InterfaceNode() { Type = typeof(IBaseInterface) };
     private Dictionary<Type, TypeNode> typeNodes = new Dictionary<Type, TypeNode>();
+    public int Count { get; private set; } = 0;
     //private Dictionary<Type, ClassNode> classNodes = new Dictionary<Type, ClassNode>();
     //private Dictionary<Type, InterfaceNode> interfaceNodes = new Dictionary<Type, InterfaceNode>();
 
@@ -62,15 +74,30 @@ public class TypeStore
         var runtime = data.GetType();
         var node = GetOrCreateNode(runtime);
         node.dataSet.Add(data);
+        if (node.dataSet.Count == 1)
+            this.Count++;
     }
     public void Remove<T>(T data)
     {
         var runtime = data.GetType();
         if (typeNodes.ContainsKey(runtime) && typeNodes[runtime].dataSet.Contains(data))
         {
-            typeNodes[runtime].dataSet.Remove(data);
+            var node = typeNodes[runtime];
+            node.dataSet.Remove(data);
+            if (node.dataSet.Count == 0)
+                this.Count--;
             RemoveNodeIfEmpty(typeNodes[runtime]);
         }
+    }
+
+    public bool ContainsValue<T>( T data)
+    {
+        var type = typeof(T);
+        return typeNodes.ContainsKey(type) && typeNodes[type].dataSet.Contains(data);
+    }
+    public bool ContainsKey(Type type)
+    {
+        return typeNodes.ContainsKey(type);
     }
 
     public IEnumerable<T> GetData<T>(bool includeDerivedTypes)
@@ -202,7 +229,7 @@ public class TypeStore
 
 public static class TypeIEnumerableHelper
 {
-    public static bool IsAssignableFromAny(this IEnumerable<Type> types, Type search)
+    public static bool IsAnyAssignableFrom(this IEnumerable<Type> types, Type search)
     {
         if (search == null)
             return false;

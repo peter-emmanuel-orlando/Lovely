@@ -26,48 +26,23 @@ public abstract class AcquireItemPerformable : Performable
     //*//////////////////////////////////////////////////////////////////////////////////////////////////
 
     public override ActivityState ActivityType { get { return ActivityState.Work; } }
-
-
-    public Type ItemToAcquire { get; }
+    public ItemsProvider ItemSource { get; }
     protected abstract AnimationClip AcquisitionAnimation { get; }
 
-    //************************************************************************************************************************************
-    //in the animator controller there is a placeholder animation named "Interact". This gets the override controller from Being and changes the 
-    //AnimationClip named "Interact" to this AnimationClip. After this Interact is done, it returns the old clip
-    bool hasOverriddenClip = false;
-    AnimationClip overriddenAnimationClip;
-    void AddAnimationToPerformer()
+    public AcquireItemPerformable(PerceivingMind acquisitioner, ItemsProvider itemToAcquire) : base(acquisitioner)
     {
-        var controller = Performer.Body.overrideController;
-        overriddenAnimationClip = controller["Interact"];
-        if (overriddenAnimationClip == null)
-            throw new UnityException("there must be a place holder animation named 'Interact' for this Interact to override");
-        controller["Interact"] = AcquisitionAnimation;
-    }
-    void ResetAnimationForPerformer()
-    {
-        if (hasOverriddenClip)
-        {
-            Performer.Body.overrideController[AcquisitionAnimation.name] = overriddenAnimationClip;
-            hasOverriddenClip = false;
-        }
-    }
-    //************************************************************************************************************************************
-
-    public AcquireItemPerformable(PerceivingMind acquireer, TypeLimiter<IItem> itemToAcquire) : base(acquireer)
-    {
-        base._performer = acquireer;
-        this._itemToAcquire = itemToAcquire;
+        base._performer = acquisitioner;
+        this.ItemSource = itemToAcquire;
     }
 
     public override IEnumerator Perform()
     {
         //move to item
         //acquire item
-        var current = new MoveToDestinationPerformable(Performer, null, itemToAcquire.transform.position).Perform();
+        var current = new MoveToDestinationPerformable(Performer, null, ItemSource.Bounds.ClosestPoint(Performer.Body.transform.position)).Perform();
         while (current.MoveNext())
             yield return null;
-        if (itemToAcquire != null && itemToAcquire.hasItems && itemToAcquire.CanBeingAcquire(Performer.Body))
+        if (ItemSource != null && ItemSource.hasResources && ItemSource.CanBeAcquiredBy(Performer))
         {
             /*
             AddAnimationToPerformer();
@@ -75,21 +50,15 @@ public abstract class AcquireItemPerformable : Performable
                 Performer.Body.anim.SetTrigger("StartInteraction");
              */
         }
-        IItem result;
-        while (itemToAcquire != null && itemToAcquire.AcquireItem(Performer.Body, out result))
+        List<IItem> result;
+        List<ISpawnedItem> spawnedItems;
+        while (ItemSource != null && ItemSource.Acquire(Performer.Body, out result, out spawnedItems))
         {  
             //pick up item performable            
             yield return null;
         }
         _success = true;
         _isComplete = true;
-        ResetAnimationForPerformer();
         yield break;
-    }
-
-    public override void Abort()
-    {
-        base.Abort();
-        ResetAnimationForPerformer();
     }
 }

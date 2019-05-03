@@ -12,15 +12,16 @@ public interface IItem
 
 public interface ISpawnedItem : ISpawnable, IItem { }
 
-
-public interface IItemProvider
-{
-    void Acquire(out List<IItem> acquiredItems, out List<ISpawnedItem> spawnedResources);
-}
-//
 //should be used for all potentially provided types
 //i.e. public class Foo : IItemProvider<IFood>, IItemProvider<IFuel>, ...etc 
-public interface IItemProvider<out T> : IItemProvider { }
+public interface IItemsProvider<out T> : IInteractable<AcquireItemPerformable>, IBounded where T : IItem
+{
+    /// <summary>
+    /// multiple types are expected to be implemented so this captures all
+    /// </summary>
+    IEnumerable<Type> ItemTypes { get; }
+    bool Acquire<TAcquisitioner>(TAcquisitioner acquisitioner, out List<IItem> acquiredItems, out List<ISpawnedItem> spawnedResources);
+}
 public interface IResource : IItem { }
 public interface ICraftingMaterial : IResource { }
 public interface IConstructionMaterial : IResource { }

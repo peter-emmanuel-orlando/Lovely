@@ -12,7 +12,7 @@ public static class TrackedComponent
 {
     //the z component of the vector3's is not tracked. right now the quantity of points is size^3 but by essentially
     //flattening to 2d it can be size^2
-    private static readonly Dictionary<Vector3, TypeDictionary<HashSet<IBounded>>> posToObjList = new Dictionary<Vector3, TypeDictionary<HashSet<IBounded>>>();
+    private static readonly Dictionary<Vector3, TypeStore<IBounded>> posToObjList = new Dictionary<Vector3, TypeStore<IBounded>>();
     private static readonly HashSet<IBounded> trackedObjects = new HashSet<IBounded>();
     private static float cellSize = 10f;
     private static int locUpdatesPerFrame = 5;
@@ -26,8 +26,9 @@ public static class TrackedComponent
         {
             if (Time.frameCount > lastUpdateFrameCount)
             {
-                foreach (var item in trackedObjects)
+                for (int i = 0; i < trackedObjects.Count; i++)
                 {
+                    var item = trackedObjects.FirstOrDefault();
                     Untrack(item);
                     if (item != null)
                         Track(item);
@@ -57,14 +58,11 @@ public static class TrackedComponent
 
         Untrack(m);
 
-        var mType = m.GetType();
         foreach (var roundedPos in roundedPoints)
         {
             if (!posToObjList.ContainsKey(roundedPos))
-                posToObjList.Add(roundedPos, new TypeDictionary<HashSet<IBounded>>());
-            if (!posToObjList[roundedPos].ContainsKey(mType))
-                posToObjList[roundedPos].Add(mType, new HashSet<IBounded>());
-            posToObjList[roundedPos][mType].Add(m);
+                posToObjList.Add(roundedPos, new TypeStore<IBounded>());
+            posToObjList[roundedPos].Add(m);
         }
         trackedObjects.Add(m);
     }
@@ -78,10 +76,8 @@ public static class TrackedComponent
             {
                 if (posToObjList.ContainsKey(roundedPos))
                 {
-                    if (posToObjList[roundedPos][mType].Contains(m))
-                        posToObjList[roundedPos][mType].Remove(m);
-                    if (posToObjList[roundedPos][mType].Count == 0)
-                        posToObjList[roundedPos].Remove(mType);
+                    if (posToObjList[roundedPos].ContainsValue(m))
+                        posToObjList[roundedPos].Remove(m);
                     if (posToObjList[roundedPos].Count == 0)
                         posToObjList.Remove(roundedPos);
                 }
@@ -116,10 +112,10 @@ public static class TrackedComponent
     }
 
     //sorted by distance
-    public static IEnumerable<T> GetOverlapping<T>(Vector3 sourcePos, float radius) where T : IBounded
+    public static IEnumerable<T> GetOverlapping<T>(Vector3 sourcePos, float radius, bool includeDerivedTypes) where T : IBounded
     {
         var bounds = new Bounds(sourcePos, Vector3.one * radius);
-        foreach (var item in GetOverlapping<T>(bounds))
+        foreach (var item in GetOverlapping<T>(bounds, includeDerivedTypes))
         {
             var closestPoint = item.Bounds.ClosestPoint(sourcePos);
             if ((closestPoint - sourcePos).sqrMagnitude < radius * radius + 0.01)
@@ -127,20 +123,16 @@ public static class TrackedComponent
         }
     }
     //sorted by distance
-    public static IEnumerable<T> GetOverlapping<T>(Bounds b) where T : IBounded
+    public static IEnumerable<T> GetOverlapping<T>(Bounds b, bool includeDerivedTypes) where T : IBounded
     {
         var posList = GetRoundedOverlapPoints(b);
         foreach (var roundedPos in posList)
         {
             if (posToObjList.ContainsKey(roundedPos))
             {
-                foreach (var itemListEnum in posToObjList[roundedPos].Get(typeof(T), TypeIncludeMode.IncludeExtendingTypes))
+                foreach (var item in posToObjList[roundedPos].GetData<T>(includeDerivedTypes))
                 {
-                    foreach (var item in itemListEnum)
-                    {
-                        if (item.Bounds.Intersects(b))
-                            yield return (T)item;
-                    }
+                    yield return item;
                 }
             }
         }

@@ -14,9 +14,9 @@ using UnityEngine;
 // a resource should only return items. an item can be food, constructionMaterials, magic, PreciousMaterials or any combination thereof. Each of these is an interface so a resource can implement any one
 
 
-public abstract class ResourceProvider : OccupiableLocation, IItemProvider<IResource>
+public abstract class ItemsProvider : OccupiableLocation, IItemsProvider<IResource>
 {
-    public abstract Type ItemType{ get; }
+    public abstract IEnumerable<Type> ItemTypes{ get; }
     protected override void Awake()
     {
         base.Awake();
@@ -35,12 +35,17 @@ public abstract class ResourceProvider : OccupiableLocation, IItemProvider<IReso
         TrackedComponent.Untrack(this);
     }
 
-    public virtual bool CanHarvest<T>(T potentialHarvester)
+    public virtual bool CanBeAcquiredBy<T>(T potentialHarvester)
     {
         bool result = hasResources && isActiveAndEnabled;
         return result;//checks if the being has the tools neccessary to harvest
     }
     public abstract bool Acquire<T>(T acquisitioner, out List<IItem> acquiredItems, out List<ISpawnedItem> spawnedResources);
+
+    public AcquireItemPerformable GetInteractionPerformable(Body performer)
+    {
+        throw new NotImplementedException();
+    }
 }
 
 

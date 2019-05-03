@@ -36,12 +36,12 @@ public class RelativePositionInfo : System.IComparable<RelativePositionInfo>
     }
 }
 
-public class RelativePositionInfo<T> : RelativePositionInfo, System.IComparable<RelativePositionInfo<T>> where T : MonoBehaviour
+public class RelativePositionInfo<T> : RelativePositionInfo, System.IComparable<RelativePositionInfo<T>> where T : IBounded
 {
     protected readonly T _subject;
     public T subject { get { return _subject; } }
 
-    public RelativePositionInfo(Vector3 requesterPosition, Quaternion requesterRotation, T subject) : base(requesterPosition, requesterRotation, subject.transform.position)
+    public RelativePositionInfo(Vector3 requesterPosition, Quaternion requesterRotation, T subject) : base(requesterPosition, requesterRotation, subject.Bounds.center)
     {
         _subject = subject;
     }

@@ -190,7 +190,7 @@ PrefabInstance:
     - target: {fileID: 114374055689382984, guid: 8e6a7fa2beba72841ba466c5232de825,
         type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4372128909694616, guid: 8e6a7fa2beba72841ba466c5232de825, type: 3}
       propertyPath: m_LocalPosition.x
@@ -1271,35 +1271,35 @@ MonoBehaviour:
   - {fileID: 7400000, guid: 374908816b319594d9169af7ee8e296f, type: 3}
   - {fileID: 7400002, guid: 374908816b319594d9169af7ee8e296f, type: 3}
   - {fileID: 7400002, guid: d89ea37480b6d75458aa38843e9688dc, type: 3}
-  - {fileID: 7400004, guid: d89ea37480b6d75458aa38843e9688dc, type: 3}
-  - {fileID: 7400006, guid: d89ea37480b6d75458aa38843e9688dc, type: 3}
-  - {fileID: 7400008, guid: d89ea37480b6d75458aa38843e9688dc, type: 3}
-  - {fileID: 7400010, guid: d89ea37480b6d75458aa38843e9688dc, type: 3}
   - {fileID: 7400012, guid: d89ea37480b6d75458aa38843e9688dc, type: 3}
+  - {fileID: 7400010, guid: d89ea37480b6d75458aa38843e9688dc, type: 3}
+  - {fileID: 7400004, guid: d89ea37480b6d75458aa38843e9688dc, type: 3}
+  - {fileID: 7400008, guid: d89ea37480b6d75458aa38843e9688dc, type: 3}
+  - {fileID: 7400006, guid: d89ea37480b6d75458aa38843e9688dc, type: 3}
   - {fileID: 7400014, guid: d89ea37480b6d75458aa38843e9688dc, type: 3}
   - {fileID: 7400000, guid: dffa50cfe77e0434bbfa71245b3dd529, type: 3}
-  - {fileID: 7400002, guid: 0d9d26e2162aa4d11ab075b34c029673, type: 3}
   - {fileID: 7400004, guid: 0d9d26e2162aa4d11ab075b34c029673, type: 3}
+  - {fileID: 7400002, guid: 0d9d26e2162aa4d11ab075b34c029673, type: 3}
   - {fileID: 7400006, guid: 0d9d26e2162aa4d11ab075b34c029673, type: 3}
   - {fileID: 7400008, guid: 0d9d26e2162aa4d11ab075b34c029673, type: 3}
-  - {fileID: 7400000, guid: 51dd2e4c869794f75a0df7d54b210214, type: 3}
   - {fileID: 7400002, guid: 51dd2e4c869794f75a0df7d54b210214, type: 3}
-  - {fileID: 7400004, guid: 51dd2e4c869794f75a0df7d54b210214, type: 3}
   - {fileID: 7400006, guid: 51dd2e4c869794f75a0df7d54b210214, type: 3}
-  - {fileID: 7400002, guid: f03e10c73f30b4ab4aa8ea8f1cc16d36, type: 3}
+  - {fileID: 7400000, guid: 51dd2e4c869794f75a0df7d54b210214, type: 3}
+  - {fileID: 7400004, guid: 51dd2e4c869794f75a0df7d54b210214, type: 3}
   - {fileID: 7400004, guid: f03e10c73f30b4ab4aa8ea8f1cc16d36, type: 3}
+  - {fileID: 7400002, guid: f03e10c73f30b4ab4aa8ea8f1cc16d36, type: 3}
   - {fileID: 7400000, guid: 1cb8ed3cbba15f0479fbae54e0a963df, type: 3}
-  - {fileID: 7400000, guid: 1062212255550964e974f3ffb3cbaae3, type: 3}
   - {fileID: 7400002, guid: 1062212255550964e974f3ffb3cbaae3, type: 3}
-  - {fileID: 7400000, guid: f2bed5dc5afacff44a00de8daae9703b, type: 3}
+  - {fileID: 7400000, guid: 1062212255550964e974f3ffb3cbaae3, type: 3}
   - {fileID: 7400002, guid: f2bed5dc5afacff44a00de8daae9703b, type: 3}
-  - {fileID: 7400000, guid: 6fb3851da6a6f5948ab6892bee8ba920, type: 3}
+  - {fileID: 7400000, guid: f2bed5dc5afacff44a00de8daae9703b, type: 3}
+  - {fileID: 7400014, guid: 6fb3851da6a6f5948ab6892bee8ba920, type: 3}
   - {fileID: 7400006, guid: 6fb3851da6a6f5948ab6892bee8ba920, type: 3}
   - {fileID: 7400010, guid: 6fb3851da6a6f5948ab6892bee8ba920, type: 3}
-  - {fileID: 7400014, guid: 6fb3851da6a6f5948ab6892bee8ba920, type: 3}
+  - {fileID: 7400000, guid: 6fb3851da6a6f5948ab6892bee8ba920, type: 3}
   - {fileID: 7400000, guid: b1a5e04ae51004842aba06704a6c2903, type: 3}
-  - {fileID: 7400000, guid: 1c52c953c83c2254a9fa72d50250f028, type: 3}
   - {fileID: 7400002, guid: 1c52c953c83c2254a9fa72d50250f028, type: 3}
+  - {fileID: 7400000, guid: 1c52c953c83c2254a9fa72d50250f028, type: 3}
   - {fileID: 7400000, guid: bb141fc9a700c9c4ca7e6dadb8acf24b, type: 3}
   - {fileID: 7400002, guid: bb141fc9a700c9c4ca7e6dadb8acf24b, type: 3}
   - {fileID: 7400000, guid: 2ba397f26347eb3469714e512494c606, type: 3}
@@ -1375,103 +1375,103 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   textList:
-  - 'NEW FRAME -- timestamp: 1417.868'
+  - 'NEW FRAME -- timestamp: 6.780475'
   - 'sender: GameTime'
   - 'CycleName: Air'
   - 'WeekName: Phoenix'
-  - 'Cycle: 0.00817973542604557'
-  - 'Year: 0.008179735'
-  - 'Week: 0.1963136'
-  - 'Day: 1.177882'
-  - 'Hour: 2.134582'
-  - 'Minute: 8.074849'
-  - 'Second: 4.488281'
-  - 'elapsedRealTime: 84.80748'
-  - 'elapsedGameTime: 50884.49'
+  - 'Cycle: 0.00333901646622609'
+  - 'Year: 0.003339017'
+  - 'Week: 0.0801364'
+  - 'Day: 0.4808183'
+  - 'Hour: 5.76982'
+  - 'Minute: 46.18918'
+  - 'Second: 11.34961'
+  - 'elapsedRealTime: 34.61892'
+  - 'elapsedGameTime: 20771.35'
   - 'timeScale: 1'
   - '-----------------END-----------------'
   - 
-  - 'NEW FRAME -- timestamp: 1417.699'
+  - 'NEW FRAME -- timestamp: 6.683781'
   - 'sender: GameTime'
   - 'CycleName: Air'
   - 'WeekName: Phoenix'
-  - 'Cycle: 0.00816470331813909'
-  - 'Year: 0.008164703'
-  - 'Week: 0.1959529'
-  - 'Day: 1.175717'
-  - 'Hour: 2.108606'
-  - 'Minute: 6.51632'
-  - 'Second: 30.97656'
-  - 'elapsedRealTime: 84.65163'
-  - 'elapsedGameTime: 50790.98'
+  - 'Cycle: 0.00331095064982047'
+  - 'Year: 0.003310951'
+  - 'Week: 0.07946281'
+  - 'Day: 0.4767769'
+  - 'Hour: 5.721322'
+  - 'Minute: 43.27932'
+  - 'Second: 16.75781'
+  - 'elapsedRealTime: 34.32793'
+  - 'elapsedGameTime: 20596.76'
   - 'timeScale: 1'
   - '-----------------END-----------------'
   - 
-  - 'NEW FRAME -- timestamp: 1417.543'
+  - 'NEW FRAME -- timestamp: 6.392796'
   - 'sender: GameTime'
   - 'CycleName: Air'
   - 'WeekName: Phoenix'
-  - 'Cycle: 0.0081535468178185'
-  - 'Year: 0.008153547'
-  - 'Week: 0.1956851'
-  - 'Day: 1.174111'
-  - 'Hour: 2.089328'
-  - 'Minute: 5.359614'
-  - 'Second: 21.57422'
-  - 'elapsedRealTime: 84.53596'
-  - 'elapsedGameTime: 50721.57'
+  - 'Cycle: 0.0032950190267055'
+  - 'Year: 0.003295019'
+  - 'Week: 0.07908046'
+  - 'Day: 0.4744827'
+  - 'Hour: 5.693792'
+  - 'Minute: 41.62753'
+  - 'Second: 37.65039'
+  - 'elapsedRealTime: 34.16275'
+  - 'elapsedGameTime: 20497.65'
   - 'timeScale: 1'
   - '-----------------END-----------------'
   - 
-  - 'NEW FRAME -- timestamp: 1417.428'
+  - 'NEW FRAME -- timestamp: 6.227614'
   - 'sender: GameTime'
   - 'CycleName: Air'
   - 'WeekName: Phoenix'
-  - 'Cycle: 0.00813611663062321'
-  - 'Year: 0.008136117'
-  - 'Week: 0.1952668'
-  - 'Day: 1.171601'
-  - 'Hour: 2.059208'
-  - 'Minute: 3.552453'
-  - 'Second: 33.14453'
-  - 'elapsedRealTime: 84.35524'
-  - 'elapsedGameTime: 50613.14'
+  - 'Cycle: 0.00327942680182452'
+  - 'Year: 0.003279427'
+  - 'Week: 0.07870624'
+  - 'Day: 0.4722374'
+  - 'Hour: 5.666849'
+  - 'Minute: 40.01092'
+  - 'Second: 0.6542969'
+  - 'elapsedRealTime: 34.00109'
+  - 'elapsedGameTime: 20400.65'
   - 'timeScale: 1'
   - '-----------------END-----------------'
   - 
-  - 'NEW FRAME -- timestamp: 1417.247'
+  - 'NEW FRAME -- timestamp: 6.065956'
   - 'sender: GameTime'
   - 'CycleName: Air'
   - 'WeekName: Phoenix'
-  - 'Cycle: 0.00812162203407343'
-  - 'Year: 0.008121622'
-  - 'Week: 0.1949189'
-  - 'Day: 1.169513'
-  - 'Hour: 2.034162'
-  - 'Minute: 2.049653'
-  - 'Second: 2.976563'
-  - 'elapsedRealTime: 84.20496'
-  - 'elapsedGameTime: 50522.98'
+  - 'Cycle: 0.00326503895402549'
+  - 'Year: 0.003265039'
+  - 'Week: 0.07836093'
+  - 'Day: 0.4701656'
+  - 'Hour: 5.641987'
+  - 'Minute: 38.51919'
+  - 'Second: 31.15039'
+  - 'elapsedRealTime: 33.85192'
+  - 'elapsedGameTime: 20311.15'
   - 'timeScale: 1'
   - '-----------------END-----------------'
   - 
-  - 'NEW FRAME -- timestamp: 1417.097'
+  - 'NEW FRAME -- timestamp: 5.916781'
   - 'sender: GameTime'
   - 'CycleName: Air'
   - 'WeekName: Phoenix'
-  - 'Cycle: 0.00810741817088597'
-  - 'Year: 0.008107418'
-  - 'Week: 0.194578'
-  - 'Day: 1.167468'
-  - 'Hour: 2.009617'
-  - 'Minute: 0.576997'
-  - 'Second: 34.61719'
-  - 'elapsedRealTime: 84.05769'
-  - 'elapsedGameTime: 50434.62'
+  - 'Cycle: 0.00325097731785005'
+  - 'Year: 0.003250977'
+  - 'Week: 0.07802346'
+  - 'Day: 0.4681407'
+  - 'Hour: 5.617688'
+  - 'Minute: 37.06128'
+  - 'Second: 3.675781'
+  - 'elapsedRealTime: 33.70613'
+  - 'elapsedGameTime: 20223.68'
   - 'timeScale: 1'
   - '-----------------END-----------------'
   - 
-  - 'NEW FRAME -- timestamp: 1416.949'
+  - 'NEW FRAME -- timestamp: 5.770989'
   - 'sender: GameTime'
   - 'CycleName: Air'
   - 'WeekName: Phoenix'
@@ -1661,9 +1661,9 @@ Light:
   m_Enabled: 1
   serializedVersion: 9
   m_Type: 2
-  m_Color: {r: 0.97718394, g: 0.6374327, b: 0, a: 1}
-  m_Intensity: 1.9528551
-  m_Range: 8.7878475
+  m_Color: {r: 0.7907258, g: 0.14532983, b: 0.9110345, a: 1}
+  m_Intensity: 1.3101102
+  m_Range: 5.895496
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
@@ -1707,7 +1707,7 @@ Light:
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: 1.6817e-41, y: 0, z: 1.71e-43, w: 0.03515625}
+  m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
   m_UseBoundingSphereOverride: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
@@ -1724,9 +1724,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animLight: {fileID: 722723198}
-  currentTime: 1.4152257
-  completedIterations: 1
-  evaluationTime: 8.687687
+  currentTime: 3.7051194
+  completedIterations: 0
+  evaluationTime: 3.7051194
   reset: 0
   lifeTime: 10
   destroyOnComplete: 0

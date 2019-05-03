@@ -43,7 +43,7 @@ public abstract class PerceivingMind : Mind
 
     private void LookForResources()
     {
-        var inRangeProviders = TrackedComponent.GetOverlapping<IResourceProvider<IResource>>(Body.CameraBone.transform.position, SightRadius);
+        var inRangeProviders = TrackedComponent.GetOverlapping<IItemsProvider<IResource>>(Body.CameraBone.transform.position, SightRadius, true);
         foreach (var provider in inRangeProviders)
         {
             var intel = new ResourceIntel(Body, provider);
@@ -53,7 +53,7 @@ public abstract class PerceivingMind : Mind
     private void LookForCreatures()
     {
         visibleEnemies.Clear();
-        var inRangeBodies = TrackedComponent.GetOverlapping<Body>(Body.CameraBone.transform.position, SightRadius);
+        var inRangeBodies = TrackedComponent.GetOverlapping<Body>(Body.CameraBone.transform.position, SightRadius, true);
         foreach (var current in inRangeBodies)
         {
             if (!ReferenceEquals(current, Body))

@@ -15,7 +15,7 @@ public abstract class UnifiedController : MonoBehaviour, IPhysicsable
     public Avatar avatar;
 
     [SerializeField]
-    public AnimatorOverrideController overrideController;
+    private AnimatorOverrideController overrideController;
 
 
     protected NavMeshAgent navAgent;

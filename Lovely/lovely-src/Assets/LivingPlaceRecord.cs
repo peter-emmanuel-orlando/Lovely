@@ -4,7 +4,8 @@ using System.Collections.Generic;
 public class LivingPlaceRecord
 {
     public static LivingPlaceRecord Instance { get; } = new LivingPlaceRecord();
-    private static TypeDictionary<List<ISpawnable>> prefabs = new TypeDictionary< List<ISpawnable>>();
+    private static TypeDictionary<List<ISpawnable>> prefabs = new TypeDictionary
+        < List<ISpawnable>>();
     static LivingPlaceRecord()
     {
         prefabs.Add(typeof(HumanMind), new List<ISpawnable>() );

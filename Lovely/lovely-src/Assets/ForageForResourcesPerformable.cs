@@ -74,10 +74,10 @@ public class ForageForResourcesPerformable : Performable
 
             if(relevantResources.Count > 0 && relevantResources[0] != null && !IsComplete)
             {
-                AcquireItemPerformable harvestPerformable = relevantResources[0].subject.GetHarvestPerformable(Performer.Body);
+                AcquireItemPerformable harvestPerformable = relevantResources[0].subject.GetInteractionPerformable(Performer.Body);
                 current = harvestPerformable.Perform();
                 currentPerformable = harvestPerformable;
-                while (!harvestPerformable.IsComplete && current != null && current.MoveNext()&& !this.IsComplete && resourcesToSearchFor.IsAssignableFromAny(harvestPerformable.resourceToHarvest.GetType()))
+                while (!harvestPerformable.IsComplete && current != null && current.MoveNext()&& !this.IsComplete && resourcesToSearchFor.IsAnyAssignableFrom(harvestPerformable.GetType()))
                 {
                     yield return null;
                 }

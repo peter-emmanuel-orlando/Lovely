@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 
 
-public class Intel<T> : RelativePositionInfo<T>, System.IComparable<Intel<T>> where T : MonoBehaviour
+public class Intel<T> : RelativePositionInfo<T>, System.IComparable<Intel<T>> where T : IBounded
 {
     readonly Body _requester;
     readonly bool _isVisible;
