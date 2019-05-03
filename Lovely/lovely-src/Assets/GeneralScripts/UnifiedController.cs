@@ -378,7 +378,6 @@ public abstract class UnifiedController : MonoBehaviour, IPhysicsable
 
     private void FixedUpdate()
     {
-        //navAgent.nextPosition = transform.position;
         //certain actions(ie jump, fly, and other vertical movements) 
         //are too complex to be scripted with physics. Therefore follow root motion animation
         //physics (ie falling, ragdolling getting hit by certain things) is to complex to do everything via animation so turn off everything and just physics
@@ -494,9 +493,13 @@ public abstract class UnifiedController : MonoBehaviour, IPhysicsable
     private IEnumerator Cleanup()
     {
         yield return new WaitForFixedUpdate();
-        if(movementSource == ControlMode.Physics)
+        if(movementSource == ControlMode.Physics || movementSource == ControlMode.AnimatedNavAgent)
+        {
+            var origRotation = rb.rotation;
             navAgent.Warp(rb.position);
-        else if (movementSource == ControlMode.Physics)
+            rb.rotation = origRotation;
+        }
+        else if (movementSource == ControlMode.Navigation)
             rb.MovePosition(navAgent.nextPosition);
     }
 
