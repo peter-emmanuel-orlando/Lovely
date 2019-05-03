@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+/*
 public abstract class ArbitraryGravity : MonoBehaviour, IBounded
 {
     [SerializeField]
@@ -61,3 +61,4 @@ public class GravityPlane : ArbitraryGravity
         Gizmos.DrawCube(Bounds.center, Bounds.size);
     }
 }
+*/

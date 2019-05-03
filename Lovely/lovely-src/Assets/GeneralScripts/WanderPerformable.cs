@@ -45,9 +45,8 @@ public class WanderPerformable : Performable
             {
                 setNext = Time.time + Random.Range(1f, 3f);
                 var randomDelta = new Vector3(Random.Range(-10f, 10f), Random.Range(-10f, 10f), Random.Range(-10f, 10f));
-                //NavMeshHit hit;
-                //NavMesh.Raycast(transform.position, transform.position + randomDelta, out hit, NavMesh.AllAreas);
-                destination = Transform.position + randomDelta;
+                NavMesh.Raycast(Transform.position, Transform.position + randomDelta, out NavMeshHit hit, NavMesh.AllAreas);
+                destination = hit.position;
             }
 
 

@@ -163,7 +163,7 @@ public abstract class UnifiedController : MonoBehaviour, IPhysicsable
 
         navAgent = transform.GetComponent<NavMeshAgent>();
         if (navAgent == null) navAgent = gameObject.AddComponent<NavMeshAgent>();
-        navAgent.hideFlags = HideFlags.NotEditable;
+        //navAgent.hideFlags = HideFlags.NotEditable;
         //navAgent.hideFlags = HideFlags.HideInInspector;
         navAgent.updatePosition = false;
         //navAgent.updateRotation = false;
@@ -171,7 +171,7 @@ public abstract class UnifiedController : MonoBehaviour, IPhysicsable
         navAgent.speed = RunSpeed;//float.MaxValue;
         navDestination = transform.position;
         //TEMPORARY WORKAROUNT todo
-        navAgent.areaMask &= ~(1 << NavMesh.GetAreaFromName("Jump"));
+        //navAgent.areaMask &= ~(1 << NavMesh.GetAreaFromName("Jump"));
 
         anim = transform.GetComponent<Animator>();
         if (anim == null) anim = gameObject.AddComponent<Animator>();
@@ -494,7 +494,10 @@ public abstract class UnifiedController : MonoBehaviour, IPhysicsable
     private IEnumerator Cleanup()
     {
         yield return new WaitForFixedUpdate();
-        navAgent.Warp(rb.position);
+        if(movementSource == ControlMode.Physics)
+            navAgent.Warp(rb.position);
+        else if (movementSource == ControlMode.Physics)
+            rb.MovePosition(navAgent.nextPosition);
     }
 
     //helper methods    
