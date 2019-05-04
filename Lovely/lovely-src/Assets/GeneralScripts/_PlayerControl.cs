@@ -77,7 +77,7 @@ public class _PlayerControl : MonoBehaviour
 
 
 
-public class PlayerControl : IPerformable, IDecisionMaker
+public class PlayerControl : IPerformable, IDecisionSource
 {
 
     //change to each mindStat in in-game days. negative takes away, positive adds
@@ -190,7 +190,7 @@ public class PlayerControl : IPerformable, IDecisionMaker
             if (performerBody != null && cam != null)
                 GameObject.Destroy(cam);
             performerBody = body;
-            Performer.OverrideDecisionMaker(this);
+            Performer.OverrideDecisionSource(this);
             //punch = new PunchCombo(Performer.Body.SubscribeForUpdates, Performer.Body.SubscribeForAnimationEvents, Performer.Body.SubscribeForTriggerEvents, Performer.Body);
             head = Performer.Body.transform.FindDeepChild("head");
             cam = body.GetComponentInChildren<Camera>();

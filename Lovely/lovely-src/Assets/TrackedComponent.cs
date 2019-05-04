@@ -28,6 +28,7 @@ public static class TrackedComponent
             {
                 for (int i = 0; i < trackedObjects.Count; i++)
                 {
+                    //todo, takes same item over and over
                     var item = trackedObjects.FirstOrDefault();
                     Untrack(item);
                     if (item != null)

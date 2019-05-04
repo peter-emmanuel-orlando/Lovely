@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 
 [RequireComponent(typeof(Body))]
-public class _WanderDecisionMaker : MonoBehaviour, IDecisionMaker
+public class _WanderDecisionSource : MonoBehaviour, IDecisionSource
 {
     WanderPerformable wander;
 
@@ -15,7 +15,7 @@ public class _WanderDecisionMaker : MonoBehaviour, IDecisionMaker
     private void Start()
     {
         var mind = gameObject.GetComponent<Body>().Mind;
-        mind.OverrideDecisionMaker(this);
+        mind.OverrideDecisionSource(this);
         wander = new WanderPerformable(mind);
     }
     

@@ -13,6 +13,15 @@ public class GravityPoint : MonoBehaviour
     float minDistance = 50f;
     float maxDistance = 100f;
 
+#if UNITY_EDITOR
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.white;
+        Gizmos.DrawWireSphere(transform.position, minDistance);
+        Gizmos.color = Color.grey;
+        Gizmos.DrawWireSphere(transform.position, maxDistance);
+    }
+#endif
     [SerializeField]
     float gravityForce = 10f;
     SphereCollider trigger;

@@ -93,19 +93,16 @@ public abstract class UnifiedController : MonoBehaviour, IPhysicsable
     protected virtual void Awake()
     {
         InnerAwake();
-        if (AwakeEvent != null)
-            AwakeEvent(this, new EventArgs());
+        AwakeEvent?.Invoke(this, new EventArgs());
     }
     protected virtual void Update()
     {
         InnerUpdate();
-        if (UpdateEvent != null)
-            UpdateEvent(this, new EventArgs());
+        UpdateEvent?.Invoke(this, new EventArgs());
     }
     protected virtual void OnDestroy()
     {
-        if (OnDestroyEvent != null)
-            OnDestroyEvent(this, new EventArgs());
+        OnDestroyEvent?.Invoke(this, new EventArgs());
     }
 
 
@@ -240,6 +237,8 @@ public abstract class UnifiedController : MonoBehaviour, IPhysicsable
             //rotating the camera and rotation of the body is handled manually outside of the animation system
             //looking up/down or left/right is the domain of the animation system
             transform.localRotation = transform.localRotation * Quaternion.Euler(0, deltaDegreesH, 0);
+            //multiplying by transform.rotation makes it world space
+            //rb.MoveRotation(transform.rotation * (transform.localRotation * Quaternion.Euler(0, deltaDegreesH, 0)));
             //only set lookV if it is between +- maxAngle;
             Quaternion temp = cameraBone.localRotation * Quaternion.Euler(deltaDegreesV, 0, 0);
             if (Quaternion.Angle(Quaternion.identity, temp) < 90f)
@@ -572,6 +571,7 @@ public abstract class UnifiedController : MonoBehaviour, IPhysicsable
         //var desiredLook = Quaternion.LookRotation(lookTarget - transform.position, transform.up).eulerAngles;
         //deltaDegreesV = desiredLook.x;
         //deltaDegreesH = desiredLook.y;
+        //todo, make this operate via rb so it doesnt force an internal recalculation of physics
         transform.LookAt(Vector3.ProjectOnPlane(lookTarget, transform.up));
         yield return ProgressStatus.Complete;
         yield break;
@@ -807,9 +807,9 @@ public abstract class UnifiedController : MonoBehaviour, IPhysicsable
 
     public void AddForce(Vector3 force, ForceMode forceMode)
     {
-        AddForce(force, forceMode);
+        AddForce(force, forceMode, requirePhysicsTimeLength = 0.5f);
     }
-    public void AddForce(Vector3 force, ForceMode forceMode, float requirePhysicsTimeLength = 0.1f )
+    public void AddForce(Vector3 force, ForceMode forceMode, float requirePhysicsTimeLength )
     {
         var poise = 8f;
         if(force.sqrMagnitude < poise.Pow(2) && navAgent.isOnNavMesh)

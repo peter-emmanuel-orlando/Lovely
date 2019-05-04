@@ -17,6 +17,7 @@ public class OccupiableLocation : MonoBehaviour, IBounded
 
     [SerializeField]
     protected int maxOccupants = 1;
+    [ShowOnly]
     [SerializeField]
     List<Body> currentOccupiers = new List<Body>(); // make hashsett
 
@@ -42,11 +43,11 @@ public class OccupiableLocation : MonoBehaviour, IBounded
             var rb= GetComponent<Rigidbody>();
         if (rb == null)
            rb = gameObject.AddComponent<Rigidbody>();
+        rb.hideFlags = HideFlags.NotEditable;
         rb.isKinematic = true;
         rb.Sleep();
     }
     
-
     public bool IsOccupant(Body being)
     {
         return currentOccupiers.Contains(being);

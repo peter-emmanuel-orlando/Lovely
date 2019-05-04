@@ -6,11 +6,11 @@ using System.Collections;
 //this class keeps track of where decisions(performables) come from. This is the decisisionSource variable. By default the decision source is this class itself.
 //but the decision source can be overridden. overriding decision source with null will let this class make its own decisions again
 //to summarise decisions can either come from an inheriting class implementing GetDecisions() or they can come from an overriding IDecisionMaker.
-public abstract class DecisionManager : IDecisionMaker
+public abstract class DecisionManager : IDecisionSource
 {
     //properties
     private Body body;
-    private IDecisionMaker decisionSource;
+    private IDecisionSource decisionSource;
     private IPerformable currentPerformable;
     private IEnumerator currentEnumerator;
 
@@ -18,7 +18,7 @@ public abstract class DecisionManager : IDecisionMaker
     //getters/setters
     public Body Body { get { return body; } }
     public IPerformable CurrentPerformable { get { return currentPerformable; } }
-    public IDecisionMaker DecisionSource { get { return decisionSource; } }
+    public IDecisionSource DecisionSource { get { return decisionSource; } }
     public ActivityState CurrentState { get { return (CurrentPerformable != null) ? CurrentPerformable.ActivityType : ActivityState.Nothing; } }
 
 
@@ -61,7 +61,7 @@ public abstract class DecisionManager : IDecisionMaker
     //public methods
     public abstract IPerformable GetDecisions();
 
-    public void OverrideDecisionMaker(IDecisionMaker newDecisionSource)
+    public void OverrideDecisionSource(IDecisionSource newDecisionSource)
     {
         decisionSource = newDecisionSource;
     }  

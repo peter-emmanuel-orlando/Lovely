@@ -44,6 +44,7 @@ public abstract class AcquireItemPerformable : Performable
             yield return null;
         if (ItemSource != null && ItemSource.hasResources && ItemSource.CanBeAcquiredBy(Performer))
         {
+            //Performer.Body.PlayAnimation
             /*
             AddAnimationToPerformer();
             if (acquireAnimationClip != null)

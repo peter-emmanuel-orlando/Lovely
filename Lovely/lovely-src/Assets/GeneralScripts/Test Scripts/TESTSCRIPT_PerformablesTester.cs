@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class TESTSCRIPT_PerformablesTester : MonoBehaviour, IDecisionMaker
+public class TESTSCRIPT_PerformablesTester : MonoBehaviour, IDecisionSource
 {
     [ShowOnly]
     PerceivingMind performer;
@@ -23,7 +23,7 @@ public class TESTSCRIPT_PerformablesTester : MonoBehaviour, IDecisionMaker
     void Start ()
     {
         performer = GetComponent<Body>().Mind;
-        performer.OverrideDecisionMaker(this);
+        performer.OverrideDecisionSource(this);
     }
 	
 	// Update is called once per frame

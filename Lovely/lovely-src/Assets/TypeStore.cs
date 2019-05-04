@@ -72,10 +72,13 @@ public class TypeStore
     public void Add<T>(T data)
     {
         var runtime = data.GetType();
-        var node = GetOrCreateNode(runtime);
-        node.dataSet.Add(data);
-        if (node.dataSet.Count == 1)
-            this.Count++;
+        var nodes = new List<TypeNode>(GetOrCreateNode(runtime));
+        foreach (var node in nodes)
+        {
+            node.dataSet.Add(data);
+            if (node.dataSet.Count == 1 && !node.Type.IsInterface)
+                this.Count++;
+        }
     }
     public void Remove<T>(T data)
     {
@@ -84,7 +87,7 @@ public class TypeStore
         {
             var node = typeNodes[runtime];
             node.dataSet.Remove(data);
-            if (node.dataSet.Count == 0)
+            if (node.dataSet.Count == 0 && !node.Type.IsInterface)
                 this.Count--;
             RemoveNodeIfEmpty(typeNodes[runtime]);
         }
@@ -154,44 +157,65 @@ public class TypeStore
         }
     }
 
-    private TypeNode GetOrCreateNode(Type type)
+    private IEnumerable<TypeNode> GetOrCreateNode(Type type)
     {
         GetOrCreateClassNodes(type);
         if (type.IsInterface)
-            return GetOrCreateInterfaceNode(type);
-        else
-            return GetOrCreateClassNodes(type);
-    }
-    private ClassNode GetOrCreateClassNodes(Type type)
-    {
-        if (type == null) throw new ArgumentNullException();
-        else if (type.IsInterface) throw new ArgumentException();
-        else if (typeNodes.ContainsKey(type)) return (ClassNode)typeNodes[type];
+            yield return GetOrCreateInterfaceNode(type);
         else
         {
-            var newNode = new ClassNode() { Type = type };
-            var baseNode = GetOrCreateClassNodes(type.BaseType);
+            yield return GetOrCreateClassNodes(type);
+            foreach (var item in GetOrCreateInterfaceNodesImplementedByClass(type))
+            {
+                yield return item;
+            } 
+        }
+    }
+    private ClassNode GetOrCreateClassNodes(Type classType)
+    {
+        if (classType == null) throw new ArgumentNullException();
+        else if (classType.IsInterface) throw new ArgumentException();
+        else if (typeNodes.ContainsKey(classType)) return (ClassNode)typeNodes[classType];
+        else
+        {
+            var newNode = new ClassNode() { Type = classType };
+            var baseNode = GetOrCreateClassNodes(classType.BaseType);
             newNode.BaseType = baseNode;
             baseNode.DerivedTypes.Add(newNode);
             return newNode;
         }
     }
-    private InterfaceNode GetOrCreateInterfaceNode(Type type)
+    private IEnumerable<InterfaceNode> GetOrCreateInterfaceNodesImplementedByClass(Type classType)
     {
-        if (type == null) return interfaceRoot;
-        else if (type.IsClass) throw new ArgumentException();
-        else if (typeNodes.ContainsKey(type)) return (InterfaceNode)typeNodes[type];
+        if (classType == null) throw new ArgumentNullException();
+        else if (!classType.IsInterface)
+        {
+            var minimalInterfaces = classType.GetInterfaces().AsEnumerable();
+            minimalInterfaces = minimalInterfaces.Except(minimalInterfaces.SelectMany(t => t.GetInterfaces()));
+            foreach (var baseInterface in minimalInterfaces)
+            {
+                yield return GetOrCreateInterfaceNode(baseInterface);
+            }
+        }
+    }
+    private InterfaceNode GetOrCreateInterfaceNode(Type interfaceType)
+    {
+        if (interfaceType == null) return interfaceRoot;
+        else if (interfaceType.IsClass) throw new ArgumentException();
+        else if (typeNodes.ContainsKey(interfaceType)) return (InterfaceNode)typeNodes[interfaceType];
         else
         {
-            InterfaceNode newNode = new InterfaceNode() { Type = type };
+            InterfaceNode newNode = new InterfaceNode() { Type = interfaceType };
 
-            var minimalInterfaces = type.GetInterfaces().Where(t => t != type);
+            var minimalInterfaces = interfaceType.GetInterfaces().Where(t => t != interfaceType);
+            /* dont remove interfaces from base types. this prevents not storing item because interface wasnt on most specicic class
             var current = type.BaseType;
             while (current != null)
             {
                 minimalInterfaces = minimalInterfaces.Except(current.GetInterfaces().SelectMany(t => t.GetInterfaces()));
                 current = current.BaseType;
             }
+            */
             if (minimalInterfaces.Count() == 0)
             {
                 newNode.BaseTypes.Add(interfaceRoot);

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class AttackPerformableDecisionMaker : Performable, IDecisionMaker
+public class AttackPerformableDecisionMaker : Performable, IDecisionSource
 {
     //change to each mindStat in in-game days. negative takes away, positive adds
     public override float DeltaWakefulness { get { return _deltaWakefulness; } }//decreases when awake, depletes quicker when performing taxing tasks, increases 1.5x speed when sleeping

@@ -2,7 +2,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public interface IDecisionMaker
+// 
+public interface IDecisionSource
 {
     IPerformable GetDecisions();   
 }
