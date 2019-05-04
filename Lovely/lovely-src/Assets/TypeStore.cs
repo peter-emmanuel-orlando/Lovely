@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using UnityEngine;
 
 public class TypeStore<BaseT>
@@ -93,7 +94,7 @@ public class TypeStore
         }
     }
 
-    public bool ContainsValue<T>( T data)
+    public bool ContainsValue<T>(T data)
     {
         var type = typeof(T);
         return typeNodes.ContainsKey(type) && typeNodes[type].dataSet.Contains(data);
@@ -116,7 +117,7 @@ public class TypeStore
             foreach (var data in node.dataSet)
             {
                 yield return data;
-                if(includeDerivedTypes)
+                if (includeDerivedTypes)
                 {
                     foreach (var derivedNode in node.DerivedTypes)
                         foreach (var derivedData in GetData(derivedNode.Type, includeDerivedTypes))
@@ -168,7 +169,7 @@ public class TypeStore
             foreach (var item in GetOrCreateInterfaceNodesImplementedByClass(type))
             {
                 yield return item;
-            } 
+            }
         }
     }
     private ClassNode GetOrCreateClassNodes(Type classType)
@@ -182,6 +183,7 @@ public class TypeStore
             var baseNode = GetOrCreateClassNodes(classType.BaseType);
             newNode.BaseType = baseNode;
             baseNode.DerivedTypes.Add(newNode);
+            typeNodes.Add(classType, newNode);
             return newNode;
         }
     }
@@ -208,6 +210,7 @@ public class TypeStore
             InterfaceNode newNode = new InterfaceNode() { Type = interfaceType };
 
             var minimalInterfaces = interfaceType.GetInterfaces().Where(t => t != interfaceType);
+            minimalInterfaces = minimalInterfaces.Except(minimalInterfaces.SelectMany(t => t.GetInterfaces()));
             /* dont remove interfaces from base types. this prevents not storing item because interface wasnt on most specicic class
             var current = type.BaseType;
             while (current != null)
@@ -216,6 +219,35 @@ public class TypeStore
                 current = current.BaseType;
             }
             */
+            if (interfaceType.IsGenericType)
+            {
+                var hasVariance = false;
+                var genericType = interfaceType.GetGenericTypeDefinition();
+                var genericTypeArgs = genericType.GetGenericArguments();
+                foreach (var item in genericTypeArgs)
+                {
+                    hasVariance = (item.GenericParameterAttributes & GenericParameterAttributes.VarianceMask) != GenericParameterAttributes.None;
+                    if (hasVariance && genericTypeArgs.Length > 1)
+                        throw new NotSupportedException("currently the typestore only accepts covariant or contravariant interfaces with 1 generic parameter!");
+                }
+
+                if (hasVariance)
+                {
+                    var constructedType = interfaceType.GetGenericArguments()[0];
+                    var variantBaseTypes = constructedType.GetInterfaces().Where(t => t != constructedType);
+                    variantBaseTypes = variantBaseTypes.Except(variantBaseTypes.SelectMany(t => t.GetInterfaces()));
+
+                    foreach (var variantBase in variantBaseTypes)
+                    {
+                        var additionalInterface = genericType.MakeGenericType(variantBase);
+                        minimalInterfaces = minimalInterfaces.Append(additionalInterface);
+                    }
+                }
+            }
+
+            var v = new List<Type>(minimalInterfaces);
+            var w = "";
+
             if (minimalInterfaces.Count() == 0)
             {
                 newNode.BaseTypes.Add(interfaceRoot);
@@ -230,6 +262,7 @@ public class TypeStore
                     baseNode.DerivedTypes.Add(newNode);
                 }
             }
+            typeNodes.Add(interfaceType, newNode);
             return newNode;
         }
     }

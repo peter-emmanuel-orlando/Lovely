@@ -25,6 +25,7 @@ public interface IItemsProvider<out T> : IInteractable<AcquireItemPerformable>, 
 public interface IResource : IItem { }
 public interface ICraftingMaterial : IResource { }
 public interface IConstructionMaterial : IResource { }
+public interface IStone : IConstructionMaterial { }
 public interface IPreciousMaterial : IResource { }
 public interface ITool : IResource { }
 public interface IFood : IResource { }

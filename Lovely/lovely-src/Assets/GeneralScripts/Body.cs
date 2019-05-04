@@ -112,8 +112,7 @@ public abstract class Body : UnifiedController, ISpawnable
     
     protected virtual void OnCharDeath(Body sender, CharDeathEventArgs e)
     {
-        if (CharDeathEvent != null)
-            CharDeathEvent(this, e);
+        CharDeathEvent?.Invoke(this, e);
 
         Destroy(this.gameObject);///return this to pool
     }

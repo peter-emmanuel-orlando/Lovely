@@ -3,8 +3,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Stone : MonoBehaviour, IItemsProvider<IConstructionMaterial>
+public class Stone : MonoBehaviour, IItemsProvider<IStone>
 {
+    public static Stone stone { get; set; }
 
     public IEnumerable<Type> ItemTypes => new Type[] { typeof(IConstructionMaterial) }; 
 
@@ -22,6 +23,7 @@ public class Stone : MonoBehaviour, IItemsProvider<IConstructionMaterial>
 
     private void OnEnable()
     {
+        stone = this;
         TrackedComponent.Track(this);
     }
 
