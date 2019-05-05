@@ -127,13 +127,18 @@ public static class TrackedComponent
     public static IEnumerable<T> GetOverlapping<T>(Bounds b, bool includeDerivedTypes) where T : IBounded
     {
         var posList = GetRoundedOverlapPoints(b);
+        var usedItems = new HashSet<T>();
         foreach (var roundedPos in posList)
         {
             if (posToObjList.ContainsKey(roundedPos))
             {
                 foreach (var item in posToObjList[roundedPos].GetData<T>(includeDerivedTypes))
                 {
-                    yield return item;
+                    if(!usedItems.Contains(item))
+                    {
+                        usedItems.Add(item);
+                        yield return item;
+                    }
                 }
             }
         }

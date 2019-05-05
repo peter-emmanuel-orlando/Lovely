@@ -25,12 +25,21 @@ public abstract class PerceivingMind : Mind
     readonly List<BodyIntel> visibleEnemies = new List<BodyIntel>();
     readonly List<BodyIntel> visibleAllies = new List<BodyIntel>();
     readonly List<BodyIntel> allBodiesInSightRange = new List<BodyIntel>();
-    readonly Dictionary<Type, List<ResourceIntel>> allResourcesInSightRange = new Dictionary<Type, List<ResourceIntel>>();
+    readonly TypeStore<IItemsProviderIntel<IResource>> allResourcesInSightRange = new TypeStore<IItemsProviderIntel<IResource>>();
     
     public List<BodyIntel> VisibleEnemies { get { return new List<BodyIntel>(visibleEnemies); } }//change so they return an array
     public List<BodyIntel> VisibleAllies { get { return new List<BodyIntel>(visibleAllies); } }
     public IEnumerable<BodyIntel> AllBeingsInSightRange { get { return allBodiesInSightRange; } }
-    public IEnumerable<ResourceIntel> GetResourcesInSight(Type type) { return allResourcesInSightRange[type]; }
+    public IEnumerable<ItemsProviderIntel<IResource>> GetResourcesInSight(Type type, bool includeDerivedTypes)
+    {
+        if (!type.IsAssignableFrom(typeof(IResource)))
+            throw new ArgumentException("only IResources may be retrieved from this dictionary!");
+        return allResourcesInSightRange.GetData(type, includeDerivedTypes).Cast<ItemsProviderIntel<IResource>>();
+    }
+    public IEnumerable<IItemsProviderIntel<T>> GetResourcesInSight<T>(bool includeDerivedTypes) where T : class, IResource
+    {
+        return allResourcesInSightRange.GetData<IItemsProviderIntel<T>>(includeDerivedTypes);
+    }
 
     public abstract float SightRadius { get; }//move to body
     //public abstract float SightArc { get; }//move to body
@@ -46,7 +55,7 @@ public abstract class PerceivingMind : Mind
         var inRangeProviders = TrackedComponent.GetOverlapping<IItemsProvider<IResource>>(Body.CameraBone.transform.position, SightRadius, true);
         foreach (var provider in inRangeProviders)
         {
-            var intel = new ResourceIntel(Body, provider);
+            var intel = new ItemsProviderIntel<IResource>(Body, provider);
         }
     }
 

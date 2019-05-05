@@ -48,13 +48,13 @@ public class ForageForResourcesPerformable : Performable
             WanderPerformable wanderPerformable = new WanderPerformable(Performer);
             current = wanderPerformable.Perform();
             currentPerformable = wanderPerformable;
-            var relevantResources = new List<ResourceIntel>();
+            var relevantResources = new List<IItemsProviderIntel<IResource>>();
             while (relevantResources.Count <= 0 && !IsComplete)
             {
                 relevantResources.Clear();
                 foreach (var code in resourcesToSearchFor)
                 {
-                    relevantResources.AddRange(Performer.GetResourcesInSight(code));
+                    relevantResources.AddRange(Performer.GetResourcesInSight<IResource>(true));
                 }
                 relevantResources.Sort();
                 if(relevantResources.Count <= 0)
@@ -74,7 +74,7 @@ public class ForageForResourcesPerformable : Performable
 
             if(relevantResources.Count > 0 && relevantResources[0] != null && !IsComplete)
             {
-                AcquireItemPerformable harvestPerformable = relevantResources[0].subject.GetInteractionPerformable(Performer.Body);
+                AcquireItemPerformable harvestPerformable = relevantResources[0].Subject.GetInteractionPerformable(Performer.Body);
                 current = harvestPerformable.Perform();
                 currentPerformable = harvestPerformable;
                 while (!harvestPerformable.IsComplete && current != null && current.MoveNext()&& !this.IsComplete && resourcesToSearchFor.IsAnyAssignableFrom(harvestPerformable.GetType()))

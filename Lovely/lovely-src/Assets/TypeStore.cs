@@ -116,15 +116,18 @@ public class TypeStore
         if (typeNodes.ContainsKey(t))
         {
             var node = typeNodes[t];
-            foreach (var data in node.dataSet)
+            if(node.dataSet.ContainsKey(this))
             {
-                yield return data;
-                if (includeDerivedTypes)
+                foreach (var data in node.dataSet[this])
                 {
-                    foreach (var derivedNode in node.DerivedTypes)
-                        foreach (var derivedData in GetData(derivedNode.Type, includeDerivedTypes))
-                            yield return derivedData;
+                    yield return data;
                 }
+            }
+            if (includeDerivedTypes)
+            {
+                foreach (var derivedNode in node.DerivedTypes)
+                    foreach (var derivedData in GetData(derivedNode.Type, includeDerivedTypes))
+                        yield return derivedData;
             }
         }
         yield break;

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/*
 [RequireComponent(typeof(Body))]
 public class ForageForResourcesDecisionSource : MonoBehaviour, IDecisionSource
 {
@@ -10,12 +11,8 @@ public class ForageForResourcesDecisionSource : MonoBehaviour, IDecisionSource
 
     public IPerformable GetDecisions()
     {
-        var stone = TrackedComponent.GetOverlapping<IItemsProvider<IResource>>(new Bounds(Stone.stone.Bounds.center, Stone.stone.Bounds.extents), true);
-        foreach (var item in stone)
-        {
-            var v = item;
-            var r = v.ToString();
-        }
+        var stonesEnum = TrackedComponent.GetOverlapping<IItemsProvider<IResource>>(new Bounds(Stone.stone.Bounds.center, Stone.stone.Bounds.extents), true);
+        var providerSet = new List<IItemsProvider<IResource>>(stonesEnum);
         return new EmptyPerformable();//forage;
     }
 
@@ -25,8 +22,8 @@ public class ForageForResourcesDecisionSource : MonoBehaviour, IDecisionSource
         forage = new ForageForResourcesPerformable(mind);
         mind.OverrideDecisionSource(this);
     }
-}
-/*
+}*/
+
 [RequireComponent(typeof(Body))]
 public class ForageForResourcesDecisionSource : MonoBehaviour, IDecisionSource
 {
@@ -44,7 +41,7 @@ public class ForageForResourcesDecisionSource : MonoBehaviour, IDecisionSource
         mind.OverrideDecisionSource(this);
     }
 }
-
+/*
 [RequireComponent(typeof(Body))]
 public class DecisionSource<T> : MonoBehaviour, IDecisionSource where T : IPerformable
 {

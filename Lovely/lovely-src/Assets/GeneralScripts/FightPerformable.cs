@@ -75,7 +75,7 @@ public class FightPerformable : Performable
         {
             IEnumerator activeEnumerator = null;
             
-            var chase = new ChasePerformable(performer, enemy.subject);
+            var chase = new ChasePerformable(performer, enemy.Subject);
             activeEnumerator = chase.Perform();
             while(activeEnumerator.MoveNext())
             {
@@ -83,8 +83,8 @@ public class FightPerformable : Performable
             }
             activeEnumerator = null;
 
-            if(!enemy.subject.IsNull())
-                activeEnumerator = performer.Body.TurnToFace(enemy.subject.Transform.position);
+            if(!enemy.Subject.IsNull())
+                activeEnumerator = performer.Body.TurnToFace(enemy.Subject.Transform.position);
             while (activeEnumerator != null && activeEnumerator.MoveNext())
             {
                 yield return null;
