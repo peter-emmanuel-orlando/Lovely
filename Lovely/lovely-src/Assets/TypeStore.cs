@@ -54,21 +54,17 @@ public class TypeStore<BaseT>
 }
 public class TypeStore
 {
-    private ClassNode classRoot = new ClassNode() { BaseType = null, Type = typeof(object) };
-    private InterfaceNode interfaceRoot = new InterfaceNode() { Type = typeof(IBaseInterface) };
-    private Dictionary<Type, TypeNode> typeNodes = new Dictionary<Type, TypeNode>();
-    public int Count { get; private set; } = 0;
-    //private Dictionary<Type, ClassNode> classNodes = new Dictionary<Type, ClassNode>();
-    //private Dictionary<Type, InterfaceNode> interfaceNodes = new Dictionary<Type, InterfaceNode>();
-
     private interface IBaseInterface { }
-    public TypeStore()
+    private static ClassNode classRoot { get; } = new ClassNode() { BaseType = null, Type = typeof(object) };
+    private static InterfaceNode interfaceRoot { get; } = new InterfaceNode() { Type = typeof(IBaseInterface) };
+    private static Dictionary<Type, TypeNode> typeNodes { get; } = new Dictionary<Type, TypeNode>();
+    static TypeStore()
     {
         typeNodes.Add(interfaceRoot.Type, interfaceRoot);
         typeNodes.Add(classRoot.Type, classRoot);
     }
 
-
+    public int Count { get; private set; } = 0;
 
     public void Add<T>(T data)
     {
@@ -76,20 +72,26 @@ public class TypeStore
         var nodes = new List<TypeNode>(GetOrCreateNode(runtime));
         foreach (var node in nodes)
         {
-            node.dataSet.Add(data);
-            if (node.dataSet.Count == 1 && !node.Type.IsInterface)
+            if (!node.dataSet.ContainsKey(this))
+                node.dataSet.Add(this, new HashSet<object>());
+            node.dataSet[this].Add(data);
+            if (node.dataSet[this].Count == 1 && !node.Type.IsInterface)
                 this.Count++;
         }
     }
     public void Remove<T>(T data)
     {
         var runtime = data.GetType();
-        if (typeNodes.ContainsKey(runtime) && typeNodes[runtime].dataSet.Contains(data))
+        if (typeNodes.ContainsKey(runtime) && typeNodes[runtime].dataSet.ContainsKey(this) && typeNodes[runtime].dataSet[this].Contains(data))
         {
             var node = typeNodes[runtime];
-            node.dataSet.Remove(data);
-            if (node.dataSet.Count == 0 && !node.Type.IsInterface)
-                this.Count--;
+            node.dataSet[this].Remove(data);
+            if (node.dataSet[this].Count == 0)
+            {
+                node.dataSet.Remove(this);
+                if (!node.Type.IsInterface)
+                    this.Count--;
+            }
             RemoveNodeIfEmpty(typeNodes[runtime]);
         }
     }
@@ -97,7 +99,7 @@ public class TypeStore
     public bool ContainsValue<T>(T data)
     {
         var type = typeof(T);
-        return typeNodes.ContainsKey(type) && typeNodes[type].dataSet.Contains(data);
+        return typeNodes.ContainsKey(type) && typeNodes[type].dataSet.ContainsKey(this) && typeNodes[type].dataSet[this].Contains(data);
     }
     public bool ContainsKey(Type type)
     {
@@ -271,7 +273,7 @@ public class TypeStore
     private class TypeNode
     {
         public Type Type { get; set; }
-        public HashSet<object> dataSet { get; } = new HashSet<object>();
+        public Dictionary<TypeStore, HashSet<object>> dataSet { get; } = new Dictionary<TypeStore, HashSet<object>>();
         public HashSet<TypeNode> DerivedTypes { get; } = new HashSet<TypeNode>();
     }
     private class ClassNode : TypeNode
