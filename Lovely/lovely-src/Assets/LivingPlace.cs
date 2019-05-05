@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 public class LivingPlace : Place
 {
-    readonly Container foodHolder = new Container(100, delegate(IItem item) { return item.GetType().IsAssignableFrom(typeof(IFood)); });
+    readonly Container foodHolder = new Container(100, delegate(IItem item) { return typeof(IFood).IsAssignableFrom(item.GetType()); });
 
     protected override void Awake()
     {

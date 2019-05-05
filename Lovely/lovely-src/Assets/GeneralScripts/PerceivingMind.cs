@@ -32,7 +32,7 @@ public abstract class PerceivingMind : Mind
     public IEnumerable<BodyIntel> AllBeingsInSightRange { get { return allBodiesInSightRange; } }
     public IEnumerable<ItemsProviderIntel<IResource>> GetResourcesInSight(Type type, bool includeDerivedTypes)
     {
-        if (!type.IsAssignableFrom(typeof(IResource)))
+        if (!typeof(IResource).IsAssignableFrom(type))
             throw new ArgumentException("only IResources may be retrieved from this dictionary!");
         return allResourcesInSightRange.GetData(type, includeDerivedTypes).Cast<ItemsProviderIntel<IResource>>();
     }
@@ -44,6 +44,7 @@ public abstract class PerceivingMind : Mind
     public abstract float SightRadius { get; }//move to body
     //public abstract float SightArc { get; }//move to body
 
+    
     private void LookAround()
     {
         LookForResources();
@@ -59,6 +60,7 @@ public abstract class PerceivingMind : Mind
             var intel = new ItemsProviderIntel<IResource>(Body, provider);
             allResourcesInSightRange.Add(intel);
         }
+        Debug.Log(inRangeProviders.Count());
     }
 
     private void LookForCreatures()

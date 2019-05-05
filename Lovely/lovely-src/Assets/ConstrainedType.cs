@@ -9,8 +9,8 @@ public class TypeLimiter<TBase>
     {
         if (type == null)
             throw new ArgumentNullException(nameof(type));
-        else if (!type.IsAssignableFrom(typeof(TBase)))
-            throw new InvalidCastException($"{type} is not assignable from {typeof(TBase)}!");
+        else if (!typeof(TBase).IsAssignableFrom(type))
+            throw new InvalidCastException($"{type} is not derived from {typeof(TBase)}!");
 
         Type = type;
     }

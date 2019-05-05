@@ -99,7 +99,7 @@ public static class TrackedComponent
                 for (float k = minPoint.z; k <= maxPoint.z; k += cellSize)
                 {
                     points.Add(new Vector3(i, j, k));
-                    //DebugShape.DrawSphere(new Vector3(i, j, k), .5f, Color.green, 1);
+                    //DebugShape.DrawSphere(new Vector3(i, j, k), .5f, Color.green);
                 }
             }
         }

@@ -46,7 +46,7 @@ public class TypeStore<BaseT>
     }
     public IEnumerable<object> GetData(Type t, bool includeDerivedTypes)
     {
-        if (t == null || !t.IsAssignableFrom(typeof(BaseT)))
+        if (t == null || !typeof(BaseT).IsAssignableFrom(t))
             yield break;
         else
             yield return inner.GetData(t, includeDerivedTypes);
@@ -271,7 +271,7 @@ public class TypeStore
                 {
                     var constructedType = interfaceType.GetGenericArguments()[0];
                     var constraints = genericTypeArgs[0].GetGenericParameterConstraints();
-                    var variantBaseTypes = constructedType.GetInterfaces().Where(t => t != constructedType && t.IsAssignableFromAny(constraints));
+                    var variantBaseTypes = constructedType.GetInterfaces().Where(t => t != constructedType && constraints.IsAnyAssignableFrom(t));
                     variantBaseTypes = variantBaseTypes.Except(variantBaseTypes.SelectMany(t => t.GetInterfaces()));
                     //need to check for reference, notNullable, defaultConstructor constraints 
 
@@ -324,27 +324,27 @@ public class TypeStore
 
 public static class TypeIEnumerableHelper
 {
-    public static bool IsAnyAssignableFrom(this IEnumerable<Type> types, Type search)
+    public static bool IsAnyAssignableFrom(this IEnumerable<Type> baseTypes, Type potentiallyDerivedTypes)
     {
-        if (search == null)
+        if (potentiallyDerivedTypes == null)
             return false;
 
-        foreach (var type in types)
+        foreach (var baseType in baseTypes)
         {
-            if (type.IsAssignableFrom(search))
+            if (baseType.IsAssignableFrom(potentiallyDerivedTypes))
                 return true;
         }
 
         return false;
     }
-    public static bool IsAssignableFromAny(this Type type, IEnumerable<Type> searches)
+    public static bool IsAssignableFromAny(this Type baseType, IEnumerable<Type> potentiallyDerivedTypes)
     {
-        if (searches == null)
+        if (potentiallyDerivedTypes == null)
             return false;
 
-        foreach (var search in searches)
+        foreach (var potentiallyDerivedType in potentiallyDerivedTypes)
         {
-            if (type.IsAssignableFrom(search))
+            if (baseType.IsAssignableFrom(potentiallyDerivedType))
                 return true;
         }
 
@@ -355,14 +355,30 @@ public static class TypeIEnumerableHelper
     /// <summary>
     /// returns true for itself
     /// </summary>
-    public static bool IsBaseOfAny(this Type type, IEnumerable<Type> searches)
+    public static bool ExtendsFromAny(this Type type, IEnumerable<Type> baseTypes)
     {
-        if (searches == null)
+        if (baseTypes == null)
             return false;
 
-        foreach (var search in searches)
+        foreach (var baseType in baseTypes)
         {
-            if (search.IsAssignableFrom(type))
+            if (baseType.IsAssignableFrom(type))
+                return true;
+        }
+
+        return false;
+    }
+    /// <summary>
+    /// returns true for itself
+    /// </summary>
+    public static bool DoesAnyExtendFrom(this IEnumerable<Type> types, Type baseType)
+    {
+        if (baseType == null)
+            return false;
+
+        foreach (var type in types)
+        {
+            if (baseType.IsAssignableFrom(type))
                 return true;
         }
 
