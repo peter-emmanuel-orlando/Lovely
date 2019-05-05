@@ -57,7 +57,7 @@ public class ForageForResourcesPerformable : Performable
                     relevantResources.AddRange(Performer.GetResourcesInSight<IResource>(true));
                 }
                 relevantResources.Sort();
-                if(relevantResources.Count <= 0)
+                if (relevantResources.Count == 0)
                 {
                     if (wanderPerformable.IsComplete || current == null || current.MoveNext() == false)
                     {
@@ -66,8 +66,8 @@ public class ForageForResourcesPerformable : Performable
                         currentPerformable = wanderPerformable;
                     }
                 }
+                else break;
                 //need a look around  method, orelse creature will go to just wherever it happens to be looking
-                //else break;
 
                 yield return null;
             }
@@ -75,13 +75,15 @@ public class ForageForResourcesPerformable : Performable
             if(relevantResources.Count > 0 && relevantResources[0] != null && !IsComplete)
             {
                 AcquireItemPerformable harvestPerformable = relevantResources[0].Subject.GetInteractionPerformable(Performer.Body);
-                current = harvestPerformable.Perform();
                 currentPerformable = harvestPerformable;
+                current = harvestPerformable?.Perform();
                 while (!harvestPerformable.IsComplete && current != null && current.MoveNext()&& !this.IsComplete && resourcesToSearchFor.IsAnyAssignableFrom(harvestPerformable.GetType()))
                 {
                     yield return null;
                 }
             }
+
+            yield return null;
         }
         _isComplete = true;
         currentPerformable = null;

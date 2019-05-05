@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public abstract class AcquireItemPerformable : Performable
+public class AcquireItemPerformable : Performable
 {
 
     //change to each mindStat in in-game days. negative takes away, positive adds
@@ -27,12 +27,12 @@ public abstract class AcquireItemPerformable : Performable
 
     public override ActivityState ActivityType { get { return ActivityState.Work; } }
     public ItemsProvider ItemSource { get; }
-    protected abstract AnimationClip AcquisitionAnimation { get; }
+    protected virtual AnimationClip AcquisitionAnimation { get; } = null;
 
-    public AcquireItemPerformable(PerceivingMind acquisitioner, ItemsProvider itemToAcquire) : base(acquisitioner)
+    public AcquireItemPerformable(PerceivingMind acquisitioner, ItemsProvider itemSource) : base(acquisitioner)
     {
         base._performer = acquisitioner;
-        this.ItemSource = itemToAcquire;
+        this.ItemSource = itemSource;
     }
 
     public override IEnumerator Perform()
@@ -42,20 +42,23 @@ public abstract class AcquireItemPerformable : Performable
         var current = new MoveToDestinationPerformable(Performer, null, ItemSource.Bounds.ClosestPoint(Performer.Body.transform.position)).Perform();
         while (current.MoveNext())
             yield return null;
-        if (ItemSource != null && ItemSource.hasResources && ItemSource.CanBeAcquiredBy(Performer))
+        if (AcquisitionAnimation != null && ItemSource != null && ItemSource.hasResources && ItemSource.CanBeAcquiredBy(Performer))
         {
-            //Performer.Body.PlayAnimation
-            /*
-            AddAnimationToPerformer();
-            if (acquireAnimationClip != null)
-                Performer.Body.anim.SetTrigger("StartInteraction");
-             */
+            Performer.Body.PlayAnimation(AcquisitionAnimation);
         }
         List<IItem> result;
-        List<ISpawnedItem> spawnedItems;
+        List<ISpawnedItem<IItem>> spawnedItems;
         while (ItemSource != null && ItemSource.Acquire(Performer.Body, out result, out spawnedItems))
-        {  
-            //pick up item performable            
+        {
+            //pick up item performable     
+            foreach (var item in result)
+            {
+                Performer.Body.Backpack.AddItem(item);
+            }
+            foreach (var item in spawnedItems)
+            {
+                item.GetInteractionPerformable(Performer.Body);
+            }
             yield return null;
         }
         _success = true;

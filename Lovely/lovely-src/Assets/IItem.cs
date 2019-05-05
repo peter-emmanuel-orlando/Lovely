@@ -10,7 +10,7 @@ public interface IItem
     //get item preview
 }
 
-public interface ISpawnedItem : ISpawnable, IItem { }
+public interface ISpawnedItem<out T> : ISpawnable, IItemsProvider<T> where T : IItem { }
 
 //should be used for all potentially provided types
 //i.e. public class Foo : IItemProvider<IFood>, IItemProvider<IFuel>, ...etc 
@@ -20,7 +20,7 @@ public interface IItemsProvider<out T> : IInteractable<AcquireItemPerformable>, 
     /// multiple types are expected to be implemented so this captures all
     /// </summary>
     IEnumerable<Type> ItemTypes { get; }
-    bool Acquire<TAcquisitioner>(TAcquisitioner acquisitioner, out List<IItem> acquiredItems, out List<ISpawnedItem> spawnedResources);
+    bool Acquire<TAcquisitioner>(TAcquisitioner acquisitioner, out List<IItem> acquiredItems, out List<ISpawnedItem<IItem>> spawnedResources);
 }
 public interface IResource : IItem { }
 public interface ICraftingMaterial : IResource { }

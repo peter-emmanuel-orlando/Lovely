@@ -6,7 +6,7 @@ using UnityEngine;
 //allows one more item to overfill it
 public class Container
 {
-    readonly TypeStore<HashSet<IItem>> inner = new TypeStore<HashSet<IItem>>();
+    readonly TypeStore<IItem> inner = new TypeStore<IItem>();
     public readonly Predicate<IItem> canContainerHoldItem;
     float maxHoldableVolume = 100f;
     public float MaxHoldableVolume { get { return maxHoldableVolume; } }
@@ -31,9 +31,9 @@ public class Container
         this.canContainerHoldItem = delegate (IItem item) { return /*item.Volume <= this.FreeVolume*/ !isFull && conditionsForContaining(item); };;
     }
 
-    public void AddItem()
+    public void AddItem<T>( T item) where T : IItem
     {
-        throw new NotImplementedException();
+        inner.Add(item);
     }
 
     public IItem GetItem()

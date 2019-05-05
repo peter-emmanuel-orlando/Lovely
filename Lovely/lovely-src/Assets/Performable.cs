@@ -3,6 +3,8 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
+//a DecisionSource is repeating and coordinate doing a thing over and over whereas a performable is one shot
+
 public abstract class Performable : IPerformable
 {
 

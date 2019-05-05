@@ -15,7 +15,11 @@ public interface IInteractable<out T> where T : IPerformable
 /// <summary>
 /// represents one single location that when occupied, allows interaction with an interactable. An interactable can have many interactiveLocations
 /// </summary>
-public interface IInteractiveLocation
+public interface IInteractiveLocation : IBounded
+{}
+
+public class InteractiveLocation : MonoBehaviour, IInteractiveLocation
 {
-    bool HasSpace { get; }
+    public Bounds Bounds => throw new System.NotImplementedException();
+
 }

@@ -3,27 +3,18 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-public class Stone : MonoBehaviour, IItemsProvider<IStone>
+public class StoneSlab : ItemsProvider, IItemsProvider<IStone>
 {
-    public static Stone stone { get; set; }
 
-    public IEnumerable<Type> ItemTypes => new Type[] { typeof(IConstructionMaterial) }; 
+    private readonly Type[] itemTypes = new Type[] { typeof(IStone) };
+    public override IEnumerable<Type> ItemTypes => itemTypes;
 
-    public Bounds Bounds => new Bounds(transform.position, Vector3.one * 10);
+    public override float harvestTime => 1;
 
-    public bool Acquire<TAcquisitioner>(TAcquisitioner acquisitioner, out List<IItem> acquiredItems, out List<ISpawnedItem> spawnedResources)
-    {
-        throw new NotImplementedException();
-    }
-
-    public AcquireItemPerformable GetInteractionPerformable(Body performer)
-    {
-        throw new NotImplementedException();
-    }
+    public override float harvestCount => 10;
 
     private void OnEnable()
     {
-        stone = this;
         TrackedComponent.Track(this);
     }
 
@@ -31,5 +22,24 @@ public class Stone : MonoBehaviour, IItemsProvider<IStone>
     {
         TrackedComponent.Untrack(this);   
     }
-    
+
+    public override bool Acquire<T>(T acquisitioner, out List<IItem> acquiredItems, out List<ISpawnedItem<IItem>> spawnedResources)
+    {
+        acquiredItems = new List<IItem>();
+        spawnedResources = new List<ISpawnedItem<IItem>>();
+        return true;
+    }
+}
+public class RockChunk : ItemsProvider, IItemsProvider<IStone>
+{
+    public override IEnumerable<Type> ItemTypes => throw new NotImplementedException();
+
+    public override float harvestTime => throw new NotImplementedException();
+
+    public override float harvestCount => throw new NotImplementedException();
+
+    public override bool Acquire<T>(T acquisitioner, out List<IItem> acquiredItems, out List<ISpawnedItem<IItem>> spawnedResources)
+    {
+        throw new NotImplementedException();
+    }
 }

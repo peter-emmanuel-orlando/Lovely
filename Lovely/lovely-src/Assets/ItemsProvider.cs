@@ -13,18 +13,31 @@ using UnityEngine;
 /// </summary>
 // a resource should only return items. an item can be food, constructionMaterials, magic, PreciousMaterials or any combination thereof. Each of these is an interface so a resource can implement any one
 
-
-public abstract class ItemsProvider : OccupiableLocation, IItemsProvider<IResource>
+public abstract class ItemsProvider : MonoBehaviour, IItemsProvider<IResource>
 {
     public abstract IEnumerable<Type> ItemTypes{ get; }
-    protected override void Awake()
-    {
-        base.Awake();
-    }
     public abstract float harvestTime { get; }//in game hrs it takes to get one of the item
     public abstract float harvestCount { get; }//how many items are left to be harvested    
     public bool hasResources { get { return harvestCount != 0; } }
 
+    private Vector3 harvestDistance = Vector3.one * 4;
+    private Collider boundMin = null;
+    public virtual Bounds Bounds => (boundMin == null)? new Bounds(transform.position, harvestDistance ) : new Bounds(boundMin.bounds.center, boundMin.bounds.size + harvestDistance);
+
+    //public IEnumerable<IInteractiveLocation> InteractiveLocations => new IInteractiveLocation[] { this };
+
+    private void OnDrawGizmosSelected()
+    {
+        if(boundMin == null)
+            boundMin = GetComponent<Collider>();
+        Gizmos.color = Color.Lerp(Color.blue, Color.magenta, 0.5f);
+        Gizmos.DrawWireCube(Bounds.center, Bounds.size);
+    }
+
+    protected virtual void Awake()
+    {
+        boundMin = GetComponent<Collider>();
+    }
     private void OnEnable()
     {
         TrackedComponent.Track(this);
@@ -40,11 +53,11 @@ public abstract class ItemsProvider : OccupiableLocation, IItemsProvider<IResour
         bool result = hasResources && isActiveAndEnabled;
         return result;//checks if the being has the tools neccessary to harvest
     }
-    public abstract bool Acquire<T>(T acquisitioner, out List<IItem> acquiredItems, out List<ISpawnedItem> spawnedResources);
+    public abstract bool Acquire<T>(T acquisitioner, out List<IItem> acquiredItems, out List<ISpawnedItem<IItem>> spawnedResources);
 
-    public AcquireItemPerformable GetInteractionPerformable(Body performer)
+    public virtual AcquireItemPerformable GetInteractionPerformable(Body performer)
     {
-        throw new NotImplementedException();
+        return new AcquireItemPerformable(performer.Mind, this);
     }
 }
 

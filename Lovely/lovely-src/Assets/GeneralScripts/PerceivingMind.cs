@@ -60,7 +60,7 @@ public abstract class PerceivingMind : Mind
             var intel = new ItemsProviderIntel<IResource>(Body, provider);
             allResourcesInSightRange.Add(intel);
         }
-        Debug.Log(inRangeProviders.Count());
+        //Debug.Log(inRangeProviders.Count());
     }
 
     private void LookForCreatures()
