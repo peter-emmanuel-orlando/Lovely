@@ -51,7 +51,19 @@ public class TypeStore<BaseT>
         else
             yield return inner.GetData(t, includeDerivedTypes);
     }
+
+    public void Release()
+    {
+        inner.Release();
+    }
+    public void Clear()
+    {
+        inner.Clear();
+    }
 }
+/// <summary>
+/// RELEASE MUST BE CALLED OR ELSE MEMORY WILL LEAK
+/// </summary>
 public class TypeStore
 {
     private interface IBaseInterface { }
@@ -94,6 +106,25 @@ public class TypeStore
             }
             RemoveNodeIfEmpty(typeNodes[runtime]);
         }
+    }
+
+    public void Release()
+    {
+        Clear();
+    }
+
+    public void Clear()
+    {
+        var types = new List<Type>(typeNodes.Keys);//have to make new enumerable as collection may change during iteration
+        foreach (var type in types)
+        {
+            if(typeNodes.ContainsKey(type) && typeNodes[type] != null && typeNodes[type].dataSet.ContainsKey(this))
+            {
+                typeNodes[type].dataSet.Remove(this);
+                RemoveNodeIfEmpty(typeNodes[type]);
+            }
+        }
+        Count = 0;
     }
 
     public bool ContainsValue<T>(T data)
@@ -239,8 +270,10 @@ public class TypeStore
                 if (hasVariance)
                 {
                     var constructedType = interfaceType.GetGenericArguments()[0];
-                    var variantBaseTypes = constructedType.GetInterfaces().Where(t => t != constructedType);
+                    var constraints = genericTypeArgs[0].GetGenericParameterConstraints();
+                    var variantBaseTypes = constructedType.GetInterfaces().Where(t => t != constructedType && t.IsAssignableFromAny(constraints));
                     variantBaseTypes = variantBaseTypes.Except(variantBaseTypes.SelectMany(t => t.GetInterfaces()));
+                    //need to check for reference, notNullable, defaultConstructor constraints 
 
                     foreach (var variantBase in variantBaseTypes)
                     {
@@ -304,6 +337,21 @@ public static class TypeIEnumerableHelper
 
         return false;
     }
+    public static bool IsAssignableFromAny(this Type type, IEnumerable<Type> searches)
+    {
+        if (searches == null)
+            return false;
+
+        foreach (var search in searches)
+        {
+            if (type.IsAssignableFrom(search))
+                return true;
+        }
+
+        return false;
+    }
+
+
     /// <summary>
     /// returns true for itself
     /// </summary>

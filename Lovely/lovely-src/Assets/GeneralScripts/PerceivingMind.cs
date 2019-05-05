@@ -52,10 +52,12 @@ public abstract class PerceivingMind : Mind
 
     private void LookForResources()
     {
+        allResourcesInSightRange.Clear();
         var inRangeProviders = TrackedComponent.GetOverlapping<IItemsProvider<IResource>>(Body.CameraBone.transform.position, SightRadius, true);
         foreach (var provider in inRangeProviders)
         {
             var intel = new ItemsProviderIntel<IResource>(Body, provider);
+            allResourcesInSightRange.Add(intel);
         }
     }
 
