@@ -13,12 +13,15 @@ public class StoneSlab : ItemsProvider, IItemsProvider<IStone>
 
     public override float harvestCount { get; protected set; } = 10;
 
-    public override bool Acquire<T>(T acquisitioner, out List<IItem> acquiredItems, out List<ISpawnedItem<IItem>> spawnedResources)
+    public override bool Acquire<T>(T acquisitioner, out List<IItem> acquiredItems, out List<ISpawnedItem<IItem>> spawnedResources, bool requestSuccessOverride = false)
     {
         acquiredItems = new List<IItem>();
         spawnedResources = new List<ISpawnedItem<IItem>>();
-        if (harvestCount <= 0) return false;
-        if (typeof(IBounded).IsAssignableFrom(typeof(T)) && !((IBounded)acquisitioner).Bounds.Intersects(this.Bounds)) return false;
+        if(!requestSuccessOverride)
+        {
+            if (harvestCount <= 0) return false;
+            if (typeof(IBounded).IsAssignableFrom(typeof(T)) && !((IBounded)acquisitioner).Bounds.Intersects(this.Bounds)) return false;
+        }
         var rockPrefab = _PrefabPool.GetPrefab(RockChunk._PrefabName);
         for (int i = 0; i < harvestCount; i++)
         {

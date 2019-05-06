@@ -55,7 +55,7 @@ public abstract class ItemsProvider : MonoBehaviour, IItemsProvider<IResource>
         return result;//checks if the being has the tools neccessary to harvest
     }
 
-    public abstract bool Acquire<T>(T acquisitioner, out List<IItem> acquiredItems, out List<ISpawnedItem<IItem>> spawnedResources);
+    public abstract bool Acquire<T>(T acquisitioner, out List<IItem> acquiredItems, out List<ISpawnedItem<IItem>> spawnedResources, bool requestSuccessOverride = false);
 
     public virtual AcquireItemPerformable GetInteractionPerformable(Body performer)
     {

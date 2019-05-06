@@ -48,7 +48,7 @@ public class RockChunk : ItemsProvider, ISpawnedItem<IStone>
         yield break;
     }
 
-    public override bool Acquire<T>(T acquisitioner, out List<IItem> acquiredItems, out List<ISpawnedItem<IItem>> spawnedResources)
+    public override bool Acquire<T>(T acquisitioner, out List<IItem> acquiredItems, out List<ISpawnedItem<IItem>> spawnedResources, bool requestSuccessOverride = false)
     {
         acquiredItems = new List<IItem>();
         while(harvestCount > 0)
