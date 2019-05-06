@@ -3,7 +3,8 @@
     Complete,
     Aborted,
     //Pending,
-    InProgress
+    InProgress,
+    Failed
 }
 
 

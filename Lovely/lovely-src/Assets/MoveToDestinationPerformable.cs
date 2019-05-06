@@ -51,6 +51,7 @@ public class MoveToDestinationPerformable : Performable
             yield return null;
         }
         _isComplete = true;
+        callBack(current.Current == ProgressStatus.Complete);
         yield break;
     }
 }

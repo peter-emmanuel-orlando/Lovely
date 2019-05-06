@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using static UnifiedController;
 
 public class AcquireItemPerformable : Performable
 {
@@ -39,12 +40,26 @@ public class AcquireItemPerformable : Performable
     {
         //move to item
         //acquire item
-        var current = new MoveToDestinationPerformable(Performer, null, ItemSource.Bounds.ClosestPoint(Performer.Body.transform.position)).Perform();
-        while (current.MoveNext())
-            yield return null;
+        IEnumerator current = null;
+        var maxTries = 5;
+        for (int i = 0; i < maxTries; i++)
+        {
+            var success = false;
+            current = new MoveToDestinationPerformable(Performer, (b)=>success = b, ItemSource.Bounds.ClosestPoint(Performer.Body.transform.position)).Perform();
+            while (current.MoveNext())
+                yield return null;
+
+            if (success) break;
+            else if (!success && i == maxTries - 1) yield break;
+        }
+        PlayToken pt = null;
         if (AcquisitionAnimation != null && ItemSource != null && ItemSource.hasResources && ItemSource.CanBeAcquiredBy(Performer))
         {
-            Performer.Body.PlayAnimation(AcquisitionAnimation);
+            pt = Performer.Body.PlayAnimation(AcquisitionAnimation);
+            while (pt.GetProgress() < 0.99)
+            {
+                yield return null;
+            }
         }
         List<IItem> result;
         List<ISpawnedItem<IItem>> spawnedItems;
@@ -57,7 +72,9 @@ public class AcquireItemPerformable : Performable
             }
             foreach (var item in spawnedItems)
             {
-                item.GetInteractionPerformable(Performer.Body);
+                current = item.GetInteractionPerformable(Performer.Body).Perform();
+                while (current.MoveNext())
+                    yield return null;
             }
             yield return null;
         }

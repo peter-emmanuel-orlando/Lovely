@@ -631,7 +631,12 @@ public abstract class UnifiedController : MonoBehaviour, IPhysicsable
                 yield return ProgressStatus.InProgress;
         }
 
-        yield return ProgressStatus.Complete;
+        if (navDestination != destination)
+            yield return ProgressStatus.Aborted;
+        else if ((destination - transform.position).sqrMagnitude > stoppingDistance.Pow(2))
+            yield return ProgressStatus.Failed;
+        else
+            yield return ProgressStatus.Complete;
     }
     public void Jump(Vector3 normalizedJump)
     {

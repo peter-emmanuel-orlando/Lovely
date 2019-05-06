@@ -56,7 +56,7 @@ public class ForageForResourcesPerformable : Performable
                 {
                     relevantResources.AddRange(Performer.GetResourcesInSight<IResource>(true));
                 }
-                relevantResources.Sort();
+                relevantResources.Sort((x, y) => x.CompareTo(y));
                 if (relevantResources.Count == 0)
                 {
                     if (wanderPerformable.IsComplete || current == null || current.MoveNext() == false)
@@ -77,7 +77,7 @@ public class ForageForResourcesPerformable : Performable
                 AcquireItemPerformable harvestPerformable = relevantResources[0].Subject.GetInteractionPerformable(Performer.Body);
                 currentPerformable = harvestPerformable;
                 current = harvestPerformable?.Perform();
-                while (!harvestPerformable.IsComplete && current != null && current.MoveNext()&& !this.IsComplete && resourcesToSearchFor.IsAnyAssignableFrom(harvestPerformable.GetType()))
+                while (!harvestPerformable.IsComplete && current != null && current.MoveNext()&& !this.IsComplete && resourcesToSearchFor.Any((t)=>t.IsAssignableFromAny(harvestPerformable.ItemSource.ItemTypes)))
                 {
                     yield return null;
                 }

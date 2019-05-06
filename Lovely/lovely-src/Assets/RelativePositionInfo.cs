@@ -1,17 +1,15 @@
 ﻿using UnityEngine;
 
-public interface IRelativePositionInfo
+public interface IRelativePositionInfo : System.IComparable<IRelativePositionInfo>
 {
     float angle { get; }
     float distance { get; }
     Vector3 requesterPosition { get; }
     Quaternion requesterRotation { get; }
     Vector3 subjectPosition { get; }
-
-    int CompareTo(RelativePositionInfo other);
 }
 
-public class RelativePositionInfo : System.IComparable<RelativePositionInfo>, IRelativePositionInfo
+public class RelativePositionInfo : IRelativePositionInfo
 {
     public Vector3 requesterPosition { get; }
     public Quaternion requesterRotation { get; }
@@ -33,7 +31,7 @@ public class RelativePositionInfo : System.IComparable<RelativePositionInfo>, IR
         angle = Vector3.SignedAngle(forward, towardSubject, up);
     }
 
-    public int CompareTo(RelativePositionInfo other)
+    public int CompareTo(IRelativePositionInfo other)
     {
         //if this is valid and other is not valid, this is greater
         if (other == null) return 1;

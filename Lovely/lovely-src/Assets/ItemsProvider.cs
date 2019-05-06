@@ -16,10 +16,11 @@ using UnityEngine;
 public abstract class ItemsProvider : MonoBehaviour, IItemsProvider<IResource>
 {
     public abstract IEnumerable<Type> ItemTypes{ get; }
-    public abstract float harvestTime { get; }//in game hrs it takes to get one of the item
-    public abstract float harvestCount { get; }//how many items are left to be harvested    
+    public abstract float harvestTime { get; protected set; }//in game hrs it takes to get one of the item
+    public abstract float harvestCount { get; protected set; }//how many items are left to be harvested    
     public bool hasResources { get { return harvestCount != 0; } }
 
+    [SerializeField]
     private Vector3 harvestDistance = Vector3.one * 4;
     private Collider boundMin = null;
     public virtual Bounds Bounds => (boundMin == null)? new Bounds(transform.position, harvestDistance ) : new Bounds(boundMin.bounds.center, boundMin.bounds.size + harvestDistance);
@@ -38,12 +39,12 @@ public abstract class ItemsProvider : MonoBehaviour, IItemsProvider<IResource>
     {
         boundMin = GetComponent<Collider>();
     }
-    private void OnEnable()
+    protected virtual void OnEnable()
     {
         TrackedComponent.Track(this);
     }
 
-    private void OnDisable()
+    protected virtual void OnDisable()
     {
         TrackedComponent.Untrack(this);
     }
@@ -53,6 +54,7 @@ public abstract class ItemsProvider : MonoBehaviour, IItemsProvider<IResource>
         bool result = hasResources && isActiveAndEnabled;
         return result;//checks if the being has the tools neccessary to harvest
     }
+
     public abstract bool Acquire<T>(T acquisitioner, out List<IItem> acquiredItems, out List<ISpawnedItem<IItem>> spawnedResources);
 
     public virtual AcquireItemPerformable GetInteractionPerformable(Body performer)
