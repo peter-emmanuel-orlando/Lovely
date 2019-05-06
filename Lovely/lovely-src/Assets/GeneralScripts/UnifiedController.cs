@@ -620,7 +620,7 @@ public abstract class UnifiedController : MonoBehaviour, IPhysicsable
             else
                 yield return ProgressStatus.InProgress;//ProgressStatus.Pending;
         }
-        while ( navAgent.isOnOffMeshLink || ( navAgent.isOnNavMesh && navAgent.remainingDistance > 0))
+        while ( navAgent.isOnOffMeshLink || ( navAgent.isOnNavMesh && navAgent.remainingDistance > stoppingDistance))
         {
             if ((navDestination != destination) || (!navAgent.isOnNavMesh && !navAgent.isOnOffMeshLink))
             {

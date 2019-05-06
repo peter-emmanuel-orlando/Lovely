@@ -120,7 +120,7 @@ public static class TrackedComponent
         var bounds = new Bounds(sourcePos, Vector3.one * radius);
         foreach (var item in GetOverlapping<T>(bounds, includeDerivedTypes))
         {
-            if ( item == null || item.Bounds.center == Vector3.negativeInfinity )
+            if ( item is GameObject && (item as GameObject ?? false) )
                 continue;
             var closestPoint = item.Bounds.ClosestPoint(sourcePos);
             if ((closestPoint - sourcePos).sqrMagnitude < radius * radius + 0.01)

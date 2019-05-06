@@ -11,7 +11,7 @@ public class StoneSlab : ItemsProvider, IItemsProvider<IStone>
 
     public override float harvestTime { get; protected set; } = 1;
 
-    public override float harvestCount { get; protected set; } = 1;
+    public override float harvestCount { get; protected set; } = 10;
 
     public override bool Acquire<T>(T acquisitioner, out List<IItem> acquiredItems, out List<ISpawnedItem<IItem>> spawnedResources, bool requestSuccessOverride = false)
     {
@@ -23,8 +23,9 @@ public class StoneSlab : ItemsProvider, IItemsProvider<IStone>
             if (typeof(IBounded).IsAssignableFrom(typeof(T)) && !((IBounded)acquisitioner).Bounds.Intersects(this.Bounds)) return false;
         }
         var rockPrefab = _PrefabPool.GetPrefab(RockChunk._PrefabName);
-        for (int i = 0; i < harvestCount; i++)
+        while (harvestCount > 0)
         {
+            harvestCount--;
             var spawnedRocks = Instantiate(rockPrefab.GameObject, transform.position, transform.rotation).GetComponent<ISpawnedItem<IStone>>();
             spawnedResources.Add(spawnedRocks);
         }
