@@ -53,7 +53,7 @@ public class AcquireItemPerformable : Performable
             else if (!success && i == maxTries - 1) yield break;
         }
         PlayToken pt = null;
-        if (AcquisitionAnimation != null && ItemSource != null && ItemSource.hasResources && ItemSource.CanBeAcquiredBy(Performer))
+        if (AcquisitionAnimation != null && ItemSource != null && ItemSource.HasItems && ItemSource.CanBeAcquiredBy(Performer))
         {
             pt = Performer.Body.PlayAnimation(AcquisitionAnimation);
             while (pt.GetProgress() < 0.99)

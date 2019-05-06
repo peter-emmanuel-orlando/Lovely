@@ -57,7 +57,7 @@ public class RockChunk : ItemsProvider, ISpawnedItem<IStone>
             acquiredItems.Add(new StoneItem());
         }
         spawnedResources = new List<ISpawnedItem<IItem>>();
-        Destroy(gameObject, 2000);
+        Destroy(gameObject, 2);
         return true;
     }
 }

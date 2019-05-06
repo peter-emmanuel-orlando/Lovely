@@ -18,7 +18,7 @@ public abstract class ItemsProvider : MonoBehaviour, IItemsProvider<IResource>
     public abstract IEnumerable<Type> ItemTypes{ get; }
     public abstract float harvestTime { get; protected set; }//in game hrs it takes to get one of the item
     public abstract float harvestCount { get; protected set; }//how many items are left to be harvested    
-    public bool hasResources { get { return harvestCount != 0; } }
+    public bool HasItems { get { return harvestCount != 0; } }
 
     [SerializeField]
     private Vector3 harvestDistance = Vector3.one * 4;
@@ -43,7 +43,10 @@ public abstract class ItemsProvider : MonoBehaviour, IItemsProvider<IResource>
     {
         TrackedComponent.Track(this);
     }
-
+    protected virtual void OnDestroy()
+    {
+        OnDisable();
+    }
     protected virtual void OnDisable()
     {
         TrackedComponent.Untrack(this);
@@ -51,7 +54,7 @@ public abstract class ItemsProvider : MonoBehaviour, IItemsProvider<IResource>
 
     public virtual bool CanBeAcquiredBy<T>(T potentialHarvester)
     {
-        bool result = hasResources && isActiveAndEnabled;
+        bool result = HasItems && isActiveAndEnabled;
         return result;//checks if the being has the tools neccessary to harvest
     }
 

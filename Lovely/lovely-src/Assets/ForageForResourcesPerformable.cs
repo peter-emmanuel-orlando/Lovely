@@ -54,7 +54,7 @@ public class ForageForResourcesPerformable : Performable
                 relevantResources.Clear();
                 foreach (var code in resourcesToSearchFor)
                 {
-                    relevantResources.AddRange(Performer.GetResourcesInSight<IResource>(true));
+                    relevantResources.AddRange(Performer.GetResourcesInSight<IResource>(true).Where(intel => intel.Subject.HasItems));
                 }
                 relevantResources.Sort((x, y) => x.CompareTo(y));
                 if (relevantResources.Count == 0)

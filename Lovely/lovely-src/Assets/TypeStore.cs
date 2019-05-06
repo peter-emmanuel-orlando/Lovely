@@ -94,17 +94,25 @@ public class TypeStore
     public void Remove<T>(T data)
     {
         var runtime = data.GetType();
-        if (typeNodes.ContainsKey(runtime) && typeNodes[runtime].dataSet.ContainsKey(this) && typeNodes[runtime].dataSet[this].Contains(data))
+        if (ContainsKey(runtime))
         {
-            var node = typeNodes[runtime];
-            node.dataSet[this].Remove(data);
-            if (node.dataSet[this].Count == 0)
+
+            var minimal = runtime.GetInterfaces().AsEnumerable();
+            minimal = minimal.Except(minimal.SelectMany(t => t.GetInterfaces()));
+            minimal = minimal.Append(runtime);
+
+            foreach (var type in minimal)
             {
-                node.dataSet.Remove(this);
-                if (!node.Type.IsInterface)
-                    this.Count--;
+                var node = typeNodes[type];
+                var b = node.dataSet[this].Remove(data);
+                if (node.dataSet[this].Count == 0)
+                {
+                    node.dataSet.Remove(this);
+                    if (!node.Type.IsInterface)
+                        this.Count--;
+                }
+                RemoveNodeIfEmpty(node);
             }
-            RemoveNodeIfEmpty(typeNodes[runtime]);
         }
     }
 
@@ -129,7 +137,7 @@ public class TypeStore
 
     public bool ContainsValue<T>(T data)
     {
-        var type = typeof(T);
+        var type = data.GetType();
         return typeNodes.ContainsKey(type) && typeNodes[type].dataSet.ContainsKey(this) && typeNodes[type].dataSet[this].Contains(data);
     }
     public bool ContainsKey(Type type)

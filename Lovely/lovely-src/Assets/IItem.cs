@@ -20,6 +20,7 @@ public interface IItemsProvider<out T> : IInteractable<AcquireItemPerformable>, 
     /// multiple types are expected to be implemented so this captures all
     /// </summary>
     IEnumerable<Type> ItemTypes { get; }
+    bool HasItems { get; }
     bool Acquire<TAcquisitioner>(TAcquisitioner acquisitioner, out List<IItem> acquiredItems, out List<ISpawnedItem<IItem>> spawnedResources, bool requestSuccessOverride = false);
 }
 public interface IResource : IItem { }

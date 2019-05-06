@@ -11,7 +11,7 @@ public class StoneSlab : ItemsProvider, IItemsProvider<IStone>
 
     public override float harvestTime { get; protected set; } = 1;
 
-    public override float harvestCount { get; protected set; } = 10;
+    public override float harvestCount { get; protected set; } = 1;
 
     public override bool Acquire<T>(T acquisitioner, out List<IItem> acquiredItems, out List<ISpawnedItem<IItem>> spawnedResources, bool requestSuccessOverride = false)
     {
@@ -27,6 +27,10 @@ public class StoneSlab : ItemsProvider, IItemsProvider<IStone>
         {
             var spawnedRocks = Instantiate(rockPrefab.GameObject, transform.position, transform.rotation).GetComponent<ISpawnedItem<IStone>>();
             spawnedResources.Add(spawnedRocks);
+        }
+        if (this.harvestCount <= 0)
+        {
+            Destroy(gameObject, 2);
         }
         return true;
     }
