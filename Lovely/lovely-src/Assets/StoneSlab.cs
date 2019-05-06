@@ -9,7 +9,7 @@ public class StoneSlab : ItemsProvider, IItemsProvider<IStone>
     private readonly Type[] itemTypes = new Type[] { typeof(IStone) };
     public override IEnumerable<Type> ItemTypes => itemTypes;
 
-    public override float harvestTime { get; protected set; } = 1;
+    public override float? harvestTime { get; protected set; } = 1;
 
     public override float harvestCount { get; protected set; } = 10;
 

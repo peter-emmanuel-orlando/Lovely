@@ -9,7 +9,7 @@ public class RockChunk : ItemsProvider, ISpawnedItem<IStone>
     private readonly Type[] itemTypes = new Type[] { typeof(IStone) };
     public override IEnumerable<Type> ItemTypes => itemTypes;
 
-    public override float harvestTime { get; protected set; } = 1;
+    public override float? harvestTime { get; protected set; } = 1;
 
     public override float harvestCount { get; protected set; } = 1;
 
@@ -51,12 +51,13 @@ public class RockChunk : ItemsProvider, ISpawnedItem<IStone>
     public override bool Acquire<T>(T acquisitioner, out List<IItem> acquiredItems, out List<ISpawnedItem<IItem>> spawnedResources, bool requestSuccessOverride = false)
     {
         acquiredItems = new List<IItem>();
-        while(harvestCount > 0)
+        spawnedResources = new List<ISpawnedItem<IItem>>();
+        if (harvestCount <= 0) return false;
+        while (harvestCount > 0)
         {
             harvestCount--;
             acquiredItems.Add(new StoneItem());
         }
-        spawnedResources = new List<ISpawnedItem<IItem>>();
         Destroy(gameObject, 2);
         return true;
     }

@@ -30,12 +30,12 @@ public class AcquireItemPerformable : Performable
     public ItemsProvider ItemSource { get; }
     protected virtual AnimationClip AcquisitionAnimation { get; } = null;
 
-    public AcquireItemPerformable(PerceivingMind acquisitioner, ItemsProvider itemSource) : base(acquisitioner)
+    public AcquireItemPerformable(PerceivingMind acquisitioner, ItemsProvider itemSource, AnimationClip acquisitionAnimation = null) : base(acquisitioner)
     {
         base._performer = acquisitioner;
         this.ItemSource = itemSource;
+        this.AcquisitionAnimation = acquisitionAnimation;
     }
-
     public override IEnumerator Perform()
     {
         //move to item
@@ -52,18 +52,35 @@ public class AcquireItemPerformable : Performable
             if (success) break;
             else if (!success && i == maxTries - 1) yield break;
         }
-        PlayToken pt = null;
+
+        //deals with timing, either harvest time or animation
+        #region 
+        var harvestTime = ItemSource.harvestTime;
+        var giveUpTime = Time.time + harvestTime ?? 10;
         if (AcquisitionAnimation != null && ItemSource != null && ItemSource.HasItems && ItemSource.CanBeAcquiredBy(Performer))
         {
-            pt = Performer.Body.PlayAnimation(AcquisitionAnimation);
-            while (pt.GetProgress() < 0.99)
+            PlayToken pt = null;
+            while (Time.time < giveUpTime)
+            {
+                pt = Performer.Body.PlayAnimation(AcquisitionAnimation, false, false, !harvestTime.HasValue );
+                if (pt == null)
+                    yield return null;
+                else
+                    break;
+            }
+
+            while ((harvestTime.HasValue && Time.time < giveUpTime) || (!harvestTime.HasValue && pt != null && pt.GetProgress() < 0.99))
             {
                 yield return null;
             }
         }
-        List<IItem> result;
-        List<ISpawnedItem<IItem>> spawnedItems;
-        while (ItemSource != null && ItemSource.Acquire(Performer.Body, out result, out spawnedItems))
+        while (harvestTime.HasValue && Time.time < giveUpTime)
+        {
+            yield return null;
+        }
+        #endregion
+
+        while (ItemSource != null && ItemSource.HasItems && ItemSource.Acquire(Performer.Body, out List<IItem> result, out List<ISpawnedItem<IItem>> spawnedItems))
         {
             //pick up item performable     
             foreach (var item in result)
