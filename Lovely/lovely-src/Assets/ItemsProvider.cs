@@ -17,7 +17,10 @@ public abstract class ItemsProvider : MonoBehaviour, IItemsProvider<IResource>
 {
     public abstract IEnumerable<Type> ItemTypes{ get; }
     public abstract float? harvestTime { get; protected set; }//in game hrs it takes to get one of the item
-    public abstract float harvestCount { get; protected set; }//how many items are left to be harvested    
+    /// <summary>
+    /// how many times can be harvested, NOT the resulting ammount
+    /// </summary>
+    public abstract float harvestCount { get; protected set; }   
     public bool HasItems { get { return harvestCount != 0; } }
 
     [SerializeField]

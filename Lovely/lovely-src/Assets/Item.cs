@@ -1,6 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-public class Item
-{
 
+public abstract class Item : IItem
+{
+    public abstract Type ItemType { get; }
+    public abstract float Volume { get; }
+    public abstract MatterPhase Phase { get; }
 }

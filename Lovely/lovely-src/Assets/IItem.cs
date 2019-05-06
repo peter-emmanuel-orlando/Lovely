@@ -24,13 +24,18 @@ public interface IItemsProvider<out T> : IInteractable<AcquireItemPerformable>, 
     bool Acquire<TAcquisitioner>(TAcquisitioner acquisitioner, out List<IItem> acquiredItems, out List<ISpawnedItem<IItem>> spawnedResources, bool requestSuccessOverride = false);
 }
 public interface IResource : IItem { }
-public interface ICraftingMaterial : IResource { }
-public interface IConstructionMaterial : IResource { }
-public interface IStone : IConstructionMaterial { }
-public interface IPreciousMaterial : IResource { }
+
 public interface ITool : IResource { }
 public interface IFood : IResource { }
 public interface IFuel : IResource { }
+public interface IPreciousMaterial : IResource { }
+public interface IConstructionMaterial : IResource { }
+
+
+public interface IStone : IConstructionMaterial { }
+public interface IWood : IFuel, IConstructionMaterial { }
+public interface ILeaves : IFuel { }
+
 
 
 
