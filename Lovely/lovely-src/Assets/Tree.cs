@@ -13,40 +13,17 @@ public class Tree : ItemsProvider, IItemsProvider<IWood>, IItemsProvider<ILeaves
 
     public override bool Acquire<T>(T acquisitioner, out List<IItem> acquiredItems, out List<ISpawnedItem<IItem>> spawnedResources, bool requestSuccessOverride = false)
     {
-        acquiredItems = new List<IItem>();
-        spawnedResources = new List<ISpawnedItem<IItem>>();
-        if (!requestSuccessOverride)
+        Func<IItem[]> getAcquiredItemInstances = () => new StoneItem[] { new StoneItem() };
+
+        var rockPrefab = _PrefabPool.GetPrefab(RockChunk._PrefabName);//<-
+        Func<ISpawnedItem<IItem>[]> getSpawnedItemInstances = () =>
         {
-            if (harvestCount <= 0) return false;
-            if (typeof(IBounded).IsAssignableFrom(typeof(T)) && !((IBounded)acquisitioner).Bounds.Intersects(this.Bounds)) return false;
-        }
-        var spawnPrefab = _PrefabPool.GetPrefab(WoodChunk._PrefabName);
-        while (harvestCount > 0)
-        {
-            harvestCount--;
-            var newSpawned = Instantiate(spawnPrefab.GameObject, transform.position, transform.rotation).GetComponent<ISpawnedItem<IWood>>();
-            spawnedResources.Add(newSpawned);
-        }
-        if (this.harvestCount <= 0)
-        {
-            Destroy(gameObject);
-        }
-        return true;
+            var l = new List<RockChunk>();
+            for (int i = 0; i < 2; i++)
+                l.Add(Instantiate(rockPrefab.GameObject, transform.position, transform.rotation).GetComponent<RockChunk>());
+            return l.ToArray();
+        };
+
+        return base.Acquire(acquisitioner, out acquiredItems, out spawnedResources, requestSuccessOverride, getSpawnedItemInstances, getAcquiredItemInstances);
     }
-}
-public class WoodItem : Item, IWood
-{
-    public override Type ItemType => typeof(IWood);
-
-    public override float Volume => 0.2f;
-
-    public override MatterPhase Phase => MatterPhase.Solid;
-}
-public class LeavesItem : Item, ILeaves
-{
-    public override  Type ItemType => typeof(ILeaves);
-
-    public override float Volume => 0.2f;
-
-    public override  MatterPhase Phase => MatterPhase.Solid;
 }

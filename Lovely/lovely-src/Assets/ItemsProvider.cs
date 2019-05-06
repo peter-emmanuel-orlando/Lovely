@@ -63,6 +63,28 @@ public abstract class ItemsProvider : MonoBehaviour, IItemsProvider<IResource>
 
     public abstract bool Acquire<T>(T acquisitioner, out List<IItem> acquiredItems, out List<ISpawnedItem<IItem>> spawnedResources, bool requestSuccessOverride = false);
 
+
+    protected bool Acquire<T>(T acquisitioner, out List<IItem> acquiredItems, out List<ISpawnedItem<IItem>> spawnedResources, bool requestSuccessOverride, Func<ISpawnedItem<IItem>[]> getSpawnedItemInstances, Func<IItem[]> getAcquiredItemInstances)
+    {
+        acquiredItems = new List<IItem>();
+        spawnedResources = new List<ISpawnedItem<IItem>>();
+        if (!requestSuccessOverride)
+        {
+            if (harvestCount <= 0) return false;
+            if (typeof(IBounded).IsAssignableFrom(typeof(T)) && !((IBounded)acquisitioner).Bounds.Intersects(this.Bounds)) return false;
+        }
+        if (harvestCount > 0)
+        {
+            harvestCount--;
+            acquiredItems.AddRange(getAcquiredItemInstances());
+            spawnedResources.AddRange(getSpawnedItemInstances());
+        }
+        if (this.harvestCount <= 0)
+        {
+            Destroy(gameObject);
+        }
+        return true;
+    }
     public virtual AcquireItemPerformable GetInteractionPerformable(Body performer)
     {
         return new AcquireItemPerformable(performer.Mind, this);
