@@ -8,26 +8,24 @@ public class Container
 {
     readonly TypeStore<IItem> inner = new TypeStore<IItem>();
     public readonly Predicate<IItem> canContainerHoldItem;
-    float maxHoldableVolume = 100f;
-    public float MaxHoldableVolume { get { return maxHoldableVolume; } }
-    float filledVolume = 0;
-    public float FilledVolume { get { return filledVolume; } }
+
+    public float MaxHoldableVolume { get; } = 100f;
+    public float FilledVolume { get; } = 0;
     public float FreeVolume { get { return MaxHoldableVolume - FilledVolume; } }
 
-    int itemCount = 0;
-    public int ItemCount { get { return itemCount; } }
+    public int ItemCount => inner.Count;
 
-    public bool isEmpty { get { return itemCount == 0; } }
+    public bool isEmpty { get { return ItemCount == 0; } }
     public bool isFull { get { return FreeVolume <= 0; } }
 
     public Container(float maxHoldableVolume)
     {
-        this.maxHoldableVolume = maxHoldableVolume;
+        this.MaxHoldableVolume = maxHoldableVolume;
         this.canContainerHoldItem = delegate (IItem item) { return !isFull; };
     }
     public Container(float maxHoldableVolume, Predicate<IItem> conditionsForContaining)
     {
-        this.maxHoldableVolume = maxHoldableVolume;
+        this.MaxHoldableVolume = maxHoldableVolume;
         this.canContainerHoldItem = delegate (IItem item) { return /*item.Volume <= this.FreeVolume*/ !isFull && conditionsForContaining(item); };;
     }
 

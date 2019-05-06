@@ -86,8 +86,7 @@ public class TypeStore
         {
             if (!node.dataSet.ContainsKey(this))
                 node.dataSet.Add(this, new HashSet<object>());
-            node.dataSet[this].Add(data);
-            if (node.dataSet[this].Count == 1 && !node.Type.IsInterface)
+            if (node.dataSet[this].Add(data) && !node.Type.IsInterface)
                 this.Count++;
         }
     }
@@ -104,13 +103,10 @@ public class TypeStore
             foreach (var type in minimal)
             {
                 var node = typeNodes[type];
-                var b = node.dataSet[this].Remove(data);
-                if (node.dataSet[this].Count == 0)
-                {
-                    node.dataSet.Remove(this);
-                    if (!node.Type.IsInterface)
+                if(node.dataSet[this].Remove(data) && !node.Type.IsInterface)
                         this.Count--;
-                }
+                if (node.dataSet[this].Count == 0)
+                    node.dataSet.Remove(this);
                 RemoveNodeIfEmpty(node);
             }
         }
