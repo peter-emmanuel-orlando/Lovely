@@ -9,7 +9,7 @@ public class StoneSlab : ItemsProvider, IItemsProvider<IStone>
     private readonly Type[] itemTypes = new Type[] { typeof(IStone) };
     public override IEnumerable<Type> ItemTypes => itemTypes;
 
-    public override float? harvestTime { get; protected set; } = 1;
+    public override float? harvestTime { get; protected set; } = 5;
 
     public override float harvestCount { get; protected set; } = 10;
 
@@ -31,7 +31,7 @@ public class StoneSlab : ItemsProvider, IItemsProvider<IStone>
         }
         if (this.harvestCount <= 0)
         {
-            Destroy(gameObject, 2);
+            Destroy(gameObject);
         }
         return true;
     }

@@ -58,7 +58,7 @@ public class RockChunk : ItemsProvider, ISpawnedItem<IStone>
             harvestCount--;
             acquiredItems.Add(new StoneItem());
         }
-        Destroy(gameObject, 2);
+        Destroy(gameObject);
         return true;
     }
 }
