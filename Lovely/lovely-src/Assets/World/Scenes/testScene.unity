@@ -135,6 +135,10 @@ PrefabInstance:
       propertyPath: m_Name
       value: HumanFemale
       objectReference: {fileID: 0}
+    - target: {fileID: 1339464740402814, guid: 8e6a7fa2beba72841ba466c5232de825, type: 3}
+      propertyPath: m_IsActive
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 4488507308224088, guid: 8e6a7fa2beba72841ba466c5232de825, type: 3}
       propertyPath: m_LocalPosition.x
       value: 740.73
@@ -1187,7 +1191,9 @@ MonoBehaviour:
   - {fileID: 1112828313470640, guid: 4147ad8e6ac7f0c4c88b0ef3a349a6c0, type: 3}
   - {fileID: 1480453624050336, guid: dc67df065bf443948a96508a511f1443, type: 3}
   - {fileID: 1340635444622178, guid: 9c85852f64b451945ade0960a5624849, type: 3}
+  - {fileID: 4509439674057358, guid: e0b8d5bce3311954cadf0b276368a3a2, type: 3}
   - {fileID: 2996683376678011441, guid: 913af852109f3294c97568a9276a3698, type: 3}
+  - {fileID: 4509439674057358, guid: 9fb990a1eba158f42ab98d84bef63836, type: 3}
   setTrueToManuallyUpdate: 0
 --- !u!114 &330443299
 MonoBehaviour:
@@ -1718,9 +1724,9 @@ Light:
   m_Enabled: 1
   serializedVersion: 9
   m_Type: 2
-  m_Color: {r: 0.7907258, g: 0.14532983, b: 0.9110345, a: 1}
-  m_Intensity: 1.3101102
-  m_Range: 5.895496
+  m_Color: {r: 0.84851146, g: 0.5125782, b: 0.52687645, a: 1}
+  m_Intensity: 1.0600585
+  m_Range: 4.770263
   m_SpotAngle: 30
   m_InnerSpotAngle: 21.80208
   m_CookieSize: 10
@@ -1764,7 +1770,7 @@ Light:
   m_BounceIntensity: 1
   m_ColorTemperature: 6570
   m_UseColorTemperature: 0
-  m_BoundingSphereOverride: {x: 0, y: 0, z: 0, w: 0}
+  m_BoundingSphereOverride: {x: 0, y: 3.6e-43, z: 0, w: 3.7155345e-31}
   m_UseBoundingSphereOverride: 0
   m_ShadowRadius: 0
   m_ShadowAngle: 0
@@ -1781,9 +1787,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   animLight: {fileID: 722723198}
-  currentTime: 3.7051194
+  currentTime: 1.4909374
   completedIterations: 0
-  evaluationTime: 3.7051194
+  evaluationTime: 1.4909374
   reset: 0
   lifeTime: 10
   destroyOnComplete: 0
@@ -2287,6 +2293,7 @@ GameObject:
   - component: {fileID: 875533982}
   - component: {fileID: 875533981}
   - component: {fileID: 875533980}
+  - component: {fileID: 875533984}
   m_Layer: 0
   m_Name: Wood
   m_TagString: Untagged
@@ -2361,12 +2368,25 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 875533979}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 739.9, y: 50.178, z: 335.49283}
-  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_LocalPosition: {x: 739.9, y: 53.54, z: 335.49283}
+  m_LocalScale: {x: 1, y: 4.84, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
   m_RootOrder: 8
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &875533984
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 875533979}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 177b2958b594cb94892011fd44acd29f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  harvestDistance: {x: 4, y: 4, z: 4}
 --- !u!1 &888793733
 GameObject:
   m_ObjectHideFlags: 0
@@ -2472,6 +2492,10 @@ PrefabInstance:
     - target: {fileID: 1339464740402814, guid: 8e6a7fa2beba72841ba466c5232de825, type: 3}
       propertyPath: m_Name
       value: HumanFemale (1)
+      objectReference: {fileID: 0}
+    - target: {fileID: 1339464740402814, guid: 8e6a7fa2beba72841ba466c5232de825, type: 3}
+      propertyPath: m_IsActive
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4488507308224088, guid: 8e6a7fa2beba72841ba466c5232de825, type: 3}
       propertyPath: m_LocalPosition.x
@@ -4537,7 +4561,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1753220867}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 733.862, y: 58, z: 299.05002}
+  m_LocalPosition: {x: 733.862, y: 58, z: 318.99}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}

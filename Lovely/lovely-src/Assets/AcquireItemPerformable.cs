@@ -80,7 +80,7 @@ public class AcquireItemPerformable : Performable
         }
         #endregion
 
-        while (ItemSource != null && ItemSource.HasItems && ItemSource.Acquire(Performer.Body, out List<IItem> result, out List<ISpawnedItem<IItem>> spawnedItems))
+        if (ItemSource != null && ItemSource.HasItems && ItemSource.Acquire(Performer.Body, out List<IItem> result, out List<ISpawnedItem<IItem>> spawnedItems))
         {
             //pick up item performable     
             foreach (var item in result)

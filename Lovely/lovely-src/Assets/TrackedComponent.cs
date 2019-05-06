@@ -28,10 +28,20 @@ public static class TrackedComponent
             {
                 var keys = new List<IBounded>(objToPosList.Keys);
                 foreach (var item in keys)
-                { 
-                    Untrack(item);
-                    if (item != null)
-                        Track(item);
+                {
+                    if(item == null)
+                    {
+                        Untrack(item);
+                    }
+                    else
+                    {
+                        var newPoints = new HashSet<Vector3>(GetRoundedOverlapPoints(item.Bounds));
+                        var oldPoints = objToPosList[item];
+                        oldPoints.ExceptWith(newPoints);
+
+                        UnlinkObjectAndPoints(item, oldPoints);
+                        LinkObjectAndPoints(item, newPoints);
+                    }
                 }
                 lastUpdateFrameCount = Time.frameCount;
             }
@@ -43,6 +53,7 @@ public static class TrackedComponent
     //by specifying what kind of tracked component, itll only let you submit that type for tracking
     public static void Track<T>(T m) where T : IBounded
     {
+        //return;
         //if the gameobject is destroyed do nothing
         if (m == null) return;
 
@@ -54,10 +65,13 @@ public static class TrackedComponent
             isUpdating = true;
         }
 
-        var roundedPoints = GetRoundedOverlapPoints(m.Bounds);
-
         Untrack(m);
+        var roundedPoints = GetRoundedOverlapPoints(m.Bounds);
+        LinkObjectAndPoints(m, roundedPoints);
+    }
 
+    private static void LinkObjectAndPoints<T>(T m, IEnumerable<Vector3> roundedPoints) where T : IBounded
+    {
         foreach (var roundedPos in roundedPoints)
         {
             if (!posToObjList.ContainsKey(roundedPos))
@@ -69,21 +83,27 @@ public static class TrackedComponent
         objToPosList[m].UnionWith(roundedPoints);
     }
 
+
     public static void Untrack<T>(T m) where T : IBounded
     {
         if (m != null && objToPosList.ContainsKey(m))
         {
             var points = objToPosList[m];
             objToPosList.Remove(m);
-            foreach (var roundedPos in points)
+            UnlinkObjectAndPoints(m, points);
+        }
+    }
+
+    private static void UnlinkObjectAndPoints<T>(T m, IEnumerable<Vector3> points) where T : IBounded
+    {
+        foreach (var roundedPos in points)
+        {
+            if (posToObjList.ContainsKey(roundedPos))
             {
-                if (posToObjList.ContainsKey(roundedPos))
-                {
-                    if (posToObjList[roundedPos].ContainsValue(m))
-                        posToObjList[roundedPos].Remove(m);
-                    if (posToObjList[roundedPos].Count == 0)
-                        posToObjList.Remove(roundedPos);
-                }
+                if (posToObjList[roundedPos].ContainsValue(m))
+                    posToObjList[roundedPos].Remove(m);
+                if (posToObjList[roundedPos].Count == 0)
+                    posToObjList.Remove(roundedPos);
             }
         }
     }
