@@ -4,7 +4,7 @@ public class StoneItem : Item, IStone
 {
     public override Type ItemType => typeof(IStone);
 
-    public override float Volume => 0.2f;
+    public override float Volume { get; protected set; } = 0.2f;
 
     public override MatterPhase Phase => MatterPhase.Solid;
 }

@@ -6,13 +6,25 @@ public interface IItem
 {
     Type ItemType { get; }
     float Volume { get; }
+    bool IsEmpty { get; }
     MatterPhase Phase { get; }
+    bool UseVolume(float volume);
+}
+
+/*
+public interface IContainableItem : IItem
+{ 
     //get item preview
+}*/
+
+public interface ICombineableItem : IItem
+{
+    bool Combine( ref ICombineableItem other, out IItem result);
 }
 
 public interface ISpawnedItem<out T> : ISpawnable, IItemsProvider<T> where T : IItem { }
 
-//should be used for all potentially provided types
+//should be used for all potentially provided types. This gives you items that you put into your inventory
 //i.e. public class Foo : IItemProvider<IFood>, IItemProvider<IFuel>, ...etc 
 public interface IItemsProvider<out T> : IInteractable<AcquireItemPerformable>, IBounded where T : IItem
 {
@@ -24,7 +36,6 @@ public interface IItemsProvider<out T> : IInteractable<AcquireItemPerformable>, 
     bool Acquire<TAcquisitioner>(TAcquisitioner acquisitioner, out List<IItem> acquiredItems, out List<ISpawnedItem<IItem>> spawnedResources, bool requestSuccessOverride = false);
 }
 public interface IResource : IItem { }
-
 public interface ITool : IResource { }
 public interface IFood : IResource { }
 public interface IFuel : IResource { }
@@ -36,6 +47,21 @@ public interface IStone : IConstructionMaterial { }
 public interface IWood : IFuel, IConstructionMaterial { }
 public interface ILeaves : IFuel { }
 
+//these are items you never really take into your inventory, rather you have to go to them.
+//the location of these may be stored
+
+
+public interface ILocationUseToken
+{
+    float Expiry { get; }
+    bool IsExpired { get; }
+}
+public interface IUseableLocation : IBounded
+{
+    bool AcquireLocationUse()
+}
+public interface IRealEstate : IUseableLocation { }
+public interface ICreationLocation : IUseableLocation { }//any place you use to make other stuff, like a workbench or a cauldron or a stove
 
 
 

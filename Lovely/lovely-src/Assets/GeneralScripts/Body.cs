@@ -48,7 +48,7 @@ public abstract class Body : UnifiedController, ISpawnable
     private int empowermentLevel = 0;
     [ShowOnly]
     [SerializeField]
-    private ItemPack backpack = new ItemPack();
+    private Container backpack = new Container(100);
     
     public abstract PerceivingMind Mind { get; }
 
@@ -62,7 +62,7 @@ public abstract class Body : UnifiedController, ISpawnable
     public abstract string PrefabName { get; }
     private readonly CharacterAbilities characterAbilities = new CharacterAbilities();
     public CharacterAbilities CharacterAbilities { get { return characterAbilities; } }
-    public ItemPack Backpack { get { return backpack; } protected set { backpack = value; } }
+    public Container Backpack { get { return backpack; } protected set { backpack = value; } }
     public float Calories { get { return calories; } protected set { calories = value; } }
     public float Blood { get { return blood; } protected set { blood = value; } }
     public float Stamina { get { return stamina; } protected set { stamina = value; } }

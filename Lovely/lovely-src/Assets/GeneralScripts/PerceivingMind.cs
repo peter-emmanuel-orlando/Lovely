@@ -129,7 +129,7 @@ public abstract class PerceivingMind : Mind
     public float Stamina { get { return Body.Stamina; } }
     public float StaminaMax { get { return Body.CaloriesMax; } }
 
-    public ItemPack Backpack { get { return Body.Backpack; } }
+    public Container Backpack { get { return Body.Backpack; } }
     #endregion
 
     #region [[[ active period stats ]]]
