@@ -1,39 +1,89 @@
 ﻿using UnityEngine;
 
-public class AdminToken<T> : AuthorizationToken<T>
+
+//token grant permissions
+//  admin
+//      -CANNOT DEMOTE OTHER ADMINS
+//      -can revoke or change permissions
+//      -can create or change any level token
+//      -can use admin level features
+//      -everything below
+//
+//  manager
+//      -can revoke or change lower permissions
+//      -can create or change lower level token
+//      -can use manager level features
+//      -everything below
+//
+//  ------------------------------------------------------------
+//  || EVERYTHING BELOW MAY NOT ALLOW ACCESS AT CERTAIN TIMES ||
+//  ------------------------------------------------------------
+//  worker
+//      -can access specific areas at specific times
+//
+//  User  
+//      -can use user level features
+//      -everything below
+//
+//  visitor
+//      -can use public features
+//
+public class AdminToken<T> : ManagerToken<T>
 {
     protected AdminToken(T authSubject, float expiry = float.PositiveInfinity) : base(authSubject, expiry)
     {
+
     }
 }
-
-public class AuthorizationToken<T>
+public class ManagerToken<T> : WorkerToken<T>
 {
-    protected AuthorizationToken(T authSubject, float expiry = float.PositiveInfinity)
+    protected ManagerToken(T authSubject, float expiry = float.PositiveInfinity) : base(authSubject, expiry)
+    {
+
+    }
+}
+public class WorkerToken<T> : VisitorToken<T>
+{
+    protected WorkerToken(T authSubject, float expiry = float.PositiveInfinity) : base(authSubject, expiry)
+    {
+
+    }
+}
+public class UserToken<T> : VisitorToken<T>
+{
+    protected UserToken(T authSubject, float expiry = float.PositiveInfinity) : base(authSubject, expiry)
+    {
+
+    }
+}
+public class VisitorToken<T> : AuthorizationToken<T>
+{
+    protected VisitorToken(T authSubject, float expiry = float.PositiveInfinity) : base(authSubject, expiry)
+    {
+
+    }
+}
+public interface IAuthorizationToken<out T>
+{
+    T AuthSubject { get; }
+    float Expiry { get; }
+    bool IsExpired { get; }
+}
+
+public class AuthorizationToken<T> : ExpirationToken, IAuthorizationToken<T>
+{
+    public T AuthSubject { get; }
+    protected AuthorizationToken(T authSubject, float expiry = float.PositiveInfinity) : base(expiry)
     {
         AuthSubject = authSubject;
+    }
+}
+public abstract class ExpirationToken
+{
+    protected ExpirationToken(float expiry = float.PositiveInfinity)
+    {
         Expiry = expiry;
     }
-
-    //token grant permissions
-    //  admin
-    //      -CANNOT DEMOTE OTHER ADMINS
-    //      -can revoke or change permissions
-    //      -can create or change any level token
-    //      -everything below
-    //
-    //  manager
-    //      -can revoke or change lower permissions
-    //      -can create or change lower level token
-    //      -everything below
-    //
-    //  User  
-    //      -can use all features
-    //
-    //  visitor
-    //      -can use unrestricted features
-    //
-    public T AuthSubject { get; }
     public float Expiry { get; }
     public bool IsExpired => Time.time >= Expiry;
 }

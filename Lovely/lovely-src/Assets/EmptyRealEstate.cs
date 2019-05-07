@@ -20,7 +20,7 @@ public class EmptyRealEstate : IRealEstate
         TrackedComponent.Track(this);
     }
 
-    public static bool AcquireRealEstate<T> (Bounds requestedBounds,  out AuthorizationToken<EmptyRealEstate> result, AuthorizationToken<EmptyRealEstate> ownershipToken = null )
+    public static bool AcquireRealEstate<T> (Bounds requestedBounds,  out IAuthorizationToken<EmptyRealEstate> result, IAuthorizationToken<EmptyRealEstate> ownershipToken = null )
     {
         //ownershipToken is so you can get subplots of land within your land
         result = null;
@@ -39,12 +39,12 @@ public class EmptyRealEstate : IRealEstate
         return success;
     }
 
-    public bool AcquireUse<T>(/**/ out AuthorizationToken<IUseableLocation> useToken, AuthorizationToken<IUseableLocation> authorisingToken )
+    public bool AcquireUse<T>(/**/ out IAuthorizationToken<IUseableLocation> useToken, IAuthorizationToken<IUseableLocation> authorisingToken )
     {
         throw new System.NotImplementedException();
     }
 
-    public bool AcquireUse<T>(T requester, out AuthorizationToken<IUseableLocation> useToken)
+    public bool AcquireUse<T>(T requester, out IAuthorizationToken<IUseableLocation> useToken)
     {
         throw new System.NotImplementedException();
     }

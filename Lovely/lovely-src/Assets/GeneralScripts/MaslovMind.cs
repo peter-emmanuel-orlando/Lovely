@@ -4,6 +4,9 @@ using UnityEngine;
 
 public abstract class SurvivalMind : PerceivingMind
 {
+    //does fight or flight
+    //tries to heal if blood too low
+    //tries to get food if starving
     public SurvivalMind(Body body) : base(body) { }
     IPerformable decision = null;
     public override IPerformable GetDecisions()
@@ -25,6 +28,9 @@ public abstract class SurvivalMind : PerceivingMind
 }
 public abstract class SafetyMind : SurvivalMind
 {
+    //seeks to build house or preserve house from destruction
+    //
+    public LivingPlace Home { get; protected set; }// if no home, create a temporary one
     public SafetyMind(Body body) : base(body) { }
     protected override bool Decide(ref IPerformable newDecision)
     {
@@ -38,7 +44,6 @@ public abstract class SafetyMind : SurvivalMind
 }
 public abstract class EsteemMind : SafetyMind
 {
-    public LivingPlace Home { get; protected set; }// if no home, create a temporary one
     public WorkPlace WorkPlace { get; protected set; }//this is by default food storage. you work to fill up your food storage, by hunting and preserving//by default workplace is just the urge to hunt
     public List<RecreationPlace> RestPlaces { get; protected set; } = new List<RecreationPlace>();//by default interaction with peers or enjoying a local natural feature
 
@@ -126,7 +131,7 @@ public abstract class EsteemMind : SafetyMind
         //      eat
         //      poo
         if (!hasMadeDecision)
-            hasMadeDecision = Body.GetMaintinenceAssignment(Body, ref newDecision);
+            hasMadeDecision = Body.GetMaintinenceAssignment(ref newDecision);
 
         return hasMadeDecision;
     }
@@ -189,7 +194,7 @@ public abstract class EsteemMind : SafetyMind
             {
                 //do prepareForBedPerformable before sleeping
                 if (newDecision == null || !newDecision.IsSleepActivity)
-                    hasMadeDecision = Body.GetRestAssignment(Body, ref newDecision);
+                    hasMadeDecision = Body.GetRestAssignment(ref newDecision);
             }
         }
 

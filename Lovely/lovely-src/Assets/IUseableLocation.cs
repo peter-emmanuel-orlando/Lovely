@@ -3,8 +3,9 @@
 
 public interface IUseableLocation : IBounded
 {
-    bool AcquireUse<T>(T requester, out AuthorizationToken<IUseableLocation> useToken);
+    bool IsAuthorized(IAuthorizationToken<IUseableLocation> authToken);
+    bool AcquireUse<T>(out ILocationUseToken<IUseableLocation> useToken);
 }
 
-public interface ILocationUseToken { }
+public interface ILocationUseToken<T> where T : IUseableLocation{}
 

@@ -21,6 +21,8 @@ public abstract class Body : UnifiedController, ISpawnable
 {
     //seperate into bodyBase and body
 
+    //being hungry burns through maxCalories.
+    //starving is when maxCalories is below certain threshold
     public GameObject GameObject { get { return (this == null) ? null : gameObject; } }
     public Transform Transform { get { return (this == null) ? null : transform; } }
     public Bounds Bounds { get { if (this == null) return new Bounds(); else if (bodyMesh == null) return new Bounds(transform.position, Vector3.zero); else return bodyMesh.bounds; } }
@@ -34,6 +36,9 @@ public abstract class Body : UnifiedController, ISpawnable
     [ShowOnly]
     [SerializeField]
     private float calories = float.MaxValue;//num days calories will last. ie 1 calorie is enough for 1 day.
+    [ShowOnly]
+    [SerializeField]
+    private float weightGainRatio = 0.5f;//excess calories is turned into MaxCalories
     [ShowOnly]
     [SerializeField]
     private float bloodMax = float.MaxValue;//reaching 0 blood and being passes out
@@ -56,8 +61,6 @@ public abstract class Body : UnifiedController, ISpawnable
     public float BloodMax { get { return bloodMax; } protected set { bloodMax = value; } }
     public float StaminaMax { get { return staminaMax; } protected set { staminaMax = value; } }
     public float CaloriesMax { get { return caloriesMax; } protected set { caloriesMax = value; } }
-    //public float caloriesMax { get { return _caloriesMax; } protected set { _caloriesMax = value; } }
-    //public float bloodMax { get { return _bloodMax; } protected set { _bloodMax = value; } }
     public abstract Gender Gender { get; }
     public abstract string PrefabName { get; }
     private readonly CharacterAbilities characterAbilities = new CharacterAbilities();
@@ -185,14 +188,14 @@ public abstract class Body : UnifiedController, ISpawnable
             OnCharDeath(this, new CharDeathEventArgs());
     }
 
-    public bool GetMaintinenceAssignment(Body being, ref IPerformable assignment)
+    public bool GetMaintinenceAssignment(ref IPerformable assignment)
     {
         var assignedPerformable = true;
         assignment = new EmptyPerformable();
         return assignedPerformable;
     }
 
-    public bool GetRestAssignment(Body being, ref IPerformable assignment)
+    public bool GetRestAssignment(ref IPerformable assignment)
     {
         var assignedPerformable = true;
         //sleep until its no longer sleep period or mind enters an emergency state
@@ -209,8 +212,17 @@ public abstract class Body : UnifiedController, ISpawnable
             calories += Mind.CurrentPerformable.DeltaCalories * GameTime.DeltaTimeGameDays;//num days calories will last.
             blood += Mind.CurrentPerformable.DeltaBlood * GameTime.DeltaTimeGameDays;//reaching 0 blood and being passes out
         }
+        if(calories > CaloriesMax)
+        {
+            //a fraction of excess calories becomes weight 
+            CaloriesMax = (calories - CaloriesMax) * weightGainRatio;
+        }
         calories = Mathf.Clamp(calories, 0, CaloriesMax);
         blood = Mathf.Clamp(blood, 0, BloodMax);
+
+        if (calories <= 0 || blood <= 0)
+            OnCharDeath(this, new CharDeathEventArgs());
+
         anim.SetFloat("BreathingLabor", 1f - (stamina / 100));
     }
 
