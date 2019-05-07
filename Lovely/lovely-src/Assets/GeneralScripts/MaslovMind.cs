@@ -2,27 +2,56 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-
 public abstract class SurvivalMind : PerceivingMind
+{
+    public SurvivalMind(Body body) : base(body) { }
+    IPerformable decision = null;
+    public override IPerformable GetDecisions()
+    {
+        if (decision != null && decision.IsComplete) decision = null;
+        var newDecision = decision;
+        Decide(ref newDecision);//NOT this.Decide decide may be overridden
+        //if decision is empty, decided to do nothing, or not the same as current decision; decision = newDecision
+        if (decision == null || newDecision == null || decision.GetType() != newDecision.GetType())
+            decision = newDecision;
+        return decision;
+    }
+    protected virtual bool Decide(ref IPerformable newDecision)
+    {
+        var hasDecided = false;
+        //decide survival decisions
+        return hasDecided;
+    }
+}
+public abstract class SafetyMind : SurvivalMind
+{
+    public SafetyMind(Body body) : base(body) { }
+    protected override bool Decide(ref IPerformable newDecision)
+    {
+        var hasDecided = base.Decide(ref newDecision);
+        if (!hasDecided)
+        {
+            //decide safety decisions
+        }
+        return hasDecided;
+    }
+}
+public abstract class EsteemMind : SafetyMind
 {
     public LivingPlace Home { get; protected set; }// if no home, create a temporary one
     public WorkPlace WorkPlace { get; protected set; }//this is by default food storage. you work to fill up your food storage, by hunting and preserving//by default workplace is just the urge to hunt
     public List<RecreationPlace> RestPlaces { get; protected set; } = new List<RecreationPlace>();//by default interaction with peers or enjoying a local natural feature
 
-    IPerformable decision = null;
 
-    public SurvivalMind(Body body) : base(body) { }
-    
+    public EsteemMind(Body body) : base(body) { }
 
-    public override IPerformable GetDecisions()
+
+    protected override bool Decide(ref IPerformable newDecision)
     {
         //if no backpack, hunt for materials to make a backpack or buy one.
         //If no job, wander around and then choose among the least populated jobs, or request one from buildings
         //if no house, go build one, or buy one, or establish a temporary lean-to or hotel
-
-        if (decision != null && decision.IsComplete) decision = null;
-        var newDecision = decision;
-        var hasMadeDecision = false;
+        var hasMadeDecision = base.Decide(ref newDecision);
 
         //"emergency" meaning imminant danger, respond to imminant danger regardless of currentState
         //emergency is...
@@ -33,6 +62,12 @@ public abstract class SurvivalMind : PerceivingMind
         //sleep is above level
         //start emergency conditions
 
+        /*
+        if (!hasMadeDecision && Body.Blood < 0.3 * Body.BloodMax)
+            hasMadeDecision = new FightOrFlightPerformable();
+        if (!hasMadeDecision && Body.Calories < 0.6 * Body.CaloriesMax)
+            hasMadeDecision = new SearchForFoodPerformable();
+        */
         //end emergency conditions
 
         if (!hasMadeDecision && IsWorkPeriod)
@@ -55,11 +90,8 @@ public abstract class SurvivalMind : PerceivingMind
             newDecision = new AbortPerformable();
         }
 
-        //if decision is not the same as current decision, decision = newDecision
-        if (decision == null || newDecision == null || newDecision.GetType() != decision.GetType())
-            decision = newDecision;
 
-        return decision;
+        return hasMadeDecision;
     }
     //perhaps these are defined by inheritor?
     //ie maintainHome, maintainPersonalStorage etc
@@ -125,8 +157,8 @@ public abstract class SurvivalMind : PerceivingMind
     bool GetRecreationPeriodDecisions(ref IPerformable newDecision)
     {
         // TODO: implement this
-        var hasMadeDecision = false;        
-        return hasMadeDecision;        
+        var hasMadeDecision = false;
+        return hasMadeDecision;
     }
 
 
@@ -136,10 +168,9 @@ public abstract class SurvivalMind : PerceivingMind
         var hasMadeDecision = false;
 
         //if already sleeping, stay asleep (aside from a random chance of waking)
-        if (decision != null && decision.ActivityType == ActivityState.Rest)
+        if (newDecision != null && newDecision.ActivityType == ActivityState.Rest)
         {
             hasMadeDecision = true;
-            newDecision = decision;
         }
         else
         {
@@ -166,9 +197,26 @@ public abstract class SurvivalMind : PerceivingMind
     }
 
 }
+public abstract class ActualizationMind : EsteemMind
+{
+    public ActualizationMind(Body body) : base(body) { }
+    protected override bool Decide(ref IPerformable newDecision)
+    {
+        var hasDecided = base.Decide(ref newDecision);
+        if (!hasDecided)
+        {
+            //decide actualization decisions
+        }
+        return hasDecided;
+    }
+}
+
+
+
+
 
 //calories is magic. the ideal calorie balance gives a perfect balance between 
-//physical stats and magic reserves. this bogy type is the classic fighter
+//physical stats and magic reserves. this body type is the classic fighter
 //hoarding excessive calories results in a "warlock" who isnt nearly as mobile, but has hella magic up his sleeve
 // extreme calories causes magic to bleed out of the skin as the body tries to purge the excess. these burn calories just by existing
 //they are the typical "blaster mage
