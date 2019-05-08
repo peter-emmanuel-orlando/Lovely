@@ -1,0 +1,13 @@
+
+
+goal: steal all the artefacts of ka'eh'ulan to defeat the Gul'kensu and free all kalera from its evil possession
+
+powers: 
+
+passive: madness of euphoria - whether just your perception or some ancient magic, enemies around attack to the beat of your heart and blood
+
+relic of return - throw daggar at point. At death or cue, return to spot
+mirror misdirection - shield infront of an enemy shielding, the world spins, you find yourself still facing your opponent, but youve switched positions and yourw on the side you want
+clone crazy - 2 clones spawn and go random directions
+hitch a ride - jump inside a persons soul and ride along with them
+backsies - reverse pickpocket your relic of return onto someone, then burst out of their pocket when you choose
