@@ -12,7 +12,7 @@ public static class TrackedComponent
 {
     //the z component of the vector3's is not tracked. right now the quantity of points is size^3 but by essentially
     //flattening to 2d it can be size^2
-    private static readonly Dictionary<Vector3, TypeStore<IBounded>> posToObjList = new Dictionary<Vector3, TypeStore<IBounded>>();
+    private static readonly Dictionary<Vector3, TypeStoreUNMANAGED<IBounded>> posToObjList = new Dictionary<Vector3, TypeStoreUNMANAGED<IBounded>>();
     private static readonly Dictionary<IBounded, HashSet<Vector3>> objToPosList = new Dictionary<IBounded, HashSet<Vector3>>();
     private static float cellSize = 10f;
     private static int locUpdatesPerFrame = 5;
@@ -75,7 +75,7 @@ public static class TrackedComponent
         foreach (var roundedPos in roundedPoints)
         {
             if (!posToObjList.ContainsKey(roundedPos))
-                posToObjList.Add(roundedPos, new TypeStore<IBounded>());
+                posToObjList.Add(roundedPos, new TypeStoreUNMANAGED<IBounded>());
             posToObjList[roundedPos].Add(m);
         }
         if (!objToPosList.ContainsKey(m))

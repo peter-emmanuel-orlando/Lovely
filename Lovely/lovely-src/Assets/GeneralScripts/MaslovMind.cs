@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using static LandPlot;
 
 public abstract class SurvivalMind : PerceivingMind
 {
@@ -111,7 +112,6 @@ public abstract class EsteemMind : SafetyMind
         //      etc
         if (!hasMadeDecision && base.Backpack != null)
             hasMadeDecision = base.Backpack.GetMaintinenceAssignment(Body, ref newDecision);
-
 
 
         //..get performable from home

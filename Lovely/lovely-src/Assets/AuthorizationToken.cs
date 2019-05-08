@@ -28,6 +28,8 @@
 //  visitor
 //      -can use public features
 //
+
+//must be extended in class creating them
 public class AdminToken<T> : ManagerToken<T>
 {
     protected AdminToken(T authSubject, float expiry = float.PositiveInfinity) : base(authSubject, expiry)

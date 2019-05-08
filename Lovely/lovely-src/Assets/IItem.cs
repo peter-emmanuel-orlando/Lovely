@@ -4,11 +4,13 @@ using System.Collections.Generic;
 
 public interface IItem
 {
+    float Value { get; }
+    float ValuePerVolume { get; }
     Type ItemType { get; }
     float Volume { get; }
     bool IsEmpty { get; }
     MatterPhase Phase { get; }
-    bool UseVolume(float volume);
+    void UseItem();
 }
 
 /*
@@ -17,10 +19,18 @@ public interface IContainableItem : IItem
     //get item preview
 }*/
 
+public interface IDivisibleItem<T> : IItem where T : IItem
+{
+    void Combine<TOther>(ref TOther other) where TOther : T;
+    bool AddVolume<TOther>(ref TOther other, float maxTransfer) where TOther : T;
+    bool UseVolume(float volume);
+}
+/*
 public interface ICombineableItem : IItem
 {
     bool Combine( ref ICombineableItem other, out IItem result);
 }
+*/
 
 public interface ISpawnedItem<out T> : ISpawnable, IItemsProvider<T> where T : IItem { }
 

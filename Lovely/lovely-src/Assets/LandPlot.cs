@@ -5,7 +5,7 @@
 using System.Linq;
 using UnityEngine;
 
-public class EmptyRealEstate : IRealEstate
+public class LandPlot : MonoBehaviour, IRealEstate
 {
     public Bounds Bounds { get; }
     public bool IsFlat { get; private set; } = false;
@@ -14,18 +14,25 @@ public class EmptyRealEstate : IRealEstate
         throw new System.NotImplementedException();
     }
 
-    private EmptyRealEstate( Bounds bounds)
+    private LandPlot( Bounds bounds)
     {
         Bounds = bounds;
         TrackedComponent.Track(this);
     }
 
-    public static bool AcquireRealEstate<T> (Bounds requestedBounds,  out IAuthorizationToken<EmptyRealEstate> result, IAuthorizationToken<EmptyRealEstate> ownershipToken = null )
+    private class EmptyRealEstateAuthToken : AdminToken<LandPlot>
+    {
+        public EmptyRealEstateAuthToken(LandPlot authSubject, float expiry = float.PositiveInfinity) : base(authSubject, expiry)
+        {
+
+        }
+    }
+    public static bool AcquireRealEstate<T> (out IAuthorizationToken<LandPlot> result, Bounds requestedBounds, IAuthorizationToken<LandPlot> ownershipToken = null )
     {
         //ownershipToken is so you can get subplots of land within your land
         result = null;
         var success = false;
-        var overlapping = TrackedComponent.GetOverlapping<EmptyRealEstate>(requestedBounds, true);
+        var overlapping = TrackedComponent.GetOverlapping<LandPlot>(requestedBounds, true);
         if(overlapping.Any())
         {
             if (ownershipToken == null) return false;
@@ -35,16 +42,17 @@ public class EmptyRealEstate : IRealEstate
                     return false;
             }
         }
-        var newLand = new EmptyRealEstate(requestedBounds);
+        var newLand = new LandPlot(requestedBounds);
+        result = new EmptyRealEstateAuthToken(newLand);
         return success;
     }
 
-    public bool AcquireUse<T>(/**/ out IAuthorizationToken<IUseableLocation> useToken, IAuthorizationToken<IUseableLocation> authorisingToken )
+    public bool IsAuthorized(IAuthorizationToken<IUseableLocation> authToken)
     {
         throw new System.NotImplementedException();
     }
 
-    public bool AcquireUse<T>(T requester, out IAuthorizationToken<IUseableLocation> useToken)
+    public bool AcquireUse<T>(out ILocationUseToken<IUseableLocation> useToken)
     {
         throw new System.NotImplementedException();
     }

@@ -25,7 +25,7 @@ public abstract class PerceivingMind : Mind
     readonly List<BodyIntel> visibleEnemies = new List<BodyIntel>();
     readonly List<BodyIntel> visibleAllies = new List<BodyIntel>();
     readonly List<BodyIntel> allBodiesInSightRange = new List<BodyIntel>();
-    readonly TypeStore<IItemsProviderIntel<IResource>> allResourcesInSightRange = new TypeStore<IItemsProviderIntel<IResource>>();
+    readonly TypeStoreUNMANAGED<IItemsProviderIntel<IResource>> allResourcesInSightRange = new TypeStoreUNMANAGED<IItemsProviderIntel<IResource>>();
     
     public List<BodyIntel> VisibleEnemies { get { return new List<BodyIntel>(visibleEnemies); } }//change so they return an array
     public List<BodyIntel> VisibleAllies { get { return new List<BodyIntel>(visibleAllies); } }

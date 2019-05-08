@@ -5,9 +5,9 @@ using System.Linq;
 using System.Reflection;
 using UnityEngine;
 
-public class TypeStore<BaseT>
+public class TypeStoreUNMANAGED<BaseT>
 {
-    private TypeStore inner { get; } = new TypeStore();
+    private TypeStoreUNMANAGED inner { get; } = new TypeStoreUNMANAGED();
 
     public int Count => inner.Count;
     public void Add(BaseT data)
@@ -64,13 +64,13 @@ public class TypeStore<BaseT>
 /// <summary>
 /// RELEASE MUST BE CALLED OR ELSE MEMORY WILL LEAK
 /// </summary>
-public class TypeStore
+public class TypeStoreUNMANAGED
 {
     private interface IBaseInterface { }
     private static ClassNode classRoot { get; } = new ClassNode() { BaseType = null, Type = typeof(object) };
     private static InterfaceNode interfaceRoot { get; } = new InterfaceNode() { Type = typeof(IBaseInterface) };
     private static Dictionary<Type, TypeNode> typeNodes { get; } = new Dictionary<Type, TypeNode>();
-    static TypeStore()
+    static TypeStoreUNMANAGED()
     {
         typeNodes.Add(interfaceRoot.Type, interfaceRoot);
         typeNodes.Add(classRoot.Type, classRoot);
@@ -103,8 +103,8 @@ public class TypeStore
             foreach (var type in minimal)
             {
                 var node = typeNodes[type];
-                if(node.dataSet[this].Remove(data) && !node.Type.IsInterface)
-                        this.Count--;
+                if (node.dataSet[this].Remove(data) && !node.Type.IsInterface)
+                    this.Count--;
                 if (node.dataSet[this].Count == 0)
                     node.dataSet.Remove(this);
                 RemoveNodeIfEmpty(node);
@@ -122,7 +122,7 @@ public class TypeStore
         var types = new List<Type>(typeNodes.Keys);//have to make new enumerable as collection may change during iteration
         foreach (var type in types)
         {
-            if(typeNodes.ContainsKey(type) && typeNodes[type] != null && typeNodes[type].dataSet.ContainsKey(this))
+            if (typeNodes.ContainsKey(type) && typeNodes[type] != null && typeNodes[type].dataSet.ContainsKey(this))
             {
                 typeNodes[type].dataSet.Remove(this);
                 RemoveNodeIfEmpty(typeNodes[type]);
@@ -151,7 +151,7 @@ public class TypeStore
         if (typeNodes.ContainsKey(t))
         {
             var node = typeNodes[t];
-            if(node.dataSet.ContainsKey(this))
+            if (node.dataSet.ContainsKey(this))
             {
                 foreach (var data in node.dataSet[this])
                 {
@@ -313,7 +313,7 @@ public class TypeStore
     private class TypeNode
     {
         public Type Type { get; set; }
-        public Dictionary<TypeStore, HashSet<object>> dataSet { get; } = new Dictionary<TypeStore, HashSet<object>>();
+        public Dictionary<TypeStoreUNMANAGED, HashSet<object>> dataSet { get; } = new Dictionary<TypeStoreUNMANAGED, HashSet<object>>();
         public HashSet<TypeNode> DerivedTypes { get; } = new HashSet<TypeNode>();
     }
     private class ClassNode : TypeNode
@@ -325,6 +325,338 @@ public class TypeStore
         public HashSet<InterfaceNode> BaseTypes { get; } = new HashSet<InterfaceNode>();
     }
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+public class TypeStore<BaseT>
+{
+    private TypeStore inner { get; } = new TypeStore();
+
+    public int Count => inner.Count;
+    public void Add<T>(T data) where T : BaseT
+    {
+        inner.Add(data);
+    }
+    public void Remove<T>(T data) where T : BaseT
+    {
+        inner.Remove(data);
+    }
+
+    public bool ContainsKey(Type type)
+    {
+        return inner.ContainsKey(type);
+    }
+    public bool ContainsValue<T>(T data)
+    {
+        return inner.ContainsValue(data);
+    }
+    public IEnumerable<T> GetData<T>(bool includeDerivedTypes) where T : BaseT
+    {
+        return inner.GetData<T>(includeDerivedTypes);
+    }
+    public IEnumerable<object> GetData(Type t, bool includeDerivedTypes)
+    {
+        if (t == null || !typeof(BaseT).IsAssignableFrom(t))
+            yield break;
+        else
+            yield return inner.GetData(t, includeDerivedTypes);
+    }
+
+    public void Clear()
+    {
+        inner.Clear();
+    }
+}
+public class TypeStore : TStoreBase<HashSet<object>, object>
+{
+    public TypeStore()
+    {
+        typeNodes.Add(interfaceRoot.Type, interfaceRoot);
+        typeNodes.Add(classRoot.Type, classRoot);
+    }
+
+    public int Count { get; private set; } = 0;
+
+    public void Add<T>(T data)
+    {
+        var runtime = data.GetType();
+        var nodes = new List<TypeNode>(GetOrCreateNode(runtime));
+        foreach (var node in nodes)
+        {
+            if (node.dataSet.Add(data) && !node.Type.IsInterface)
+                this.Count++;
+        }
+    }
+    public void Remove<T>(T data)
+    {
+        var runtime = data.GetType();
+        if (ContainsKey(runtime))
+        {
+
+            var minimal = runtime.GetInterfaces().AsEnumerable();
+            minimal = minimal.Except(minimal.SelectMany(t => t.GetInterfaces()));
+            minimal = minimal.Append(runtime);
+
+            foreach (var type in minimal)
+            {
+                var node = typeNodes[type];
+                if (node.dataSet.Remove(data) && !node.Type.IsInterface)
+                    this.Count--;
+                RemoveNodeIfEmpty(node);
+            }
+        }
+    }
+
+    public void Clear()
+    {
+        interfaceRoot.DerivedTypes.Clear();
+        classRoot.DerivedTypes.Clear();
+        typeNodes.Clear();
+        typeNodes.Add(interfaceRoot.Type, interfaceRoot);
+        typeNodes.Add(classRoot.Type, classRoot);
+        Count = 0;
+    }
+
+    public virtual bool ContainsValue<T>(T data)
+    {
+        var type = data.GetType();
+        return typeNodes.ContainsKey(type) && typeNodes[type].dataSet.Contains(data);
+    }
+    public bool ContainsKey(Type type)
+    {
+        return typeNodes.ContainsKey(type);
+    }
+
+    public IEnumerable<T> GetData<T>(bool includeDerivedTypes)
+    {
+        foreach (var data in GetData(typeof(T), includeDerivedTypes))
+            yield return (T)data;
+    }
+    public IEnumerable<object> GetData(Type t, bool includeDerivedTypes)
+    {
+        if (typeNodes.ContainsKey(t))
+        {
+            var node = typeNodes[t];
+            foreach (var data in node.dataSet)
+            {
+                yield return data;
+            }
+            if (includeDerivedTypes)
+            {
+                foreach (var derivedNode in node.DerivedTypes)
+                    foreach (var derivedData in GetData(derivedNode.Type, includeDerivedTypes))
+                        yield return derivedData;
+            }
+        }
+        yield break;
+    }
+
+    private void RemoveNodeIfEmpty(TypeNode subject)
+    {
+        if (subject.Type.IsInterface)
+            RemoveInterfaceNodeIfEmpty((InterfaceNode)subject);
+        else
+            RemoveClassNodeIfEmpty((ClassNode)subject);
+    }
+    private void RemoveInterfaceNodeIfEmpty(InterfaceNode subject)
+    {
+        if (subject.DerivedTypes.Count == 0 && subject.dataSet.Count == 0 && subject != interfaceRoot)
+        {
+            typeNodes.Remove(subject.Type);
+            foreach (var baseNode in subject.BaseTypes)
+            {
+                baseNode.DerivedTypes.Remove(subject);
+                RemoveInterfaceNodeIfEmpty(baseNode);
+            }
+        }
+    }
+    private void RemoveClassNodeIfEmpty(ClassNode subject)
+    {
+        if (subject.DerivedTypes.Count == 0 && subject.dataSet.Count == 0 && subject != classRoot)
+        {
+            typeNodes.Remove(subject.Type);
+            var baseNode = subject.BaseType;
+            baseNode.DerivedTypes.Remove(subject);
+            RemoveClassNodeIfEmpty(baseNode);
+        }
+    }
+
+    private IEnumerable<TypeNode> GetOrCreateNode(Type type)
+    {
+        GetOrCreateClassNodes(type);
+        if (type.IsInterface)
+            yield return GetOrCreateInterfaceNode(type);
+        else
+        {
+            yield return GetOrCreateClassNodes(type);
+            foreach (var item in GetOrCreateInterfaceNodesImplementedByClass(type))
+            {
+                yield return item;
+            }
+        }
+    }
+    private ClassNode GetOrCreateClassNodes(Type classType)
+    {
+        if (classType == null) throw new ArgumentNullException();
+        else if (classType.IsInterface) throw new ArgumentException();
+        else if (typeNodes.ContainsKey(classType)) return (ClassNode)typeNodes[classType];
+        else
+        {
+            var newNode = new ClassNode() { Type = classType };
+            var baseNode = GetOrCreateClassNodes(classType.BaseType);
+            newNode.BaseType = baseNode;
+            baseNode.DerivedTypes.Add(newNode);
+            typeNodes.Add(classType, newNode);
+            return newNode;
+        }
+    }
+    private IEnumerable<InterfaceNode> GetOrCreateInterfaceNodesImplementedByClass(Type classType)
+    {
+        if (classType == null) throw new ArgumentNullException();
+        else if (!classType.IsInterface)
+        {
+            var minimalInterfaces = classType.GetInterfaces().AsEnumerable();
+            minimalInterfaces = minimalInterfaces.Except(minimalInterfaces.SelectMany(t => t.GetInterfaces()));
+            foreach (var baseInterface in minimalInterfaces)
+            {
+                yield return GetOrCreateInterfaceNode(baseInterface);
+            }
+        }
+    }
+    private InterfaceNode GetOrCreateInterfaceNode(Type interfaceType)
+    {
+        if (interfaceType == null) return interfaceRoot;
+        else if (interfaceType.IsClass) throw new ArgumentException();
+        else if (typeNodes.ContainsKey(interfaceType)) return (InterfaceNode)typeNodes[interfaceType];
+        else
+        {
+            InterfaceNode newNode = new InterfaceNode() { Type = interfaceType };
+
+            var minimalInterfaces = interfaceType.GetInterfaces().Where(t => t != interfaceType);
+            minimalInterfaces = minimalInterfaces.Except(minimalInterfaces.SelectMany(t => t.GetInterfaces()));
+            /* dont remove interfaces from base types. this prevents not storing item because interface wasnt on most specicic class
+            var current = type.BaseType;
+            while (current != null)
+            {
+                minimalInterfaces = minimalInterfaces.Except(current.GetInterfaces().SelectMany(t => t.GetInterfaces()));
+                current = current.BaseType;
+            }
+            */
+            if (interfaceType.IsGenericType)
+            {
+                var hasVariance = false;
+                var genericType = interfaceType.GetGenericTypeDefinition();
+                var genericTypeArgs = genericType.GetGenericArguments();
+                foreach (var item in genericTypeArgs)
+                {
+                    hasVariance = (item.GenericParameterAttributes & GenericParameterAttributes.VarianceMask) != GenericParameterAttributes.None;
+                    if (hasVariance && genericTypeArgs.Length > 1)
+                        throw new NotSupportedException("currently the typestore only accepts covariant or contravariant interfaces with 1 generic parameter!");
+                }
+
+                if (hasVariance)
+                {
+                    var constructedType = interfaceType.GetGenericArguments()[0];
+                    var constraints = genericTypeArgs[0].GetGenericParameterConstraints();
+                    var variantBaseTypes = constructedType.GetInterfaces().Where(t => t != constructedType && constraints.IsAnyAssignableFrom(t));
+                    variantBaseTypes = variantBaseTypes.Except(variantBaseTypes.SelectMany(t => t.GetInterfaces()));
+                    //need to check for reference, notNullable, defaultConstructor constraints 
+
+                    foreach (var variantBase in variantBaseTypes)
+                    {
+                        var additionalInterface = genericType.MakeGenericType(variantBase);
+                        minimalInterfaces = minimalInterfaces.Append(additionalInterface);
+                    }
+                }
+            }
+
+            var v = new List<Type>(minimalInterfaces);
+            var w = "";
+
+            if (minimalInterfaces.Count() == 0)
+            {
+                newNode.BaseTypes.Add(interfaceRoot);
+                interfaceRoot.DerivedTypes.Add(newNode);
+            }
+            else
+            {
+                foreach (var baseInterface in minimalInterfaces)
+                {
+                    var baseNode = GetOrCreateInterfaceNode(baseInterface);
+                    newNode.BaseTypes.Add(baseNode);
+                    baseNode.DerivedTypes.Add(newNode);
+                }
+            }
+            typeNodes.Add(interfaceType, newNode);
+            return newNode;
+        }
+    }
+}
+
+public class TStoreBase<T, W> where T : System.Collections.Generic.ICollection<W>, new()
+{ 
+    private interface IBaseInterface { }
+    protected ClassNode classRoot { get; } = new ClassNode() { BaseType = null, Type = typeof(object) };
+    protected InterfaceNode interfaceRoot { get; } = new InterfaceNode() { Type = typeof(IBaseInterface) };
+    protected Dictionary<Type, TypeNode> typeNodes { get; } = new Dictionary<Type, TypeNode>();
+
+    protected class TypeNode
+    {
+        public Type Type { get; set; }
+        public T dataSet { get; } = new T();
+        public HashSet<TypeNode> DerivedTypes { get; } = new HashSet<TypeNode>();
+    }
+    protected class ClassNode : TypeNode
+    {
+        public ClassNode BaseType { get; set; }
+    }
+    protected class InterfaceNode : TypeNode
+    {
+        public HashSet<InterfaceNode> BaseTypes { get; } = new HashSet<InterfaceNode>();
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 public static class TypeIEnumerableHelper
 {

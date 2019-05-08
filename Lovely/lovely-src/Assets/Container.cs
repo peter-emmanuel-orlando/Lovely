@@ -7,7 +7,7 @@ using UnityEngine;
 //allows one more item to overfill it
 public class Container
 {
-    readonly TypeStore<IItem> inner = new TypeStore<IItem>();
+    readonly TypeStoreUNMANAGED<IItem> inner = new TypeStoreUNMANAGED<IItem>();
     public readonly Predicate<IItem> canContainerHoldItem;
 
     public float MaxHoldableVolume { get; } = 100f;
@@ -35,10 +35,10 @@ public class Container
         //throw new NotImplementedException();
         //if item already exists, add together volumes
         var success = false;
-        if(item is ICombineableItem && inner.ContainsKey(item.GetType()))
+        if(item is IDivisibleItem && inner.ContainsKey(item.GetType()))
         {
-            var toCombine = item as ICombineableItem;
-            var preExisting = inner.GetData(item.GetType(), false).First() as ICombineableItem;
+            var toCombine = item as IDivisibleItem;
+            var preExisting = inner.GetData(item.GetType(), false).First() as IDivisibleItem;
             success = preExisting.Combine(ref toCombine, out IItem result);
             if(success)
             {
