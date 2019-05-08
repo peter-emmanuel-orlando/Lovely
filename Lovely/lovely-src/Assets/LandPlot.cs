@@ -14,15 +14,21 @@ public class LandPlot : MonoBehaviour, IRealEstate
         throw new System.NotImplementedException();
     }
 
+    private void OnDrawGizmosSelected()
+    {
+        Gizmos.color = Color.cyan;
+        Gizmos.DrawWireCube(Bounds.center, Bounds.size);
+    }
+
     private LandPlot( Bounds bounds)
     {
         Bounds = bounds;
         TrackedComponent.Track(this);
     }
 
-    private class EmptyRealEstateAuthToken : AdminToken<LandPlot>
+    private class LandPlotAuthToken : AdminToken<LandPlot>
     {
-        public EmptyRealEstateAuthToken(LandPlot authSubject, float expiry = float.PositiveInfinity) : base(authSubject, expiry)
+        public LandPlotAuthToken(LandPlot authSubject, float expiry = float.PositiveInfinity) : base(authSubject, expiry)
         {
 
         }
@@ -43,7 +49,7 @@ public class LandPlot : MonoBehaviour, IRealEstate
             }
         }
         var newLand = new LandPlot(requestedBounds);
-        result = new EmptyRealEstateAuthToken(newLand);
+        result = new LandPlotAuthToken(newLand);
         return success;
     }
 

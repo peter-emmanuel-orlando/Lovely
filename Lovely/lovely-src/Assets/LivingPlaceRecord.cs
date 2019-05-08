@@ -5,6 +5,7 @@ public static class LivingPlaceRecord
 {
     //this is  List of KVPairs where k is a hashset of interfaces of interfaces that body must implement and v is a prefab.
     //you say for all in the list, if !requirements.issubsetof(providedQualifications)
+    /*
     private static HashSet<> prefabs = new TypeDictionary<List<ISpawnable>>();
     static LivingPlaceRecord()
     {
@@ -17,5 +18,5 @@ public static class LivingPlaceRecord
     {
 
     }
-
+    */
 }

@@ -5,7 +5,7 @@ using UnityEngine;
 public abstract class ItemRecipie
 {
 
-    public TypeStoreUNMANAGED sorted { get; } = new TypeStoreUNMANAGED();
+    private TypeStore sorted { get; } = new TypeStore();
     private HashSet<IItemRequirement> ItemRequirements { get; }
     protected ItemRecipie(HashSet<IItemRequirement> itemRequirements)
     {
@@ -15,7 +15,7 @@ public abstract class ItemRecipie
             sorted.Add(item);
         }
     }
-    public float CurrentItemsValue
+    public float CurrentValue
     {
         get
         {
@@ -23,6 +23,18 @@ public abstract class ItemRecipie
             foreach (var item in ItemRequirements)
             {
                 result += item.CurrentValue;
+            }
+            return result;
+        }
+    }
+    public float RemainingCost
+    {
+        get
+        {
+            var result = 0f;
+            foreach (var item in ItemRequirements)
+            {
+                result += item.RemainingNeededValue;
             }
             return result;
         }
@@ -39,7 +51,7 @@ public abstract class ItemRecipie
             return result;
         }
     }
-
+    public float Progress => (CurrentValue / TotalRecipieCost) + 0.01f;
     public bool HasNeccessaryItemsToCraft(Container items)
     {
         var result = true;

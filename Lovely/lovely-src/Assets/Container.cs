@@ -34,19 +34,12 @@ public class Container
     {
         //throw new NotImplementedException();
         //if item already exists, add together volumes
-        var success = false;
-        if(item is IDivisibleItem && inner.ContainsKey(item.GetType()))
+        if(item is IDivisibleItem<T> && inner.ContainsKey(item.GetType()))
         {
-            var toCombine = item as IDivisibleItem;
-            var preExisting = inner.GetData(item.GetType(), false).First() as IDivisibleItem;
-            success = preExisting.Combine(ref toCombine, out IItem result);
-            if(success)
-            {
-                inner.Remove(item);
-                inner.Add(result);
-            }
+            var preExisting = inner.GetData(item.GetType(), false).First() as IDivisibleItem<T>;
+            preExisting.Combine(ref item);
         }
-        if(!success)
+        else
             inner.Add(item);
     }
 
