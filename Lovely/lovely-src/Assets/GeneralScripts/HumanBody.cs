@@ -1,8 +1,7 @@
 ﻿using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
-public abstract class HumanBody : Body
+public abstract class HumanBody : HumanoidBody
 {
     protected override void Awake()
     {

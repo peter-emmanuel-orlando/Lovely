@@ -52,16 +52,17 @@ public abstract class ItemRecipie
         }
     }
     public float Progress => (CurrentValue / TotalRecipieCost) + 0.01f;
+    /*
     public bool HasNeccessaryItemsToCraft(Container items)
     {
         var result = true;
-        foreach (var kvPair in ItemRequirements)
+        foreach (var requirement in ItemRequirements)
         {
-            //var Item = items.
+            if(requirement)
+            var containerItem = items.GetItem()
         }
         return result;
     }
-    /*
     public bool MeetsQualificationsToCraft<T>( T crafter)
     {
         return false;
@@ -130,6 +131,7 @@ public class ItemRequirement<T> : IItemRequirement where T : IItem
     public float CurrentValue => internalItem.Value;
     public float RemainingNeededVolume => Mathf.Max(TotalNeededVolume - CurrentVolume, RemainingNeededValue / internalItem.ValuePerVolume);
     public float RemainingNeededValue => Mathf.Max(TotalNeededValue - CurrentValue, RemainingNeededVolume * internalItem.ValuePerVolume);
+    private readonly HashSet<IItem> usedItems = new HashSet<IItem>();
 
     public ItemFulfilmentStatus IsSatisfied
     {
@@ -159,21 +161,32 @@ public class ItemRequirement<T> : IItemRequirement where T : IItem
         internalItem = new RequirementPlaceholder(template.ItemType, template.Volume, template.ValuePerVolume, template.Phase);
     }
 
+    public List<IItem> ReturnUsedItems()
+    {
+        var result = new List<IItem>(usedItems);
+        usedItems.Clear();
+        internalItem.UseItem();
+        return result;
+    }
+
     public ItemFulfilmentStatus Give(IItem item)
     {
-        if (item.ItemType == RequirementType)
+        if (RequirementType.IsAssignableFrom(item.ItemType))
         {
             if (IsDivisible)
             {
                 var requirement = Mathf.Max(RemainingNeededVolume, RemainingNeededValue / item.ValuePerVolume);
                 var useVolume = Mathf.Min(item.Volume, requirement);
                 internalItem.SetVolume(internalItem.Volume + useVolume);
-                ((IDivisibleItem<T>)item).UseVolume(useVolume);
+                var usedItem = (IDivisibleItem<T>)item.GetEmpty();
+                var divisible = (T)item;
+                usedItem.TakeVolumeFrom(ref divisible, useVolume);
+                usedItems.Add(usedItem);
             }
             else if (item.Volume > TotalNeededVolume && item.Value > TotalNeededValue)
             {
                 internalItem.SetVolume(internalItem.Volume);
-                item.UseItem();
+                usedItems.Add(item.TakeAll());
             }
         }
         return IsSatisfied;

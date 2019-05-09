@@ -28,6 +28,32 @@ static class MyExtensions
             }
         }
     }
+    /// <summary>
+    /// returns true if every point in this is inside or on other
+    /// </summary>
+    /// <param name="bounds"></param>
+    /// <param name="other"></param>
+    /// <returns></returns>
+    public static bool Contains(this Bounds bounds, Bounds other)
+    {
+        var result = false;
+        result = bounds.max.x >= other.max.x &&
+            bounds.max.y >= other.max.y &&
+            bounds.max.z >= other.max.z &&
+
+            bounds.min.x <= other.min.x &&
+            bounds.min.y <= other.min.y &&
+            bounds.min.z <= other.min.z;
+        return result;
+    }
+    public static bool CanContain(this Bounds bounds, Bounds other)
+    {
+        return bounds.CanContain(other.size);
+    }
+    public static bool CanContain(this Bounds bounds, Vector3 size)
+    {
+        return bounds.size.x > size.x && bounds.size.y > size.y && bounds.size.z > size.z;
+    }
     public static Vector3[] GetCornerVerticies(this Bounds bounds)
     {
 

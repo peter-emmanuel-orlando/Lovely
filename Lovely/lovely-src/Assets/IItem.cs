@@ -2,7 +2,14 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public interface IItem
+
+public interface IItem : IItemStats
+{
+    void UseItem();
+    IItem GetEmpty();
+    IItem TakeAll();
+}
+public interface IItemStats
 {
     float Value { get; }
     float ValuePerVolume { get; }
@@ -10,7 +17,6 @@ public interface IItem
     float Volume { get; }
     bool IsEmpty { get; }
     MatterPhase Phase { get; }
-    void UseItem();
 }
 
 /*
@@ -22,7 +28,7 @@ public interface IContainableItem : IItem
 public interface IDivisibleItem<T> : IItem where T : IItem
 {
     void Combine<TOther>(ref TOther other) where TOther : T;
-    bool AddVolume<TOther>(ref TOther other, float maxTransfer) where TOther : T;
+    bool TakeVolumeFrom<TOther>(ref TOther other, float maxTransfer) where TOther : T;
     bool UseVolume(float volume);
 }
 /*

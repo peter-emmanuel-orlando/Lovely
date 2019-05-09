@@ -27,6 +27,5 @@ public class FairieFireBody : Body, IBodyCanGlow
         lightSource = GetComponentInChildren<Light>();
         if (lightSource == null)
             throw new UnityException("FairieFire needs a light component in heiarchy!");
-
     }
 }

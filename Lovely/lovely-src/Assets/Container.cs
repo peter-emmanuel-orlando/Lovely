@@ -7,7 +7,7 @@ using UnityEngine;
 //allows one more item to overfill it
 public class Container
 {
-    readonly TypeStoreUNMANAGED<IItem> inner = new TypeStoreUNMANAGED<IItem>();
+    readonly TypeStore<IItem> inner = new TypeStore<IItem>();
     public readonly Predicate<IItem> canContainerHoldItem;
 
     public float MaxHoldableVolume { get; } = 100f;
@@ -43,9 +43,23 @@ public class Container
             inner.Add(item);
     }
 
-    public IItem GetItem()
+    public IEnumerable<IItem> GetItems<T>(bool includeDerived) where T : IItem
     {
-        throw new NotImplementedException();
+        var result = inner.GetData<T>(includeDerived);
+        foreach (var item in result)
+        {
+            inner.Remove(item);
+            yield return item;
+        }
+    }
+
+    public IEnumerable<IItemStats> GetItemStats<T>(bool includeDerived) where T : IItem
+    {
+        var result = inner.GetData<T>(includeDerived);
+        foreach (var item in result)
+        {
+            yield return item;
+        }
     }
     public string GetItemsList()
     {

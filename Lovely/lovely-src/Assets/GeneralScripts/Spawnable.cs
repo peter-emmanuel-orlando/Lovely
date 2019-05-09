@@ -12,16 +12,17 @@ public class Spawnable : MonoBehaviour, ISpawnable
     public Transform Transform { get { return (this == null) ? null : transform; } }
     protected MeshRenderer[] meshRenderers;
     protected SkinnedMeshRenderer[] skinnedMeshRenderers;
+    //do same for colliders
     public virtual Bounds Bounds
     {
         get
         {
             var result = new Bounds(transform.position, Vector3.zero);
-            foreach (var r in meshRenderers)
+            foreach (var r in meshRenderers ?? new MeshRenderer[0])
             {
                 result.Encapsulate(r.bounds);
             }
-            foreach (var s in skinnedMeshRenderers)
+            foreach (var s in skinnedMeshRenderers ?? new SkinnedMeshRenderer[0])
             {
                 result.Encapsulate(s.bounds);
             }

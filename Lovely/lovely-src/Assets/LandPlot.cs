@@ -7,10 +7,11 @@ using UnityEngine;
 
 public class LandPlot : MonoBehaviour, IRealEstate
 {
-    public Bounds Bounds { get; }
+    public Bounds Bounds { get; set; }
     public bool IsFlat { get; private set; } = false;
     public bool Flatten()
     {
+        return false;
         throw new System.NotImplementedException();
     }
 
@@ -20,10 +21,13 @@ public class LandPlot : MonoBehaviour, IRealEstate
         Gizmos.DrawWireCube(Bounds.center, Bounds.size);
     }
 
-    private LandPlot( Bounds bounds)
+    private void OnEnable()
     {
-        Bounds = bounds;
         TrackedComponent.Track(this);
+    }
+    private void OnDisable()
+    {
+        TrackedComponent.Untrack(this);
     }
 
     private class LandPlotAuthToken : AdminToken<LandPlot>
@@ -48,7 +52,7 @@ public class LandPlot : MonoBehaviour, IRealEstate
                     return false;
             }
         }
-        var newLand = new LandPlot(requestedBounds);
+        var newLand = new GameObject().AddComponent<LandPlot>();// new LandPlot(requestedBounds);
         result = new LandPlotAuthToken(newLand);
         return success;
     }
